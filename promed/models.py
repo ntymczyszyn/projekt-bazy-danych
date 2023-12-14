@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 import uuid
 from datetime import date
-from phonenumber_field.modelfields import PhoneNumberField
+#from phonenumber_field.modelfields import PhoneNumberField
 
 # TO-DO
 # ustal co się ma dziać on_delete, dopisać help_text
@@ -11,14 +11,16 @@ from phonenumber_field.modelfields import PhoneNumberField
 # pododawać funkcje __str__(self) i get_absolute_url(self) i Meta
 class Doctor(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    phone_number = PhoneNumberField() # weź to jeszcze sprawdź
+    #phone_number = PhoneNumberField() # weź to jeszcze sprawdź
+    # to jeszcze do okiełznania jakoś
+    phone_number = models.CharField(max_length=9)
     # czy tak lepiej to robić?
     # borrower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Patient(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    phone_number = PhoneNumberField()
+    phone_number = models.CharField(max_length=9)
     date_of_birth = models.DateField()
     # czy tu liczyć wiek jako @property??
     # czy robić pesel validation?
@@ -27,7 +29,7 @@ class Patient(models.Model):
 class Facility(models.Model):
     street_address = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=6)
-    city = models.CharField(max_lenght=200)
+    city = models.CharField(max_length=200)
     voivodeship = models.CharField(max_length=20) # jeśli nie uwzględniamy słowa "województwo"
 
     class Meta:
@@ -60,8 +62,8 @@ class Service(models.Model):
 class Appointment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular appointment.")
-    facility_id = models.ForeignKey('Facility')
-    service_id = models.ForeignKey('Service')
+    facility_id = models.ForeignKey('Facility', on_delete=models.SET_NULL, null=True)
+    service_id = models.ForeignKey('Service',on_delete=models.SET_NULL, null=True)
     appointment_time = models.DateField(null=True, blank=True)
     APPOINTMENT_STATUS = (
         ('a', 'avaliable'),
@@ -74,5 +76,5 @@ class Appointment(models.Model):
         default='a',
         help_text="Appointment status."
     )
-    patient_id = models.ForeignKey('Patient', null=True, blank=True)
+    patient_id = models.ForeignKey('Patient', on_delete=models.SET_NULL, null=True, blank=True)
 
