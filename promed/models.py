@@ -4,7 +4,10 @@ from django.conf import settings
 import uuid
 from datetime import date
 #from phonenumber_field.modelfields import PhoneNumberField
-
+#**********************************************
+# trzeba utworzyć folder promed/migrations
+# a w nim touch __init.py__, żeby migrcje zaczeły działać
+#***************************************
 # TO-DO
 # ustal co się ma dziać on_delete, dopisać help_text
 # sprawdzić czy ta biblioteka phonemunber_field jest git
