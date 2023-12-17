@@ -1,10 +1,16 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: rgb(104, 127, 241);
+    background-color: rgb(168, 128, 90);
 }
 
-.letters {
+.title {
     font-size: 50px;
+    margin-bottom: 10px;
+
+}
+
+.title2 {
+    font-size: 20px;
     margin-bottom: 10px;
 
 }
@@ -22,7 +28,7 @@ body {
     margin: auto;
     width: 400px;
     padding: 16px; 
-    background-color: rgb(64, 30, 143);
+    background-color: rgb(131, 73, 26);
     border: 1px solid #ccc;
     border-radius: 16px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -40,7 +46,7 @@ input[type=text], input[type=password] {
 }
 
 button {
-    background-color: rgb(49, 230, 154);
+    background-color: rgb(230, 197, 49);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
