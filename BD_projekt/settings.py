@@ -56,7 +56,7 @@ ROOT_URLCONF = 'BD_projekt.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'promed/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
