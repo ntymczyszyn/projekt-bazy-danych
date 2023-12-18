@@ -1,10 +1,11 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: rgb(168, 128, 90);
+    background-color: rgb(135, 175, 228);
 }
 
 .title {
-    font-size: 50px;
+    font-family:fantasy;
+    font-size: 70px;
     margin-bottom: 10px;
 
 }
@@ -16,7 +17,7 @@ body {
 }
 
 .container1 {
-    width: 400px;
+    width: 300px;
     padding: 16px;
     background-color: transparent;
     margin: auto;
@@ -26,9 +27,9 @@ body {
 
 .container2 {
     margin: auto;
-    width: 400px;
+    width: 300px;
     padding: 16px; 
-    background-color: rgb(131, 73, 26);
+    background-color: rgb(66, 154, 218);
     border: 1px solid #ccc;
     border-radius: 16px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -40,13 +41,13 @@ input[type=text], input[type=password] {
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(30, 51, 155, 0.062);
     border-radius: 8px;
     box-sizing: border-box;
 }
 
 button {
-    background-color: rgb(230, 197, 49);
+    background-color: rgb(42, 223, 141);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;

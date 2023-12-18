@@ -1,25 +1,12 @@
+{% extends 'base_home_login.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">
-    </head>
-<body class="body">
-    <div class="btn-help" style="float:right; width: auto; align-content: center; size: 10% ; ">
-        <img src="{% static 'images/dzik_logo.png' %}" alt="Image" class="dzik-image">
+{% block content %}
+<div class="container2">
+    <div class="btn-help">
+        <img src="{% static 'images/logo_dzik.png' %}" alt="Image" class="dzik-image">
         <div class="text-section">   
             <h2><a href="login">Logowanie</a></h2>
         </div>
     </div>
-    <div class="container1">
-        <h1 style="text-align: center;">
-            <div class="title">PROMED</div>
-            <div class="title2">Zdrów jak dzik!</div>
-        </h1>
-    </div>
-    {% block content %}
-    {% endblock %}
-</body>
-</html>
+</div>
+{% endblock %}

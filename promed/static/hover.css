@@ -7,8 +7,8 @@ body_h {
 }
 
 .btn-help {
-    width: 300px;
-    height: 100px;
+    width: auto;
+    height: auto;
     background: #fff;
     border-radius: 50%;
     cursor: pointer;
@@ -16,6 +16,7 @@ body_h {
     display: flex;
     justify-content: center;
     align-items: center;
+    align-content: center;
     transition: all 0.7s ease-in-out;
 }
 
