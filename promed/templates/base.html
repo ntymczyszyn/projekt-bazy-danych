@@ -11,9 +11,23 @@
 <!-- tutaj będzie navbar, tylko muszę ogarnąć jak wydobywac info o tym czy to pacjent czy lekarz    --- Natalia, uważasz, że mogę ściągać to z views.py jakoś czy raczej inaczej? -->
     <div class="container1" style="position: absolute; top: 0%; left:50%">
         <h1 style="text-align: center;">
-            <div class="title" style="font-size: 10px;">PROMED</div>
-            <div style="font-size: 1px; margin-bottom: 10px;">Zdrów jak dzik!</div>
+            <div class="title" style="font-size: 20px;">PROMED</div>
+            <div style="font-size: 10px; margin-bottom: 10px;">Zdrów jak dzik!</div>
         </h1>
+    </div>
+    <div class="container2" style="float: right; position: absolute; top: 0; right: 0; width: 150px;">
+        <div class="btn-help">
+            <img src="{% static 'images/logo_dzik.png' %}" alt="Image" class="dzik-image">
+            <div class="text-section">   
+                <ul class="menu">
+                    <li><a href="{% url 'patient' %}">Strona Główna</a></li>
+                    <li><a href="{% url 'patient-detail' %}">Profil pacjanta</a></li>
+                    <li><a href="{% url 'visits-view' %}">Wizyty</a></li>
+                    <li><a href="{% url 'reservations' %}">Rezerwacje</a></li>
+                    <li><a href="{% url 'home' %}">Wyloguj</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
     {% block content %}
     {% endblock %}

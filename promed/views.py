@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+
+from django.views import generic
+from .models import Patient, Doctor, Facility, Specialization, Service, Appointment 
+
 '''
 Trzeba zrobić view
 - do tworzenia konta?
@@ -28,8 +32,16 @@ def login(request):
 def patient(request):
     return render(request, 'patient_home.html')
 
+class PatientDetailView(generic.DetailView):
+    model = Patient
+
+
 def visits(request):
     return render(request, 'wizyty.html')
+
+# moje próby XD
+class VisitsListView(generic.ListView):
+    model = Appointment
 
 def reservation(request):
     return render(request, 'rezerwacje.html')
