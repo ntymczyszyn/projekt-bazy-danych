@@ -5,7 +5,23 @@ admin.site.site_header = "Promed administration"
 
 admin.site.register(Facility)
 admin.site.register(Service)
-admin.site.register(Appointment)
 admin.site.register(Specialization)
-admin.site.register(Doctor)
-admin.site.register(Patient)
+
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):  
+    list_filter = ('appointment_time', 'facility_id')
+
+class ServiceInline(admin.TabularInline):
+    model = Service
+
+@admin.register(Doctor)
+class DoctorAdmin(admin.ModelAdmin):  
+    inlines = [ServiceInline]
+
+class AppointmentInline(admin.TabularInline):
+    model = Appointment
+
+@admin.register(Patient)
+class PatientAdmin(admin.ModelAdmin):  
+    inlines = [AppointmentInline]

@@ -115,6 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#AUTH_USER_MODEL <- tego nie mamy dodane,bo  narazie używamy default  AUTH_USER_MODEL = 'auth.User'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -122,11 +124,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 # zmieniłam na polski czas
 TIME_ZONE = 'Europe/Warsaw'
-
 USE_I18N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
