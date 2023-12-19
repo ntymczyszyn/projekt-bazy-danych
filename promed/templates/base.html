@@ -4,16 +4,18 @@
     <head>
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">        
+        <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">  
+        <link rel="stylesheet" type="text/css" href="{% static 'patient.css' %}">       
     </head>
 <body>
 <!-- tutaj będzie navbar, tylko muszę ogarnąć jak wydobywac info o tym czy to pacjent czy lekarz    --- Natalia, uważasz, że mogę ściągać to z views.py jakoś czy raczej inaczej? -->
-    <div class="container1">
+    <div class="container1" style="position: absolute; top: 0%; left:50%">
         <h1 style="text-align: center;">
-            <div class="title">PROMED</div>
-            <div class="title2">Zdrów jak dzik!</div>
+            <div class="title" style="font-size: 10px;">PROMED</div>
+            <div style="font-size: 1px; margin-bottom: 10px;">Zdrów jak dzik!</div>
         </h1>
     </div>
-    
+    {% block content %}
+    {% endblock %}
 </body>
 </html>

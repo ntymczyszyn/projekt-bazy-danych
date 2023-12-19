@@ -29,3 +29,12 @@ def home(request):
 
 def login(request):
     return render(request, 'login.html')
+
+def patient(request):
+    return render(request, 'patient_home.html')
+
+def visits(request):
+    return render(request, 'wizyty.html')
+
+def reservation(request):
+    return render(request, 'rezerwacje.html')
