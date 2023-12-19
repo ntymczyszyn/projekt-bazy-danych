@@ -19,7 +19,8 @@ class Doctor(models.Model):
     phone_number = models.CharField(max_length=9)
     # czy tak lepiej to robić?
     # borrower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-
+    def __str__(self) -> str:
+        return str(self.user_id)
 
 class Patient(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -28,6 +29,8 @@ class Patient(models.Model):
     # czy tu liczyć wiek jako @property??
     # czy robić pesel validation?
     pesel = models.CharField(max_length=11, unique=True)
+    def __str__(self) -> str:
+        return str(self.user_id)
 
 class Facility(models.Model):
     street_address = models.CharField(max_length=200)
