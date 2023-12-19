@@ -27,7 +27,25 @@ def login(request):
 
 def patient(request):
     return render(request, 'patient_home.html')
+#-----------------------------------------------------------------------------------
+# wyświetlanie wszystkich wizyt zalogwanego użytownika
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Appointment, Patient
+from django.shortcuts import get_object_or_404
 
+class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
+    model = Appointment
+    template_name = 'promed/appointment_list_user.html' # docelowo będzie _patient
+    # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
+
+    def get_queryset(self):
+        patient = get_object_or_404(Patient, user_id=self.request.user)
+        return (
+            Appointment.objects.filter(patient_id=patient)
+            .order_by('appointment_time')
+        )
+#-----------------------------------------------------------------------------------   
 def visits(request):
     return render(request, 'wizyty.html')
 
