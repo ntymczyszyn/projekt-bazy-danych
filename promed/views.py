@@ -67,10 +67,10 @@ class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
-        id_user = get_object_or_404(Patient, user_id=self.request.user)
-        doctor = get_object_or_404(Service, doctor_id = id_user)
+        # id_user = get_object_or_404(Patient, user_id=self.request.user)
+        doctor = get_object_or_404(Doctor, user_id = self.request.user)
         return (
-            Appointment.objects.filter(doctor_id=doctor)
+            Appointment.objects.filter(service_id__doctor_id=doctor)
             .order_by('appointment_time')
         )
 
