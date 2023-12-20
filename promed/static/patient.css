@@ -37,6 +37,8 @@ nav {
 main {
     margin-left: 200px;
     padding: 10px;
+    align-items: center;
+    justify-content: center;
 }
 
 .appointments {

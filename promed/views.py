@@ -35,5 +35,19 @@ class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
             .order_by('appointment_time')
         )
 
+#-----------------------------------------------------------------------------------
+class PatientDetailView(LoginRequiredMixin, generic.DetailView):
+    def get(self, request):
+        patient = Patient.objects.get(user_id=request.user)
+        context = {
+            'first_name': patient.user_id.first_name,
+            'last_name': patient.user_id.last_name,
+            'phone_number': patient.phone_number,
+            'pesel': patient.pesel,
+        }
+        return render(request, 'promed/patient_detail.html', context)
+#-----------------------------------------------------------------------------------
+
+
 def reservation(request):
     return render(request, 'rezerwacje.html')

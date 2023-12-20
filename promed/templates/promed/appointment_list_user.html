@@ -1,4 +1,4 @@
-{% extends 'base_home_login.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block content %}
 <div class="container2" style="float: right; position: absolute; top: 0; right: 0; width: 150px;">
@@ -7,14 +7,9 @@
         <div class="text-section">   
             <ul class="menu">
                 <li><a href="{% url 'patient-dashboard' %}">Strona Główna</a></li>
-                <li><a href="{% url 'visits' %}">Wizyty</a></li>
-                <li><a href="{% url 'reservations' %}">Rezerwacje</a></li>
-                <li><a href="{% url 'home' %}">Wyloguj</a></li>
-                <!-- dodane testów odtąd -->
                 {% if user.is_authenticated %} <!-- narazie tylko tu wyświetalnie użytkownika-->
                 <li>Użytkownik: {{ user.get_username }}</li>
                 {% endif %}
-                <!-- dotąd-->
             </ul>
         </div>
     </div>
@@ -32,6 +27,6 @@
     {% else %}
         <p>Brak wizyt.</p>
     {% endif %}   
-</main>
+</div>
 
 {% endblock %}
