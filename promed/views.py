@@ -53,9 +53,9 @@ class ReservationAppointmentsView(LoginRequiredMixin, generic.ListView):
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
-        available = get_object_or_404(Appointment, APPOINTMENT_STATUS=('a','dostepna'))
+        available = get_object_or_404(Appointment, status='a')
         return (
-            Appointment.objects.filter(APPOINTMENT_STATUS=available)
+            Appointment.objects.filter(status=available)
             .order_by('appointment_time')
         )
 

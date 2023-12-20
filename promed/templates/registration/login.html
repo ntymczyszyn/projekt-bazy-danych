@@ -20,7 +20,7 @@
         <label for="psw"><b>Hasło</b></label>
         <input type="password" placeholder="Hasło" name="psw" required>
 
-        <button type="submit">Zaloguj</button>
+        <button type="submit"><a href="{% url 'patient-dashboard' %}">Zaloguj</a></button>
         <input type="hidden" name="next" value="{{ next }}">
     </form>
     
