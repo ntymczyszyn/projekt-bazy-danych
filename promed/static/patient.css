@@ -41,7 +41,32 @@ main {
     justify-content: center;
 }
 
+
 .appointments {
     list-style-type: none;
     padding: 0;
+}
+
+.appointments ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+   
+.column1 li {
+    list-style-type: none;
+    padding: 0;
+}
+   
+.column2 {
+    padding: 10px;
+}
+   
+.column1 li {
+    flex: 70%;
+    padding: 10px;
+}
+   
+.column2 {
+    flex: 30%;
+    padding: 10px;
 }

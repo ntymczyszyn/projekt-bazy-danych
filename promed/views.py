@@ -29,6 +29,7 @@ class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         patient = get_object_or_404(Patient, user_id=self.request.user)
+        
         return (
             Appointment.objects.filter(patient_id=patient)
             .order_by('appointment_time')
@@ -45,17 +46,19 @@ class PatientDetailView(LoginRequiredMixin, generic.DetailView):
         }
         return render(request, 'promed/patient_detail.html', context)
 
+#APPOINTMENTS
 class ReservationAppointmentsView(LoginRequiredMixin, generic.ListView):
     model = Appointment
     template_name = 'promed/reservation_appointments.html'
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
-        available = get_object_or_404(Appointment, status='a')
+        available = 'a'
         return (
             Appointment.objects.filter(status=available)
             .order_by('appointment_time')
         )
+
 
 #DOCTORS
 class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
@@ -64,7 +67,8 @@ class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
-        doctor = get_object_or_404(Service, doctor_id=self.request.user)
+        id_user = get_object_or_404(Patient, user_id=self.request.user)
+        doctor = get_object_or_404(Service, doctor_id = id_user)
         return (
             Appointment.objects.filter(doctor_id=doctor)
             .order_by('appointment_time')
@@ -77,7 +81,6 @@ class DoctorDetailView(LoginRequiredMixin, generic.DetailView):
             'first_name': doctor.user_id.first_name,
             'last_name': doctor.user_id.last_name,
             'phone_number': doctor.phone_number,
-            'pesel': doctor.pesel,
         }
         return render(request, 'promed/doctor_detail.html', context)
 

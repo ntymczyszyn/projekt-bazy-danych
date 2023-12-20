@@ -25,7 +25,9 @@
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'patient-detail' %}">{{ user.get_username }}</li></a></li>
                     {% endif %}
-                    <li><a href="{% url 'patient-reservation' %}">Zarezerwuj</a></li>
+                    <!-- dotąd-->
+                    <li><a href="{% url 'patient-reservation' %}">Zarezerwój</a></li>
+                    <li><a href="{% url 'doctor-dashboard' %}">Strona Lekarza</a></li>
                     <li><a href="{% url 'home' %}">Wyloguj</a></li>
                 </ul>
             </div>
