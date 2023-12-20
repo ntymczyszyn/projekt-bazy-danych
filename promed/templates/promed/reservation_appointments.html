@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw">
+    <h2>Wizyty</h2>
+    {% if appointment_list %}
+        <ul class="appointments">
+            {% for appointment in appointment_list %} 
+                <li>        
+                    {{appointment}}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak wizyt.</p>
+    {% endif %}   
+</div>
+
+{% endblock %}

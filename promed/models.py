@@ -2,12 +2,11 @@ from django.db import models
 from django.conf import settings
 import uuid
 from datetime import datetime
+from django.utils import timezone
 from django.urls import reverse  # To generate URLS by reversing URL patterns
 #from phonenumber_field.modelfields import PhoneNumberField <- czy się na to przerzucić
 # phone_number = PhoneNumberField()
-# TO-DO:
-# sprawdź on_delete, dopisz help_text
-# funkcje Meta?
+
 class Doctor(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=9)
@@ -76,8 +75,8 @@ class Specialization(models.Model):
         return reverse('specialization-detail', args=[str(self.id)])
 
 class Service(models.Model):
-    specialzation_id = models.ForeignKey('Specialization', on_delete=models.SET_NULL, null=True) #on_delete=models.SET_NULL, null=True, blank=True
-    doctor_id = models.ForeignKey('Doctor', on_delete=models.SET_NULL, null=True)
+    specialzation_id = models.ForeignKey('Specialization', on_delete=models.PROTECT) #on_delete=models.SET_NULL, null=True, blank=True
+    doctor_id = models.ForeignKey('Doctor', on_delete=models.PROTECT) 
     DURATION_LENGTH = ( 
         ('15', '15 minut'),
         ('30', '30 minut')
@@ -96,9 +95,9 @@ class Service(models.Model):
 class Appointment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unikalne ID dla danej wizyty.")
-    facility_id = models.ForeignKey('Facility', on_delete=models.SET_NULL, null=True)
-    service_id = models.ForeignKey('Service',on_delete=models.SET_NULL, null=True)
-    appointment_time = models.DateTimeField(null=True, blank=True) 
+    facility_id = models.ForeignKey('Facility', on_delete=models.PROTECT)
+    service_id = models.ForeignKey('Service', on_delete=models.PROTECT)
+    appointment_time = models.DateTimeField(default=timezone.now, null=True, blank=True) 
     APPOINTMENT_STATUS = (
         ('a', 'dostepna'),
         ('r', 'zarezerwowana'),
