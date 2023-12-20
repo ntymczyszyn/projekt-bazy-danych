@@ -20,3 +20,7 @@ urlpatterns += [
     path('doctor/dashboard',  views.AppointmentsByDoctorListView.as_view(), name="doctor-dashboard"),
     path('doctor/details', views.DoctorDetailView.as_view(), name='doctor-detail'),
 ]
+
+urlpatterns += [
+    path('patient/reservation', views.ReservationAppointmentsView.as_view(), name='patient-reservation'),
+]

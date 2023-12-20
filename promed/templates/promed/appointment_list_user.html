@@ -1,19 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="container2" style="float: right; position: absolute; top: 0; right: 0; width: 150px;">
-    <div class="btn-help">
-        <img src="{% static 'images/logo_dzik.png' %}" alt="Image" class="dzik-image">
-        <div class="text-section">   
-            <ul class="menu">
-                <li><a href="{% url 'patient-dashboard' %}">Strona Główna</a></li>
-                {% if user.is_authenticated %} <!-- narazie tylko tu wyświetalnie użytkownika-->
-                <li>Użytkownik: {{ user.get_username }}</li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</div>
 <main>
     <h2>Wizyty</h2>
     {% if appointment_list %}
