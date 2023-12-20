@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     path('home/', views.home, name="home"),
@@ -11,6 +10,7 @@ urlpatterns += [
     path('patient/dashboard', views.AppointmentsByUserListView.as_view(), name="patient-dashboard"),
     path('patient/details', views.PatientDetailView.as_view(), name='patient-detail'),
     path('patient/reservation', views.ReservationAppointmentsView.as_view(), name='patient-reservation'),
+    path('patient/search/appointments/', views.AppointmentSearchView.as_view(), name='appointment-search'),
 ]
 
 # ścieżki do strony lekarza

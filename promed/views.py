@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.views import generic
+from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Appointment, Patient, Doctor, Service
+from .forms import AppointmentSearchForm
 
 '''
 HOME
@@ -79,3 +80,20 @@ class DoctorDetailView(LoginRequiredMixin, generic.DetailView):
             'pesel': doctor.pesel,
         }
         return render(request, 'promed/doctor_detail.html', context)
+
+# WYSZUKIWARKA
+class AppointmentSearchView(View):
+    def get(self, request):
+        form = AppointmentSearchForm(request.GET)
+        appointments = Appointment.objects.all()
+
+        if form.is_valid():
+            doctor = form.cleaned_data.get('doctor')
+            facility = form.cleaned_data.get('facility')
+
+            if doctor:
+                appointments = appointments.filter(service_id__doctor_id=doctor)
+            if facility:
+                appointments = appointments.filter(facility_id=facility)
+
+        return render(request, 'appointment_search_results.html', {'form': form, 'appointments': appointments})
