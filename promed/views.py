@@ -1,10 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-
-from django.views import generic
-from .models import Patient, Doctor, Facility, Specialization, Service, Appointment 
-
 '''
 Trzeba zrobić view
 - do tworzenia konta?
@@ -31,17 +27,41 @@ def login(request):
 
 def patient(request):
     return render(request, 'patient_home.html')
+#-----------------------------------------------------------------------------------
+# wyświetlanie wszystkich wizyt zalogwanego użytownika
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Appointment, Patient
+from django.shortcuts import get_object_or_404
 
-class PatientDetailView(generic.DetailView):
-    model = Patient
+class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
+    model = Appointment
+    template_name = 'promed/appointment_list_user.html' # docelowo będzie _patient
+    # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
-
+    def get_queryset(self):
+        patient = get_object_or_404(Patient, user_id=self.request.user)
+        return (
+            Appointment.objects.filter(patient_id=patient)
+            .order_by('appointment_time')
+        )
+#-----------------------------------------------------------------------------------   
 def visits(request):
     return render(request, 'wizyty.html')
 
-# moje próby XD
-class VisitsListView(generic.ListView):
-    model = Appointment
+#-----------------------------------------------------------------------------------
+class PatientDetailView(LoginRequiredMixin, generic.DetailView):
+    def get(self, request):
+        patient = Patient.objects.get(user_id=request.user)
+        context = {
+            'first_name': patient.user_id.first_name,
+            'last_name': patient.user_id.last_name,
+            'phone_number': patient.phone_number,
+            'pesel': patient.pesel,
+        }
+        return render(request, 'promed/patient_detail.html', context)
+#-----------------------------------------------------------------------------------
+
 
 def reservation(request):
     return render(request, 'rezerwacje.html')
