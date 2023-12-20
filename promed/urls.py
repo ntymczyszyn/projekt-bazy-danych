@@ -5,7 +5,6 @@ from . import views
 
 urlpatterns = [
     path('home/', views.home, name="home"),
-    path('login/', views.login, name="login"),
     path("reservations", views.reservation, name="reservations") # to do zmiany
 ]
 
@@ -16,7 +15,7 @@ urlpatterns += [
 ]
 
 # ścieżki do strony lekarza
-urlpatterns += [
-    path('doctor/dashboard',  views.AppointmentsByDoctorListView.as_view(), name="doctor-dashboard"),
-    path('doctor/details', views.DoctorDetailView.as_view(), name='doctor-detail'),
-]
+# urlpatterns += [
+#     path('doctor/dashboard',  views.AppointmentsByDoctorListView.as_view(), name="doctor-dashboard"),
+#     path('doctor/details', views.DoctorDetailView.as_view(), name='doctor-detail'),
+# ]

@@ -19,8 +19,8 @@ LEKARZ
 def home(request):
     return render(request, 'home.html')
 
-def login(request): # to do poprawy
-    return render(request, 'registration/login.html')
+# def login(request): # to do poprawy
+#     return render(request, 'registration/login.html')
 
 # wyświetlanie wszystkich wizyt u zalogwanego użytownika, ktróry jest pacjentem
 class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
