@@ -28,9 +28,7 @@
                     {% endif %}
                     <!-- dotąd-->
                     <li><a href="{% url 'patient-reservation' %}">Zarezerwój</a></li>
-                    {% if user.groups.filter(name='doctor').exists %}
                     <li><a href="{% url 'doctor-dashboard' %}">Strona Lekarza</a></li>
-                    {% endif %}
                     <li><a href="{% url 'home' %}">Wyloguj</a></li>
                     
                     

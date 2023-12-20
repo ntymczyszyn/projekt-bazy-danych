@@ -67,7 +67,8 @@ class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
-        doctor = get_object_or_404(Service, doctor_id=self.request.user)
+        id_user = get_object_or_404(Patient, user_id=self.request.user)
+        doctor = get_object_or_404(Service, doctor_id = id_user)
         return (
             Appointment.objects.filter(doctor_id=doctor)
             .order_by('appointment_time')
@@ -81,7 +82,6 @@ class DoctorDetailView(LoginRequiredMixin, generic.DetailView):
             'first_name': doctor.user_id.first_name,
             'last_name': doctor.user_id.last_name,
             'phone_number': doctor.phone_number,
-            'pesel': doctor.pesel,
         }
         return render(request, 'promed/doctor_detail.html', context)
 
