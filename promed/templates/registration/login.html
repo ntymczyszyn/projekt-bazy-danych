@@ -14,11 +14,11 @@
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         
-        <label for="login"><b>Login</b></label>
-        <input type="text" placeholder="Login" name="login" required>
+        <label for="{{ form.username.id_for_label }}"><b>Login</b></label>
+        {{ form.username }}
 
-        <label for="psw"><b>Hasło</b></label>
-        <input type="password" placeholder="Hasło" name="psw" required>
+        <label for="{{ form.password.id_for_label }}"><b>Hasło</b></label>
+        {{ form.password }}
 
         <button type="submit"><a href="{% url 'patient-dashboard' %}">Zaloguj</a></button>
         <input type="hidden" name="next" value="{{ next }}">

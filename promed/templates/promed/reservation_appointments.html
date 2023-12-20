@@ -6,8 +6,11 @@
     {% if appointment_list %}
         <ul class="appointments">
             {% for appointment in appointment_list %} 
-                <li>        
-                    {{appointment}}
+                <li class="column1">        
+                    {{appointment}} 
+                </li>
+                <li class="column2">
+                    <button><a href="#">Zarezerwuj</a></button>
                 </li>
             {% endfor %}
         </ul>

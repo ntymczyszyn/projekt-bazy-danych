@@ -19,8 +19,6 @@ LEKARZ
 def home(request):
     return render(request, 'home.html')
 
-def login(request): # to do poprawy
-    return render(request, 'registration/login.html')
 
 # wyświetlanie wszystkich wizyt u zalogwanego użytownika, ktróry jest pacjentem
 class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
@@ -30,12 +28,12 @@ class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         patient = get_object_or_404(Patient, user_id=self.request.user)
+        
         return (
             Appointment.objects.filter(patient_id=patient)
             .order_by('appointment_time')
         )
 
-#-----------------------------------------------------------------------------------
 class PatientDetailView(LoginRequiredMixin, generic.DetailView):
     def get(self, request):
         patient = Patient.objects.get(user_id=request.user)
@@ -46,20 +44,21 @@ class PatientDetailView(LoginRequiredMixin, generic.DetailView):
             'pesel': patient.pesel,
         }
         return render(request, 'promed/patient_detail.html', context)
-#-----------------------------------------------------------------------------------
+
+#APPOINTMENTS
 class ReservationAppointmentsView(LoginRequiredMixin, generic.ListView):
     model = Appointment
     template_name = 'promed/reservation_appointments.html'
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
-        available = get_object_or_404(Appointment, status='a')
+        available = 'a'
         return (
             Appointment.objects.filter(status=available)
             .order_by('appointment_time')
         )
 
-#-----------------------------------------------------------------------------------
+
 #DOCTORS
 class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
     model = Appointment
@@ -74,7 +73,6 @@ class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
             .order_by('appointment_time')
         )
 
-#-----------------------------------------------------------------------------------
 class DoctorDetailView(LoginRequiredMixin, generic.DetailView):
     def get(self, request):
         doctor = Doctor.objects.get(user_id=request.user)
@@ -84,8 +82,3 @@ class DoctorDetailView(LoginRequiredMixin, generic.DetailView):
             'phone_number': doctor.phone_number,
         }
         return render(request, 'promed/doctor_detail.html', context)
-
-
-
-def reservation(request):
-    return render(request, 'rezerwacje.html')
