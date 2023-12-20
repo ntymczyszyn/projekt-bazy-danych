@@ -48,6 +48,5 @@ class PatientDetailView(LoginRequiredMixin, generic.DetailView):
         return render(request, 'promed/patient_detail.html', context)
 #-----------------------------------------------------------------------------------
 
-
 def reservation(request):
     return render(request, 'rezerwacje.html')
