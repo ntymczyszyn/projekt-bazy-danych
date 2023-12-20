@@ -1,42 +1,31 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Appointment, Patient
 
 '''
-Trzeba zrobić view
-- do tworzenia konta?
+HOME
+- do tworzenia konta
 - do logowana
 - do odzyskiwania hasła
 PACJENT
-- do strony o pacjencie
-- class do wyświetlania zarezerwowanych wizyt w terminarzu ? - do strony głównej u Patcjentów
-- do przeglądania wizyt (wybór wizyty)
-- do rezerwacji wizyty (nie wiem czy to nie będzie to samo co wyżej)
+- do przeglądanie odbywanych wizyt (nadchodzących i przeszłych)
+- do rezerwacji wizyty
 - do anulowania wizyty
-- do przeglądania histoii wizyt
 LEKARZ
-- do strony o lekarzu
-- do deklarowania dyspozycji
-- do przeglądania wizyt ( to samo co u Pajcentów?, bo tam inne dane osoby będą, więc nie jestem pewna)
-- do przeglądania historii wizyt
+- do deklarowanie dyspozyjności
+- do przeglądania wykonywanych wizyt (nadchodzących i przeszłych)
 '''
 def home(request):
     return render(request, 'home.html')
 
-def login(request):
-    return render(request, 'login.html')
+def login(request): # to do poprawy
+    return render(request, 'registration/login.html')
 
-def patient(request):
-    return render(request, 'patient_home.html')
-#-----------------------------------------------------------------------------------
-# wyświetlanie wszystkich wizyt zalogwanego użytownika
-from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Appointment, Patient
-from django.shortcuts import get_object_or_404
-
+# wyświetlanie wszystkich wizyt u zalogwanego użytownika, ktróry jest pacjentem
 class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
     model = Appointment
-    template_name = 'promed/appointment_list_user.html' # docelowo będzie _patient
+    template_name = 'promed/appointment_list_user.html'
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
@@ -45,9 +34,6 @@ class AppointmentsByUserListView(LoginRequiredMixin, generic.ListView):
             Appointment.objects.filter(patient_id=patient)
             .order_by('appointment_time')
         )
-#-----------------------------------------------------------------------------------   
-def visits(request):
-    return render(request, 'wizyty.html')
 
 def reservation(request):
     return render(request, 'rezerwacje.html')

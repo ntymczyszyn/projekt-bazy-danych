@@ -1,0 +1,29 @@
+{% extends 'base_home_login.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container2">
+    <h2 style="text-align: center;">
+        LOGOWANIE
+    </h2>   
+
+    {% if form.errors %}
+    <p>Błąd logowania, niepoprawna nazwa użytownika lub hasło. Spróbuj ponownie.</p>
+    {% endif %}    
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        
+        <label for="login"><b>Login</b></label>
+        <input type="text" placeholder="Login" name="login" required>
+
+        <label for="psw"><b>Hasło</b></label>
+        <input type="password" placeholder="Hasło" name="psw" required>
+
+        <button type="submit">Zaloguj</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    
+</div>
+
+{% endblock %}

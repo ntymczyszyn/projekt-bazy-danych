@@ -5,7 +5,7 @@
     <div class="btn-help">
         <img src="{% static 'images/logo_dzik.png' %}" alt="Image" class="dzik-image">
         <div class="text-section">   
-            <h2><a href="login">Logowanie</a></h2>
+            <h2><a href="{% url 'login'%}?next=patient/dashboard">Logowanie</a></h2>
         </div>
     </div>
 </div>

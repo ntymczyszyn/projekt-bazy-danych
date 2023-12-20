@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 import uuid
-from datetime import date
+from datetime import datetime
 from django.urls import reverse  # To generate URLS by reversing URL patterns
 #from phonenumber_field.modelfields import PhoneNumberField <- czy się na to przerzucić
 # phone_number = PhoneNumberField()
@@ -15,14 +15,19 @@ class Doctor(models.Model):
     def __str__(self) -> str:
         return f"{self.user_id.first_name} {self.user_id.last_name}"
     def get_absolute_url(self):
-        """Returns the url to access a particular doctor instance."""
         return reverse('doctor-detail', args=[str(self.id)])
 
 class Patient(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=9)
     date_of_birth = models.DateField()
-    # liczyć wiek jako @property??
+
+    @property # metoda tylko do odczytu (atrybut obiektu)
+    def age(self):
+        today = datetime.now().date()
+        birthdate = self.date_of_birth
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+        return age
     # pesel validation?
     pesel = models.CharField(max_length=11, unique=True)
     def __str__(self) -> str:
@@ -73,7 +78,7 @@ class Specialization(models.Model):
 class Service(models.Model):
     specialzation_id = models.ForeignKey('Specialization', on_delete=models.SET_NULL, null=True) #on_delete=models.SET_NULL, null=True, blank=True
     doctor_id = models.ForeignKey('Doctor', on_delete=models.SET_NULL, null=True)
-    DURATION_LENGTH = ( # narazie tylko 2 rodzaje
+    DURATION_LENGTH = ( 
         ('15', '15 minut'),
         ('30', '30 minut')
     )

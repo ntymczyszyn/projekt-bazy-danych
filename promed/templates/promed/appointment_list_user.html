@@ -12,7 +12,7 @@
                 <li><a href="{% url 'home' %}">Wyloguj</a></li>
                 <!-- dodane testów odtąd -->
                 {% if user.is_authenticated %} <!-- narazie tylko tu wyświetalnie użytkownika-->
-                <li>User: {{ user.get_username }}</li>
+                <li>Użytkownik: {{ user.get_username }}</li>
                 {% endif %}
                 <!-- dotąd-->
             </ul>
