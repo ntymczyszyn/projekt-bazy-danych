@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from promed.views import CustomLoginView
 
 urlpatterns = [
     path('promed/', include("promed.urls")),
@@ -27,5 +28,11 @@ urlpatterns = [
 
 # Django site authentication urls (for login, logout, password management)
 urlpatterns += [
+    path('accounts/login/', CustomLoginView.as_view(), name='custom_login'),
     path('accounts/', include('django.contrib.auth.urls')),
+    # Override the login view with your custom login view
 ]
+#  path('accounts/logout/', CustomLogoutView.as_view(), name='custom_logout'),
+# path('accounts/password_change/', CustomPasswordChangeView.as_view(), name='custom_password_change'),
+# path('accounts/password_reset/', CustomPasswordResetView.as_view(), name='custom_password_reset'),
+# path('accounts/reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='custom_password_reset_confirm'),

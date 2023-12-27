@@ -100,3 +100,20 @@ class AppointmentSearchView(View):
                 appointments = appointments.filter(facility_id=facility)
 
         return render(request, 'appointment_search_results.html', {'form': form, 'appointments': appointments})
+    
+# logowanie (+ resetowanie hasła)
+    
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
+from django.urls import reverse_lazy
+
+class CustomLoginView(LoginView):
+ def get_success_url(self):
+        return reverse_lazy('patient-dashboard')  # Assuming 'promed' is the namespace for your app
+
+# class CustomLogoutView(LogoutView):
+
+# class CustomPasswordChangeView(PasswordChangeView):
+
+# class CustomPasswordResetView(PasswordResetView):
+
+# class CustomPasswordResetConfirmView(PasswordResetConfirmView):
