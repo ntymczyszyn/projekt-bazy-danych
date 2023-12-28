@@ -1,0 +1,15 @@
+{% extends 'base_home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container2">
+    <h2 style="text-align: center;">
+        BŁĄD LOGOWANIA
+    </h2>
+
+    <p>Logowanie zostało odrzucone. </p>
+    <p>Podana nazwa użytkownika nie jest przypisane do żadnego konta pacjenta. Spróbuj ponownie.</p>
+
+    <a href="{% url 'home' %}">Powrót do strony głównej.</a>
+</div>
+{% endblock %}

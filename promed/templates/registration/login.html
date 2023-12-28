@@ -1,4 +1,4 @@
-{% extends 'base_home_login.html' %}
+{% extends 'base_home.html' %}
 {% load static %}
 
 {% block content %}
@@ -11,7 +11,7 @@
     <p>Błąd logowania, niepoprawna nazwa użytownika lub hasło. Spróbuj ponownie.</p>
     {% endif %}    
 
-    <form method="post" action="{% url 'login' %}">
+    <form method="post" action="{% url 'patient_login' %}">
         {% csrf_token %}
         
         <label for="{{ form.username.id_for_label }}"><b>Login</b></label>
@@ -20,9 +20,9 @@
         <label for="{{ form.password.id_for_label }}"><b>Hasło</b></label>
         {{ form.password }}
 
-        <button type="submit">Zaloguj</a></button>
+        <button type="submit">Zaloguj</button>
     </form>
-    
+    <p><a href="{% url 'password_reset' %}">Zapomnialeś hasła?</a></p>
 </div>
 
 {% endblock %}

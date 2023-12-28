@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">  
+        <link rel="stylesheet" type="text/css" href="{% static 'patient.css' %}">       
+    </head>
+<body>
+<!-- tutaj będzie navbar, tylko muszę ogarnąć jak wydobywac info o tym czy to pacjent czy lekarz    --- Natalia, uważasz, że mogę ściągać to z views.py jakoś czy raczej inaczej? -->
+    <div class="container1" style="position:absolute; top: 0; width:20vw; left:40vw; ">
+        <h1 style="text-align: center;">
+            <div class="title" style="font-size: 25px; top:0;">PROMED</div>
+            <div style="font-size: 15px; margin-bottom: 20px;">Twoje zdrowie jest najważniejsze!</div>
+        </h1>
+    </div>
+    <div class="container2" style="float: right; position: absolute; top: 0; right: 0; width: 150px;">
+        <div class="btn-help">
+            <img src="{% static 'images/logo_dzik.png' %}" alt="Image" class="dzik-image">
+            <div class="text-section">   
+                <ul class="menu">
+                    <li><a href="{% url 'patient_dashboard' %}">Strona Główna</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'patient_detail' %}">{{ user.get_username }}</li></a></li>
+                    {% endif %}
+                    <li><a href="{% url 'patient_reservation' %}">Zarezerwuj</a></li>
+                    <li><a href="{% url 'doctor_dashboard' %}">Strona Lekarza</a></li>
+                    <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                </ul>
+            </div>   
+        </div>
+    </div>
+    {% block content %}
+    {% endblock %}
+    
+</body>
+</html>

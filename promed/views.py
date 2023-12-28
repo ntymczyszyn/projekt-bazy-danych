@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Appointment, Patient, Doctor, Service
@@ -59,7 +59,6 @@ class ReservationAppointmentsView(LoginRequiredMixin, generic.ListView):
             .order_by('appointment_time')
         )
 
-
 #DOCTORS
 class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
     model = Appointment
@@ -101,14 +100,37 @@ class AppointmentSearchView(View):
 
         return render(request, 'appointment_search_results.html', {'form': form, 'appointments': appointments})
     
-# logowanie (+ resetowanie hasła)
-    
+# LOGOWANIE, RESETOWANIE HASŁA
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.urls import reverse_lazy
 
-class CustomLoginView(LoginView):
- def get_success_url(self):
-        return reverse_lazy('patient-dashboard')  # Assuming 'promed' is the namespace for your app
+class PatientLoginView(LoginView):
+    def get_success_url(self):
+        # Pobierz użytkownika, który został właśnie zalogowany
+        user = self.request.user
+        if hasattr(user, 'patient'):
+            return reverse_lazy('patient_dashboard')
+        else:
+            return reverse_lazy('patient_access_denied') 
+
+    def form_valid(self, form):
+        # Pobierz użytkownika, który próbuje się zalogować
+        user = form.get_user()
+        if hasattr(user, 'patient'):
+            return super().form_valid(form)
+        else:
+            form.add_error(None, 'Tylko pacjenci mogą się zalogować.')
+            return self.form_invalid(form)
+
+    def get(self, *args, **kwargs):
+        # Jeśli użytkownik jest już zalogowany, przekieruj go na pateint dashboard
+        if self.request.user.is_authenticated:
+            return redirect(self.get_success_url())
+        return super().get(*args, **kwargs)
+
+
+def pateint_access_denied(request):
+    return render(request, 'registration/patient_access_denied.html')
 
 # class CustomLogoutView(LogoutView):
 

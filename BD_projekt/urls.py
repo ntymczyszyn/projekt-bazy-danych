@@ -14,25 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
-from promed.views import CustomLoginView
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='/promed/', permanent=True)),
+    path('admin/', RedirectView.as_view(url='/promed/admin/', permanent=True)),
     path('promed/', include("promed.urls")),
-    path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 # static() to add URL mapping to serve static files during development (only)
 
-# Django site authentication urls (for login, logout, password management)
-urlpatterns += [
-    path('accounts/login/', CustomLoginView.as_view(), name='custom_login'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    # Override the login view with your custom login view
-]
-#  path('accounts/logout/', CustomLogoutView.as_view(), name='custom_logout'),
-# path('accounts/password_change/', CustomPasswordChangeView.as_view(), name='custom_password_change'),
-# path('accounts/password_reset/', CustomPasswordResetView.as_view(), name='custom_password_reset'),
-# path('accounts/reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='custom_password_reset_confirm'),

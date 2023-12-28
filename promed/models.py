@@ -7,6 +7,28 @@ from django.urls import reverse  # To generate URLS by reversing URL patterns
 #from phonenumber_field.modelfields import PhoneNumberField <- czy się na to przerzucić
 # phone_number = PhoneNumberField()
 
+# models.py
+
+# from django.contrib.auth.models import AbstractUser
+
+# class CustomUser(AbstractUser):
+#     # Dodaj własne pola, jeśli są potrzebne
+
+#     def save(self, *args, **kwargs):
+#         if not self.username:  # Sprawdź, czy nazwa użytkownika jest pusta
+#             base_username = f"{self.first_name}{self.last_name}".replace(" ", "")  # Połącz imię i nazwisko, usuń spacje
+#             username = base_username
+
+#             # Sprawdź, czy nazwa użytkownika już istnieje, i dodaj numer indeksu, jeśli trzeba
+#             index = 1
+#             while CustomUser.objects.filter(username=username).exists():
+#                 index += 1
+#                 username = f"{base_username}{index}"
+
+#             self.username = username
+
+#         super().save(*args, **kwargs)
+
 class Doctor(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=9)

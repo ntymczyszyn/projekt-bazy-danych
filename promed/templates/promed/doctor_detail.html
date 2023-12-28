@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_patient.html" %}
 {% block content %}
 <div class="container2" style="position:absolute; top: 30%; left: 40%; width: 20vw">
     <h2>Doctor Details</h2>
@@ -7,5 +7,5 @@
     <p><strong>Phone Number:</strong> {{ phone_number }}</p>
 </div>
 <h3>Go to doctor</h3>
-    <div><a href="{% url 'doctor-dashboard' %}">Doc Dashboard</a></div> 
+    <div><a href="{% url 'doctor_dashboard' %}">Doc Dashboard</a></div> 
 {% endblock %}
