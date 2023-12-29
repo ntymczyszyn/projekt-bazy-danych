@@ -36,3 +36,7 @@ urlpatterns += [
 urlpatterns += [
     path('accounts/patient/login/denied', views.pateint_access_denied, name='patient_access_denied'),
 ]
+
+urlpatterns += [
+    path('register/', views.register_user, name='register_user'),
+]

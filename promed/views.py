@@ -139,3 +139,23 @@ def pateint_access_denied(request):
 # class CustomPasswordResetView(PasswordResetView):
 
 # class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+
+# TWORZENIE USER
+
+from django.contrib.auth import login
+from .forms import CustomUserCreationForm
+from django.dispatch import Signal
+
+# user_registered = Signal()
+
+def register_user(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # user_registered.send(sender=user.__class__, user=user)  # Wysyła sygnał o zarejestrowaniu użytkownika
+            return redirect('home')  # Przekierowuje do strony po udanej rejestracji
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'registration/register.html', {'form': form})

@@ -119,8 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-#AUTH_USER_MODEL <- tego nie mamy dodane,bo  narazie używamy default  AUTH_USER_MODEL = 'auth.User'
-
+AUTH_USER_MODEL = 'promed.CustomUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
