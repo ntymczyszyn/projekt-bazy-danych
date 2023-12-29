@@ -38,5 +38,5 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('register/', views.register_user, name='register_user'),
+    path('patient/register/', views.register_user, name='patient_register'),
 ]

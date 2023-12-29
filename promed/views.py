@@ -8,8 +8,8 @@ from .forms import AppointmentSearchForm
 HOME
 - do tworzenia konta
 - do logowana
-- do odzyskiwania hasła
 PACJENT
+- do odzyskiwania hasła
 - do przeglądanie odbywanych wizyt (nadchodzących i przeszłych)
 - do rezerwacji wizyty
 - do anulowania wizyty
@@ -140,21 +140,19 @@ def pateint_access_denied(request):
 
 # class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
-# TWORZENIE USER
+# TWORZENIE PACJENTA
 
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm
-from django.dispatch import Signal
-
-# user_registered = Signal()
+from .signals import user_registered_patient_site
 
 def register_user(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # user_registered.send(sender=user.__class__, user=user)  # Wysyła sygnał o zarejestrowaniu użytkownika
-            return redirect('home')  # Przekierowuje do strony po udanej rejestracji
+            user_registered_patient_site.send(sender=user.__class__, user=user, created=True)
+            return redirect('home')
     else:
         form = CustomUserCreationForm()
 

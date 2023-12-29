@@ -60,7 +60,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'templates'),
             os.path.join(BASE_DIR, 'promed', 'templates'),
             os.path.join(BASE_DIR, 'promed','templates', 'promed'),
-        ], # chyba już działą poprawnie
+        ], # chyba już działa poprawnie
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,15 +79,6 @@ WSGI_APPLICATION = 'BD_projekt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-# będziemy musiały obie mieć osobne bazy danych bo ich nie przeniosą na githubie,
-# ja teraz zrobię urls.py, models.py, views.py, forms.py, i tytuły .html
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -98,8 +89,6 @@ DATABASES = {
         'PORT': '5432',       # Default PostgreSQL port
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
