@@ -1,0 +1,31 @@
+{% extends 'base_patient.html' %}
+{% load static %}
+{% block content %}
+    <div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw">
+        <h2>Nadchodzące wizyty</h2>
+        {% if future_appointments %}
+            <ul class="appointments">
+                {% for appointment in future_appointments %} 
+                    <li>        
+                        {{ appointment }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Brak nadchodzących wizyt.</p>
+        {% endif %}  
+        
+        <h2>Przeszłe wizyty</h2>
+        {% if past_appointments %}
+            <ul class="appointments">
+                {% for appointment in past_appointments %} 
+                    <li>        
+                        {{ appointment }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Brak przeszłych wizyt.</p>
+        {% endif %} 
+    </div>
+{% endblock %}

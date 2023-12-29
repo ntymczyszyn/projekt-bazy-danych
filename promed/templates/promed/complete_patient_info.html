@@ -1,0 +1,13 @@
+{% extends 'base_patient.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="position:absolute; top: 30%; left: 30%; width: 40vw">
+    <h2>Uzupełnij dane pacjenta</h2>
+    <form method="post" action="{% url 'complete_patient_info' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Zapisz</button>
+    </form>
+</div>
+{% endblock %}

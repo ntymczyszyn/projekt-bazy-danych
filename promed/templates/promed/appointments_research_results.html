@@ -1,0 +1,24 @@
+{% extends 'base_patient.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container" style="position:absolute; top: 30%; left: 30%; width: 40vw" >
+    <h2>Wyszukiwarka wizyt</h2>
+    <form method="get" action="{% url 'appointment_search' %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Szukaj</button>
+    </form>
+
+    {% if appointments %}
+      <h3>Znalezione wizyty:</h3>
+      <ul>
+        {% for appointment in appointments %}
+          <li>{{ appointment }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Brak wizyt spełniających kryteria.</p>
+    {% endif %}
+  </div>
+{% endblock %}
