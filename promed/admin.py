@@ -6,13 +6,10 @@ admin.site.site_header = "Promed administration"
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
-# from .forms import CustomUserCreationFormAdmin
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    # add_form = CustomUserCreationFormAdmin
-    # model = CustomUser
-    add_form_template = 'admin/custom_user_add_form.html'  # Twoje niestandardowe szablony
+    add_form_template = 'admin/custom_user_add_form.html'
 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
 

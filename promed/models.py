@@ -42,7 +42,6 @@ class Patient(models.Model):
         birthdate = self.date_of_birth
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
         return age
-    # pesel validation?
     pesel = models.CharField(max_length=11, unique=True, blank=True, null=True) # czy powinnam to jakoś zaostrzyć???
     def __str__(self) -> str:
         return f"{self.user_id.first_name} {self.user_id.last_name}"

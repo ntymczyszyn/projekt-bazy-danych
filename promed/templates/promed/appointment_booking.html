@@ -1,0 +1,11 @@
+{% extends 'promed/appointment_detail.html' %}
+
+{% block content %}
+    {{ block.super }}
+    <form method="post" action="{% url 'complete_appointment_booking' pk=appointment.id %}">
+        {% csrf_token %}
+        <div class="container2" style="position:absolute; top: 55%; left: 30%; width: 40vw" >
+            <button type="submit">Potwierdź rezerwację</button>
+        </div>
+    </form>
+{% endblock %}

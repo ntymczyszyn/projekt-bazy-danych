@@ -18,16 +18,14 @@
     </div>
     <div class="container2" style="float: right; position: absolute; top: 0; right: 0; width: 150px;">
         <div class="btn-help">
-            <img src="{% static 'images/logo_dzik.png' %}" alt="Image" class="dzik-image">
+            <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
             <div class="text-section">   
                 <ul class="menu">
                     <li><a href="{% url 'patient_dashboard' %}">Strona Główna</a></li>
-                    {% if user.is_authenticated %}
-                    <li><a href="{% url 'patient_detail' %}">{{ user.get_username }}</li></a></li>
-                    {% endif %}
-                    <li><a href="{% url 'patient_reservation' %}">Zarezerwuj</a></li>
-                    <li><a href="{% url 'doctor_dashboard' %}">Strona Lekarza</a></li>
+                    <li><a href="{% url 'patient_detail' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
+                    <li><a href="{% url 'appointment_search' %}">Wyszukaj wizytę</a></li>
                     <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                    {% comment %} <li><a href="{% url 'patient_reservation' %}">Reservation</a></li> {% endcomment %}
                 </ul>
             </div>   
         </div>

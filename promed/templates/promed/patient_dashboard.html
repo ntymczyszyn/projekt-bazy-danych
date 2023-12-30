@@ -1,5 +1,6 @@
 {% extends 'base_patient.html' %}
 {% load static %}
+
 {% block content %}
     <div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw">
         <h2>Nadchodzące wizyty</h2>
@@ -7,7 +8,7 @@
             <ul class="appointments">
                 {% for appointment in future_appointments %} 
                     <li>        
-                        {{ appointment }}
+                        {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                     </li>
                 {% endfor %}
             </ul>
@@ -20,12 +21,20 @@
             <ul class="appointments">
                 {% for appointment in past_appointments %} 
                     <li>        
-                        {{ appointment }}
+                        {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
             <p>Brak przeszłych wizyt.</p>
         {% endif %} 
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 {% endblock %}

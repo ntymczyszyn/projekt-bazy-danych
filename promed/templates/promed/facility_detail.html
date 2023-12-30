@@ -1,0 +1,14 @@
+{% extends "base_patient.html" %}  
+{% comment %}
+    czy to nie powinno po jakimś innym ogólniejszym base dziedziczyć?
+{% endcomment %}
+
+{% block content %}
+    <div>
+        <h2>Facility Details</h2>
+        <p><strong>Street Address:</strong> {{ object.street_address }}</p>
+        <p><strong>Postal Code:</strong> {{ object.postal_code }}</p>
+        <p><strong>City:</strong> {{ object.city }}</p>
+        <p><strong>Voivodeship:</strong> {{ object.get_voivodeship_display }}</p>
+    </div>
+{% endblock %}

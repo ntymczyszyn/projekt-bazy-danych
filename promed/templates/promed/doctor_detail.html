@@ -2,10 +2,15 @@
 {% block content %}
 <div class="container2" style="position:absolute; top: 30%; left: 40%; width: 20vw">
     <h2>Doctor Details</h2>
-    <p><strong>First Name:</strong> {{ first_name }}</p>
-    <p><strong>Last Name:</strong> {{ last_name }}</p>
-    <p><strong>Phone Number:</strong> {{ phone_number }}</p>
+    <p><strong>First Name:</strong> {{ doctor.user_id.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ doctor.user_id.last_name }}</p>
+    <p><strong>Phone Number:</strong> {{ doctor.phone_number }}</p>
+
+    <h3>Specializations:</h3>
+    <ul>
+        {% for specialization in specializations %}
+            <li>{{ specialization.name }}</li>
+        {% endfor %}
+    </ul>
 </div>
-<h3>Go to doctor</h3>
-    <div><a href="{% url 'doctor_dashboard' %}">Doc Dashboard</a></div> 
 {% endblock %}

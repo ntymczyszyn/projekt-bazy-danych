@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-  <div class="container" style="position:absolute; top: 30%; left: 30%; width: 40vw" >
+  <div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw" >
     <h2>Wyszukiwarka wizyt</h2>
     <form method="get" action="{% url 'appointment_search' %}">
       {% csrf_token %}
@@ -10,15 +10,22 @@
       <button type="submit">Szukaj</button>
     </form>
 
-    {% if appointments %}
-      <h3>Znalezione wizyty:</h3>
-      <ul>
-        {% for appointment in appointments %}
-          <li>{{ appointment }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>Brak wizyt spełniających kryteria.</p>
-    {% endif %}
+    <div style="margin-top: 20px;">
+      {% if appointments %}
+        <ul class="appointments">
+          <h3>Znalezione wizyty:</h3>
+            {% for appointment in appointments %}
+            <li class="column1">        
+              {{ appointment }}
+          </li>
+          <li class="column2">
+            <button><a href="{% url 'confirm_appointment' pk=appointment.id %}">Zarezerwuj</a></button>
+          </li>
+            {% endfor %}
+        </ul>
+      {% else %}
+        <p>Brak wizyt spełniających kryteria.</p>
+      {% endif %}
+    </div>
   </div>
 {% endblock %}
