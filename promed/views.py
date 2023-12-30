@@ -10,17 +10,15 @@ from django.urls import reverse_lazy, reverse
 from .signals import user_registered_patient_site
 from django.core.mail import send_mail
 '''
-PACJENT
-- do przeglądanie odbywanych wizyt (nadchodzących i przeszłych)
-- do rezerwacji wizyty
-- do anulowania wizyty
 LEKARZ
 - do deklarowanie dyspozyjności
 - do przeglądania wykonywanych wizyt (nadchodzących i przeszłych)
 '''
-# PATIENT SITE
-def home(request):
-    return render(request, 'home.html')
+def home_patient(request):
+    return render(request, 'home_patient.html')
+
+def home_doctor(request):
+    return render(request, 'home_doctor.html')
 
 @login_required
 def appointments_by_user_list(request):
@@ -54,7 +52,6 @@ def appointments_by_user_list(request):
 def complete_patient_info(request):
     patient = get_object_or_404(Patient, user_id=request.user)
 
-    # Sprawdzamy, czy pacjent ma uzupełnione dane
     if patient.phone_number and patient.date_of_birth and patient.pesel:
         return redirect('patient_dashboard')
 
@@ -132,16 +129,44 @@ def register_user(request):
             user = form.save()
             user_registered_patient_site.send(sender=user.__class__, user=user, created=True)
             send_welcome_email(user.email)
-            return redirect('home')
+            return redirect('home_patient')
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
 
 # DOCTOR SITE
+class DoctorLoginView(LoginView):
+    template_name = 'registration/login_doctor.html'
+
+    def get_success_url(self):
+        user = self.request.user
+        if hasattr(user, 'doctor'):
+            return reverse_lazy('doctor_dashboard')
+        else:
+            return reverse_lazy('doctor_access_denied') 
+
+    def form_valid(self, form):
+        # Pobierz użytkownika, który próbuje się zalogować
+        user = form.get_user()
+        if hasattr(user, 'doctor'):
+            return super().form_valid(form)
+        else:
+            form.add_error(None, 'Tylko pracownicy mogą się zalogować.')
+            return self.form_invalid(form)
+
+    def get(self, *args, **kwargs):
+        # Jeśli użytkownik jest już zalogowany, przekieruj go na pateint dashboard
+        if self.request.user.is_authenticated:
+            return redirect(self.get_success_url())
+        return super().get(*args, **kwargs)
+    
+def doctor_access_denied(request):
+    return render(request, 'registration/doctor_access_denied.html')
+
 class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
     model = Appointment
-    template_name = 'promed/appointment_list_doctor.html'
+    template_name = 'promed/doctor_dashboard.html'
     # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
 
     def get_queryset(self):
@@ -209,6 +234,22 @@ def complete_appointment_view(request, pk):
         messages.success(request, 'Rezerwacja zakończona pomyślnie.')
     except Exception as e:
         messages.error(request, f'Błąd podczas rezerwacji: {str(e)}')
+
+    return redirect(reverse('patient_dashboard'))
+
+def cancel_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'promed/appointment_cancellation.html', {'appointment': appointment,})
+
+def confirm_cancel_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    try:
+        appointment.patient_id = None
+        appointment.status = 'a'  
+        appointment.save()
+        messages.success(request, 'Anulowano wizytę.')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
 
     return redirect(reverse('patient_dashboard'))
 

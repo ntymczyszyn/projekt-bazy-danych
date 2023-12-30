@@ -5,7 +5,7 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/promed/home/', permanent=True)),
-    path('home/', views.home, name="home"),
+    path('home/', views.home_patient, name="home_patient"),
 ]
 
 urlpatterns += [
@@ -13,9 +13,12 @@ urlpatterns += [
     path('patient/details', views.patient_detail, name='patient_detail'),
     path('patient/search/appointments/', views.appointment_search, name='appointment_search'),
     path('pateint/info/complete', views.complete_patient_info, name='complete_patient_info'),
+    path('patient/appointment/<uuid:pk>/detail', views.cancel_appointment_view, name='detail_cancel_appointment'),
+    path('patient/appointment/<uuid:pk>/cancel/complete', views.confirm_cancel_appointment_view, name='complete_appointment_cancellation'),
 ]
 
 urlpatterns += [
+    path('home/doctor', views.home_doctor, name="home_doctor"),
     path('doctor/dashboard',  views.AppointmentsByDoctorListView.as_view(), name="doctor_dashboard"),
     path('doctor/details', views.doctor_detail_view, name='doctor_detail'),
 ]
@@ -27,6 +30,10 @@ urlpatterns += [
     path('accounts/patient/register/', views.register_user, name='patient_register'),
     path('accounts/', include('django.contrib.auth.urls')),
     
+]
+urlpatterns += [
+    path('accounts/doctor/login/', views.DoctorLoginView.as_view(), name='doctor_login'),
+    path('accounts/doctor/login/denied', views.doctor_access_denied, name='doctor_access_denied'),
 ]
 # path('accounts/logout/', CustomLogoutView.as_view(), name='custom_logout'),
 # path('accounts/password_change/', CustomPasswordChangeView.as_view(), name='custom_password_change'),
@@ -40,6 +47,6 @@ urlpatterns += [
 urlpatterns += [
     path('facility/<int:pk>/', views.FacilityDetailView.as_view(), name='facility_detail'),
     path('appointment/<uuid:pk>/', views.AppointmentDetailView.as_view(), name='appointment_detail'),
-    path('appointment/<uuid:pk>/confirm', views.confirm_appointment_view, name='confirm_appointment'),
-    path('appointment/<uuid:pk>/complete', views.complete_appointment_view, name='complete_appointment_booking'),
+    path('appointment/<uuid:pk>/book/confirm', views.confirm_appointment_view, name='confirm_appointment'),
+    path('appointment/<uuid:pk>/book/complete', views.complete_appointment_view, name='complete_appointment_booking'),
 ]

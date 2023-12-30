@@ -24,7 +24,7 @@ class AppointmentSearchForm(forms.Form):
     end_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
 
 class PatientInfoForm(forms.Form):
-    phone_number = forms.CharField(max_length=10, label='Numer telefonu')
+    phone_number = forms.CharField(max_length=9, label='Numer telefonu')
     date_of_birth = forms.DateField(
         label='Data urodzenia',
         widget=forms.DateInput(attrs={'type': 'date'}),

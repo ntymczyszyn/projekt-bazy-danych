@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw"  >
         <h2>Appointment Details</h2>
-        <p><strong>Facility:</strong> {{ appointment.facility_id }}</p>
+        <p><strong>Facility:</strong> <a href="{% url 'facility_detail' pk=appointment.facility_id.id %}">{{ appointment.facility_id }}</a></p>
         <p><strong>Service:</strong> {{ appointment.service_id }}</p>
         <p><strong>Appointment Time:</strong> {{ appointment.formatted_appointment_time }}</p>
         <p><strong>Status:</strong> {{ appointment.get_status_display }}</p>
