@@ -14,14 +14,17 @@ LEKARZ
 - do deklarowanie dyspozyjności
 - do przeglądania wykonywanych wizyt (nadchodzących i przeszłych)
 '''
-def home_patient(request):
+def home_view(request):
+    return render(request, 'home.html')
+
+def home_patient_view(request):
     return render(request, 'home_patient.html')
 
-def home_doctor(request):
+def home_doctor_view(request):
     return render(request, 'home_doctor.html')
 
 @login_required
-def appointments_by_user_list(request):
+def patient_dashboard_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
 
     # Sprawdzamy, czy pacjent ma uzupełnione dane
@@ -49,7 +52,7 @@ def appointments_by_user_list(request):
     )
 
 @login_required
-def complete_patient_info(request):
+def complete_info_patient_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
 
     if patient.phone_number and patient.date_of_birth and patient.pesel:
@@ -69,7 +72,7 @@ def complete_patient_info(request):
     return render(request, 'promed/complete_patient_info.html', {'form': form})
 
 @login_required
-def patient_detail(request):
+def patient_detail_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
     context = {
         'first_name': patient.user_id.first_name,
@@ -103,7 +106,7 @@ class PatientLoginView(LoginView):
             return redirect(self.get_success_url())
         return super().get(*args, **kwargs)
 
-def patient_access_denied(request):
+def patient_access_denied_view(request):
     return render(request, 'registration/patient_access_denied.html')
 
 # class CustomLogoutView(LogoutView):
@@ -114,7 +117,7 @@ def patient_access_denied(request):
 
 # class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
-def send_welcome_email(user_email): # czy to moża było jako html zrobić?
+def send_welcome_email_patient(user_email): # czy to moża było jako html zrobić?
     subject = 'Witamy w Promed'
     message = 'Dziękujemy za rejestracje. Pamiętaj o uzupełnieniu swojego profilu po pierwszym logowaniu.'
     from_email = 'promed.administation@promed.pl'
@@ -122,20 +125,20 @@ def send_welcome_email(user_email): # czy to moża było jako html zrobić?
 
     send_mail(subject, message, from_email, recipient_list)
 
-def register_user(request):
+def register_patient_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             user_registered_patient_site.send(sender=user.__class__, user=user, created=True)
-            send_welcome_email(user.email)
+            send_welcome_email_patient(user.email)
             return redirect('home_patient')
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
 
-# DOCTOR SITE
+# DOCTOR SITE-----------------------------------------------------------------------------
 class DoctorLoginView(LoginView):
     template_name = 'registration/login_doctor.html'
 
@@ -161,20 +164,37 @@ class DoctorLoginView(LoginView):
             return redirect(self.get_success_url())
         return super().get(*args, **kwargs)
     
-def doctor_access_denied(request):
+def doctor_access_denied_view(request):
     return render(request, 'registration/doctor_access_denied.html')
 
-class AppointmentsByDoctorListView(LoginRequiredMixin, generic.ListView):
-    model = Appointment
-    template_name = 'promed/doctor_dashboard.html'
-    # paginate_by = 10 # trzeba będzie dodać do base_html  {% block pagination %}
+@login_required
+def doctor_dashboard_view(request):
+    doctor = get_object_or_404(Doctor, user_id=request.user)
 
-    def get_queryset(self):
-        doctor = get_object_or_404(Doctor, user_id = self.request.user)
-        return (
-            Appointment.objects.filter(service_id__doctor_id=doctor)
-            .order_by('appointment_time')
-        )
+    # Pobieramy wszystkie wizyty lekarza
+    all_appointments = (
+        Appointment.objects.filter(service_id__doctor_id=doctor)
+        .order_by('appointment_time')
+    )
+
+    # Dzielimy wizyty na przeszłe i nadchodzące
+    past_appointments = [appointment for appointment in all_appointments if appointment.appointment_time < timezone.now()]
+    future_appointments = [appointment for appointment in all_appointments if appointment.appointment_time >= timezone.now()]
+
+    # Dzielimy nadchodzące wizyty na zarezerwowane i dostępne
+    reserved_appointments = [appointment for appointment in future_appointments if appointment.status == 'r']
+    available_appointments = [appointment for appointment in future_appointments if appointment.status == 'a']
+
+    return render(
+        request,
+        'promed/doctor_dashboard.html',
+        {
+            'past_appointments': past_appointments,
+            'reserved_appointments': reserved_appointments,
+            'available_appointments': available_appointments,
+        }
+    )
+
 
 @login_required
 def doctor_detail_view(request):
@@ -189,7 +209,7 @@ def doctor_detail_view(request):
     return render(request, 'promed/doctor_detail.html', context)
 
 @login_required
-def appointment_search(request):
+def appointment_search_patient_view(request):
     form = AppointmentSearchForm(request.GET)
     appointments = []
 

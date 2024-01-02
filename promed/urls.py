@@ -5,35 +5,36 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/promed/home/', permanent=True)),
-    path('home/', views.home_patient, name="home_patient"),
+    path('home/', views.home_view, name="home"),
 ]
 
 urlpatterns += [
-    path('patient/dashboard', views.appointments_by_user_list, name="patient_dashboard"),
-    path('patient/details', views.patient_detail, name='patient_detail'),
-    path('patient/search/appointments/', views.appointment_search, name='appointment_search'),
-    path('pateint/info/complete', views.complete_patient_info, name='complete_patient_info'),
+    path('home/pateint', views.home_patient_view, name="home_patient"),
+    path('patient/dashboard', views.patient_dashboard_view, name="patient_dashboard"),
+    path('patient/details', views.patient_detail_view, name='patient_detail'),
+    path('patient/search/appointments/', views.appointment_search_patient_view, name='appointment_search'),
+    path('pateint/info/complete', views.complete_info_patient_view, name='complete_patient_info'),
     path('patient/appointment/<uuid:pk>/detail', views.cancel_appointment_view, name='detail_cancel_appointment'),
     path('patient/appointment/<uuid:pk>/cancel/complete', views.confirm_cancel_appointment_view, name='complete_appointment_cancellation'),
 ]
 
 urlpatterns += [
-    path('home/doctor', views.home_doctor, name="home_doctor"),
-    path('doctor/dashboard',  views.AppointmentsByDoctorListView.as_view(), name="doctor_dashboard"),
+    path('home/doctor', views.home_doctor_view, name="home_doctor"),
+    path('doctor/dashboard',  views.doctor_dashboard_view, name="doctor_dashboard"),
     path('doctor/details', views.doctor_detail_view, name='doctor_detail'),
 ]
 
 # Django site authentication urls (for login, logout, password management)
 urlpatterns += [
     path('accounts/patient/login/', views.PatientLoginView.as_view(), name='patient_login'),
-    path('accounts/patient/login/denied', views.patient_access_denied, name='patient_access_denied'),
-    path('accounts/patient/register/', views.register_user, name='patient_register'),
+    path('accounts/patient/login/denied', views.patient_access_denied_view, name='patient_access_denied'),
+    path('accounts/patient/register/', views.register_patient_view, name='patient_register'),
     path('accounts/', include('django.contrib.auth.urls')),
     
 ]
 urlpatterns += [
     path('accounts/doctor/login/', views.DoctorLoginView.as_view(), name='doctor_login'),
-    path('accounts/doctor/login/denied', views.doctor_access_denied, name='doctor_access_denied'),
+    path('accounts/doctor/login/denied', views.doctor_access_denied_view, name='doctor_access_denied'),
 ]
 # path('accounts/logout/', CustomLogoutView.as_view(), name='custom_logout'),
 # path('accounts/password_change/', CustomPasswordChangeView.as_view(), name='custom_password_change'),

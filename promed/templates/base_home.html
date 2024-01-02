@@ -9,7 +9,11 @@
 <body class="body">
     <div class="container1">
         <h1 style="text-align: center;">
-            <div class="title" style="font-size: 70px;">PROMED</div>
+            <div class="title" style="font-size: 70px;">
+                <a href="{% url 'home'%}" style="text-decoration: none; color: inherit;">PROMED</a>
+            </div> 
+            {% comment %} narazie tutaj zminiłam wygląd tego linku możesz to susnąc i zrobić to
+            formatowanie w .css na spokojnie, to tylko żeby link się nie podświetlał {% endcomment %}
             <div style="font-size: 15px; margin-bottom: 10px;">Twoje zdrowie jest najważniesze!</div>
         </h1>
     </div>

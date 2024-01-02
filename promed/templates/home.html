@@ -1,19 +1,14 @@
 {% extends 'base_home.html' %}
 {% load static %}
 {% block content %}
-<div>
-    <h1 style="text-align: center;">
-        <div class="title" style="font-size: 15px;">Portal pacjenta</div>
-    </h1>
-</div>
 <div class="container2">
     <div class="btn-help">
         <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
         <div class="text-section">   
-            <h2><a href="{% url 'patient_login'%}">Zaloguj się</a></h2>
+            <h2><a href="{% url 'home_patient'%}">Strefa pacjenta</a></h2>
         </div>
         <div class="text-section">   
-            <h2><a href="{% url 'patient_register'%}">Zarejestruj się</a></h2>
+            <h2><a href="{% url 'home_doctor'%}">Strefa pracownika</a></h2>
         </div>
     </div>
 </div>
