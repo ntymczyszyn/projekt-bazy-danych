@@ -48,30 +48,9 @@
     {% else %}
         <p>Brak dostępnych wizyt.</p>
     {% endif %} 
+    <h3>Przeszłe wizyty</h3>
+    <button><a href="{% url 'doctor_past_appointments' %}">Przeszłe wizyty</a></button>
 
-    <h2>Przeszłe wizyty</h2>
-        {% if past_appointments %}
-            {% regroup past_appointments by service_id.specialzation_id as grouped_past_appointments %}
-            {% for specialization, appointments in grouped_past_appointments %}
-                <h3>{{ specialization }}</h3>
-                <ul class="appointments">
-                    {% for appointment in appointments %} 
-                        <li>        
-                            {{ appointment.patient_id }}
-                        </li>
-                        <li>        
-                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                        </li>
-                        <li>
-                            <button><a href="{% url 'appointment_detail' pk=appointment.id %}">Szczegóły</a></button>
-                        </li>
-                        <br>
-                    {% endfor %}
-                </ul>
-            {% endfor %}
-        {% else %}
-            <p>Brak przeszłych wizyt.</p>
-        {% endif %} 
     </div>
 
 {% endblock %}

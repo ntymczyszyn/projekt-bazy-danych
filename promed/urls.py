@@ -22,6 +22,7 @@ urlpatterns += [
     path('home/doctor', views.home_doctor_view, name="home_doctor"),
     path('doctor/dashboard',  views.doctor_dashboard_view, name="doctor_dashboard"),
     path('doctor/details', views.doctor_detail_view, name='doctor_detail'),
+    path('doctor/past-appointments/', views.doctor_past_appointments_view, name='doctor_past_appointments'),
 ]
 
 # Django site authentication urls (for login, logout, password management)

@@ -44,7 +44,7 @@ def patient_dashboard_view(request):
 
     return render(
         request,
-        'promed/patient_dashboard.html',
+        'patient_dashboard.html',
         {
             'past_appointments': past_appointments,
             'future_appointments': future_appointments,
@@ -69,7 +69,7 @@ def complete_info_patient_view(request):
     else:
         form = PatientInfoForm()
 
-    return render(request, 'promed/complete_patient_info.html', {'form': form})
+    return render(request, 'complete_patient_info.html', {'form': form})
 
 @login_required
 def patient_detail_view(request):
@@ -80,9 +80,10 @@ def patient_detail_view(request):
         'phone_number': patient.phone_number,
         'pesel': patient.pesel,
     }
-    return render(request, 'promed/patient_detail.html', context)
+    return render(request, 'patient_detail.html', context)
 
 class PatientLoginView(LoginView):
+    template_name = 'registration/patient/login_patient.html'
     def get_success_url(self):
         # Pobierz użytkownika, który został właśnie zalogowany
         user = self.request.user
@@ -107,7 +108,7 @@ class PatientLoginView(LoginView):
         return super().get(*args, **kwargs)
 
 def patient_access_denied_view(request):
-    return render(request, 'registration/patient_access_denied.html')
+    return render(request, 'registration/patient/patient_access_denied.html')
 
 # class CustomLogoutView(LogoutView):
 
@@ -136,11 +137,11 @@ def register_patient_view(request):
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'registration/register.html', {'form': form})
+    return render(request, 'registration/patient/register_patient.html', {'form': form})
 
 # DOCTOR SITE-----------------------------------------------------------------------------
 class DoctorLoginView(LoginView):
-    template_name = 'registration/login_doctor.html'
+    template_name = 'registration/doctor/login_doctor.html'
 
     def get_success_url(self):
         user = self.request.user
@@ -165,7 +166,7 @@ class DoctorLoginView(LoginView):
         return super().get(*args, **kwargs)
     
 def doctor_access_denied_view(request):
-    return render(request, 'registration/doctor_access_denied.html')
+    return render(request, 'registration/doctor/doctor_access_denied.html')
 
 @login_required
 def doctor_dashboard_view(request):
@@ -187,11 +188,32 @@ def doctor_dashboard_view(request):
 
     return render(
         request,
-        'promed/doctor_dashboard.html',
+        'doctor_dashboard.html',
         {
             'past_appointments': past_appointments,
             'reserved_appointments': reserved_appointments,
             'available_appointments': available_appointments,
+        }
+    )
+
+@login_required
+def doctor_past_appointments_view(request):
+    doctor = get_object_or_404(Doctor, user_id=request.user)
+
+    # Pobieramy przeszłe wizyty lekarza
+    past_appointments = (
+        Appointment.objects.filter(
+            service_id__doctor_id=doctor,
+            appointment_time__lt=timezone.now()
+        )
+        .order_by('appointment_time')
+    )
+
+    return render(
+        request,
+        'doctor_past_appointments.html',
+        {
+            'past_appointments': past_appointments,
         }
     )
 
@@ -206,7 +228,7 @@ def doctor_detail_view(request):
         'doctor': doctor,
         'specializations': specializations,
     }
-    return render(request, 'promed/doctor_detail.html', context)
+    return render(request, 'doctor_detail.html', context)
 
 @login_required
 def appointment_search_patient_view(request):
@@ -239,7 +261,7 @@ def appointment_search_patient_view(request):
 
 def confirm_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
-    return render(request, 'promed/appointment_booking.html', {'appointment': appointment,})
+    return render(request, 'appointment_booking.html', {'appointment': appointment,})
 
 from django.contrib import messages
 
@@ -259,7 +281,7 @@ def complete_appointment_view(request, pk):
 
 def cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
-    return render(request, 'promed/appointment_cancellation.html', {'appointment': appointment,})
+    return render(request, 'appointment_cancellation.html', {'appointment': appointment,})
 
 def confirm_cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
@@ -276,9 +298,9 @@ def confirm_cancel_appointment_view(request, pk):
 # INNE
 class FacilityDetailView(generic.DetailView):
     model = Facility
-    template_name = 'promed/facility_detail.html'   
+    template_name = 'facility_detail.html'   
 
 class AppointmentDetailView(generic.DetailView):
     model = Appointment
-    template_name = 'promed/appointment_detail.html'
+    template_name = 'appointment_detail.html'
     context_object_name = 'appointment'

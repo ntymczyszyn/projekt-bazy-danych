@@ -60,6 +60,8 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'templates'),
             os.path.join(BASE_DIR, 'promed', 'templates'),
             os.path.join(BASE_DIR, 'promed','templates', 'promed'),
+            os.path.join(BASE_DIR, 'promed', 'templates', 'patient'),
+            os.path.join(BASE_DIR, 'promed', 'templates', 'doctor'),
         ], # chyba już działa poprawnie
         'APP_DIRS': True,
         'OPTIONS': {
