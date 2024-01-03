@@ -14,6 +14,9 @@ LEKARZ
 - do deklarowanie dyspozyjności
 - do przeglądania wykonywanych wizyt (nadchodzących i przeszłych)
 '''
+def custom_logout(request):
+    return render(request, 'logged_out.html')
+
 def home_view(request):
     return render(request, 'home.html')
 
