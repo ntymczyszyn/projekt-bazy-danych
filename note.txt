@@ -1,0 +1,38 @@
+NAJWAŻNIESZE:
+do zrobienia CustomUser, trzeba na nowo zrobić migracje, a co to oznacza:
+1. trzeba albo usunąć wszystkie dane z bazy danych i potem na nowo wymyślać, albo zrobić backup danych
+    a) usuwanko: robi się drop database <nazwa>, a potem tworzy nową o tej samej nazwie
+    b) kopia: tworzymy drugą bazę danych i tam kopiujemy nasza bazę przed usunięciem (podpunkt a)
+    [ 
+        ja utworzyłam najpierw <promed_backup> i to skopiowałam dane z <promed> w ten sposób: 
+        .\pg_dump -U postgres -h localhost -d promed -F c -f promed_backup.dump 
+        .\pg_restore -U postgres -h localhost -d promed_backup promed_backup.dump  
+    ]
+2. usuwamy zawartość __pycache__ (wszystich 3 folderów) i całą zawartość migrations/ (oprócz __init__.py)
+3. wykonujemy standardowe migracje (makemigrations i migrate)
+4. tworzymy nowego superusera
+5. i odtąd zabawa już tak jak wcześniej - ablo wymyśalmy, albo przepisujemy z backup'u
+ 
+WSKAZÓWKI:
+1. Testuj stronę w karcie incognito, bo czasem cache w przeglądarce zapisuje stare ustwienia i nawet jak kod jest dobry, to wygląda jakby nie działał;
+a i tak czasem trzeba zamknąć i otworzyć wszystko żeby najnowsze zmiany działaly
+2. Pozmieniałam ścieżki, jak coś ci nie działa to pewnie przez to (wszystko sie teraz od "promed/" zaczyna)
+3. zamieniłam - na _ jak coś w tyhc skrótach do url np. patient_detail
+UWAGI:
+- coś mi źle działa to menu z dzikiem, jakby muszę kilka razy najeżdżać na ikonkę, żeby mnie przekierowało tak gdzie chce
+- ja bym to logo zostawiła tylko tam gdzie jest home page, a resztę jako navbar zrobiła po prostu
+
+DODATKOWE INFO:
+tak wyglądają wszsytkie pliki do logowania (zrobiłam templates do wszystkiego co gotowe klasy z django potrzebują
+- wsensie te z 'django.contrib.auth.urls' )
+promed/
+|-- templates/
+|   |-- registration/
+|       |-- login.html
+|       |-- logged_out.html
+|       |-- password_change_form.html
+|       |-- password_change_done.html
+|       |-- password_reset_form.html
+|       |-- password_reset_done.html
+|       |-- password_reset_confirm.html
+|       |-- password_reset_complete.html

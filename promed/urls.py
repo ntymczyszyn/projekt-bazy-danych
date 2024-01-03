@@ -31,7 +31,6 @@ urlpatterns += [
     path('accounts/patient/login/denied', views.patient_access_denied_view, name='patient_access_denied'),
     path('accounts/patient/register/', views.register_patient_view, name='patient_register'),
     path('accounts/', include('django.contrib.auth.urls')),
-    
 ]
 urlpatterns += [
     path('accounts/doctor/login/', views.DoctorLoginView.as_view(), name='doctor_login'),
