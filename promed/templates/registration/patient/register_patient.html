@@ -1,10 +1,10 @@
 {% extends 'base_home.html' %}
 
 {% block content %}
-  <h2>Register</h2>
+  <h2>Rejestracja</h2>
   <form method="post" action="{% url 'patient_register' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Register</button>
+    <button type="submit">Zarejestrój</button>
   </form>
 {% endblock %}

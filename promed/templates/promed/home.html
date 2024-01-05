@@ -2,13 +2,21 @@
 {% load static %}
 {% block content %}
 <div class="container2">
-    <div class="btn-help">
+    <div class="btn-help" style="width:500px; left:(50% - 250px); margin: auto;">
         <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
         <div class="text-section">   
-            <h2><a href="{% url 'home_patient'%}">Strefa pacjenta</a></h2>
-        </div>
-        <div class="text-section">   
-            <h2><a href="{% url 'home_doctor'%}">Strefa pracownika</a></h2>
+            <h2>
+                <form action="{% url 'home_patient' %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright" style="width:200px; height: 50px;">Strefa pacjenta</button>
+                </form>
+            </h2>  
+            <h2>
+                <form action="{% url 'home_doctor' %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright" style="width:200px; height: 50px;">Strefa pracownika</button>
+                </form>
+            </h2>
         </div>
     </div>
 </div>

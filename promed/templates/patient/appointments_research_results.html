@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block content %}
-  <div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw" >
+  <div class="container2">
     <h2>Wyszukiwarka wizyt</h2>
     <form method="get" action="{% url 'appointment_search' %}">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit">Szukaj</button>
+      <button type="submit" id="topright">Szukaj</button>
     </form>
 
     <div style="margin-top: 20px;">
@@ -19,7 +19,10 @@
               {{ appointment }}
           </li>
           <li class="column2">
-            <button><a href="{% url 'confirm_appointment' pk=appointment.id %}">Zarezerwuj</a></button>
+            <form action="{% url 'confirm_appointment' pk=appointment.id %}">
+              {% csrf_token %}
+              <button type="submit" id="topright">Zarezerwuj</button>
+            </form>
           </li>
             {% endfor %}
         </ul>

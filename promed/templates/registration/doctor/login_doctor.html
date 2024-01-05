@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container2">
+<div class="container2" style="width:300px; left:(50% - 150px);">
     <h2 style="text-align: center;">
         LOGOWANIE
     </h2>   
@@ -22,7 +22,12 @@
 
         <button type="submit">Zaloguj</button>
     </form>
-    <p><a href="{% url 'password_reset' %}">Zapomnialeś hasła?</a></p>
+    <p>
+        <form action="{% url 'password_reset' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">Zapomniałeś hasła?</button>
+        </form>
+    </p>
 </div>
 
 {% endblock %}

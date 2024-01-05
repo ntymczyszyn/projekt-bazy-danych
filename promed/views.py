@@ -14,6 +14,10 @@ LEKARZ
 - do deklarowanie dyspozyjności
 - do przeglądania wykonywanych wizyt (nadchodzących i przeszłych)
 '''
+class MyLogoutView(LogoutView):
+    next_page = '/promed/accounts/logout/'
+    allowed_methods = ['get']
+
 def custom_logout(request):
     return render(request, 'logged_out.html')
 

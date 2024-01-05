@@ -19,8 +19,12 @@ nav {
 }
 
 .menu {
-    list-style-type: none;
     padding: 0;
+    display: flex;
+}
+
+.menu li {
+    margin-right: 10px;
 }
 
 .menu li a {

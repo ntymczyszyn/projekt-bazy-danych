@@ -1,13 +1,13 @@
 {% extends "base_doctor.html" %}
 
 {% block content %}
-    <div class="container2" style="position:absolute; top: 30%; left: 40%; width: 20vw">
-        <h2>Doctor Details</h2>
-        <p><strong>First Name:</strong> {{ doctor.user_id.first_name }}</p>
-        <p><strong>Last Name:</strong> {{ doctor.user_id.last_name }}</p>
-        <p><strong>Phone Number:</strong> {{ doctor.phone_number }}</p>
+    <div class="container2">
+        <h2>Informacje o Lekarzu</h2>
+        <p><strong>Imię:</strong> {{ doctor.user_id.first_name }}</p>
+        <p><strong>Nazwisko:</strong> {{ doctor.user_id.last_name }}</p>
+        <p><strong>Numer Telefonu:</strong> {{ doctor.phone_number }}</p>
 
-        <h3>Specializations:</h3>
+        <h3>Specjalizacja:</h3>
         <ul>
             {% for specialization in specializations %}
                 <li>{{ specialization.name }}</li>

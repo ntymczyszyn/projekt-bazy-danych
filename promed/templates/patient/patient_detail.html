@@ -1,11 +1,14 @@
 {% extends "base_patient.html" %}
 {% block content %}
-<div class="container2" style="position:absolute; top: 30%; left: 40%; width: 20vw">
-    <h2>Patient Details</h2>
-    <p><strong>First Name:</strong> {{ first_name }}</p>
-    <p><strong>Last Name:</strong> {{ last_name }}</p>
-    <p><strong>Phone Number:</strong> {{ phone_number }}</p>
+<div class="container2">
+    <h2>Informacje o Pacjencie</h2>
+    <p><strong>Imię:</strong> {{ first_name }}</p>
+    <p><strong>Nazwisko:</strong> {{ last_name }}</p>
+    <p><strong>Numer Telefonu:</strong> {{ phone_number }}</p>
     <p><strong>PESEL:</strong> {{ pesel }}</p>
-    <p><a href="{% url 'password_change' %}">Zmień hasło</a></p>
+    <p><form action="{% url 'password_change' %}">
+        {% csrf_token %}
+        <button type="submit" id="topright">Zmień hasło</button>
+    </form></p>
 </div>
 {% endblock %}

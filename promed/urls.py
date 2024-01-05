@@ -36,6 +36,7 @@ urlpatterns += [
     path('accounts/doctor/login/', views.DoctorLoginView.as_view(), name='doctor_login'),
     path('accounts/doctor/login/denied', views.doctor_access_denied_view, name='doctor_access_denied'),
     path('accounts/logout/', views.custom_logout, name='custom_logout'),
+    path('accounts/logout/', views.MyLogoutView.as_view(), name='logout'),
 ]
 # path('accounts/logout/', CustomLogoutView.as_view(), name='custom_logout'),
 # path('accounts/password_change/', CustomPasswordChangeView.as_view(), name='custom_password_change'),

@@ -8,8 +8,21 @@ body {
     margin-bottom: 10px;
 }
 
+#container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  position: fixed;
+  cursor: pointer;
+  width: 40vw;
+  height: 8vh;
+  user-select: none;
+}
+
 .container1 {
-    width: 300px;
+    width: 500px;
+    height: 15vh;
     padding: 16px;
     display: flex;
     align-items: center;
@@ -17,14 +30,17 @@ body {
     background-color: rgb(66, 154, 218);
     border: 1px solid #ccc;
     margin: auto;
-    margin-top: 100px;
+    margin-top: 10vh;
     border-radius: 16px;
 } 
 
-.container2 {
+.container2 { 
+    width:500px; 
+    left:(50% - 250px); 
     margin: auto;
-    width: 300px;
-    padding: 16px; 
+    padding: 16px;
+    display: flex;
+    flex-direction: column; 
     align-items: center;
     justify-content: center;
     background-color: rgb(66, 154, 218);
@@ -57,7 +73,7 @@ input[type=text], input[type=password] {
 }
 
 button {
-    background-color: rgb(42, 223, 141);
+    background-color: rgb(69, 241, 184);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -69,4 +85,74 @@ button {
 
 button:hover {
     opacity: 0.8;
+}
+
+/* Navbar css */
+.container input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+
+.box {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  font-size: 14px;
+  width: 1vw;
+  height: 1vw;
+  user-select: none;
+  border: 4px solid;
+  border-image-slice: 1;
+  background-color: #313131;
+}
+
+label {
+  align-self: flex-start;
+  font-size: 12px;
+  margin-top: -6px;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  text-align: center;
+  visibility: visible;
+}
+
+#topright {
+  border-image-source: linear-gradient(45deg, #64a5f0, #36ebc4);
+  color: white
+}
+
+.selected {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#topright:hover {
+  border-image-source: linear-gradient(45deg, #64a5f0, #36ebc4);
+  background-image: linear-gradient(45deg, #64a5f0, #36ebc4);
+}
+
+#topright input[type="radio"]:checked ~ .selected {
+  box-shadow: -5px 5px 25px  #64a5f0,
+                5px -5px 25px   #36ebc4;
+  border-image-slice: 1;
+}
+
+
+
+  /* pop up message */
+  .popup-message {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white;
+    border: 1px solid black;
+    padding: 10px;
+    z-index: 1000;
 }

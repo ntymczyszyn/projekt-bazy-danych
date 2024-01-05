@@ -1,19 +1,27 @@
 {% extends 'base_home.html' %}
 {% load static %}
 {% block content %}
-<div>
+<div style="width:100px; left:(50% - 50px); margin: auto;">
     <h1 style="text-align: center;">
         <div class="title" style="font-size: 15px;">Portal pacjenta</div>
     </h1>
 </div>
-<div class="container2">
-    <div class="btn-help">
+<div class="container2" style="width:300px; left:(50%-150px)">
+    <div class="btn-help" style="width:300px; left:(50% - 150px);">
         <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
         <div class="text-section">   
-            <h2><a href="{% url 'patient_login'%}">Zaloguj się</a></h2>
-        </div>
-        <div class="text-section">   
-            <h2><a href="{% url 'patient_register'%}">Zarejestruj się</a></h2>
+            <h2>
+                <form action="{% url 'patient_login' %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright" style="width:200px; height: 50px;">Zaloguj się</button>
+                </form>
+            </h2>  
+            <h2>
+                <form action="{% url 'patient_register' %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright" style="width:200px; height: 50px;">Zarejestruj się</button>
+                </form>
+            </h2>
         </div>
     </div>
 </div>

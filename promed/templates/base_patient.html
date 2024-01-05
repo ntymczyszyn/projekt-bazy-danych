@@ -6,29 +6,38 @@
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">  
-        <link rel="stylesheet" type="text/css" href="{% static 'patient.css' %}">       
+        <link rel="stylesheet" type="text/css" href="{% static 'patient.css' %}"> 
     </head>
 <body>
-<!-- tutaj będzie navbar, tylko muszę ogarnąć jak wydobywac info o tym czy to pacjent czy lekarz    --- Natalia, uważasz, że mogę ściągać to z views.py jakoś czy raczej inaczej? -->
-    <div class="container1" style="position:absolute; top: 0; width:20vw; left:40vw; ">
+    <div id="container" style="left:30vw; top: 0vh; ">
+        <form action="{% url 'patient_dashboard' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">Strona Główna</button>
+        </form>
+        &nbsp;
+        <form action="{% url 'patient_detail' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">{{ user.first_name }} {{ user.last_name }}</button>
+        </form>
+        &nbsp;
+        <form action="{% url 'appointment_search' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">Rezerwacja wizyt</button>
+        </form>
+        &nbsp;
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" id="topright">Wyloguj</button>
+        </form>       
+    </div>
+    
+    <div class="container1" style="left:(50% - 250px)">
         <h1 style="text-align: center;">
             <div class="title" style="font-size: 25px; top:0;">PROMED</div>
             <div style="font-size: 15px; margin-bottom: 20px;">Portal pacjenta</div>
         </h1>
     </div>
-    <div class="container2" style="float: right; position: absolute; top: 0; right: 0; width: 150px;">
-        <div class="btn-help">
-            <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
-            <div class="text-section">   
-                <ul class="menu">
-                    <li><a href="{% url 'patient_dashboard' %}">Strona Główna</a></li>
-                    <li><a href="{% url 'patient_detail' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
-                    <li><a href="{% url 'appointment_search' %}">Wyszukaj wizytę</a></li>
-                    <li><a href="{% url 'custom_logout' %}">Wyloguj</a></li>
-                </ul>
-            </div>   
-        </div>
-    </div>
+
     {% block content %}
     {% endblock %}
     

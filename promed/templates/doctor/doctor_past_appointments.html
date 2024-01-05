@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw">
+<div class="container2">
     <h2>Przeszłe wizyty</h2>
     {% if past_appointments %}
         {% regroup past_appointments by service_id.specialzation_id as grouped_past_appointments %}
@@ -17,7 +17,10 @@
                         {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                     </li>
                     <li>
-                        <button><a href="{% url 'appointment_detail' pk=appointment.id %}">Szczegóły</a></button>
+                        <form action="{% url 'appointment_detail' pk=appointment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" id="topright">Szczegóły</button>
+                        </form>
                     </li>
                     <br>
                 {% endfor %}

@@ -7,11 +7,16 @@
         <div class="title" style="font-size: 15px;">Portal pracownika</div>
     </h1>
 </div>
-<div class="container2">
-    <div class="btn-help">
+<div class="container2" style="width:300px; left:(50%-150px)">
+    <div class="btn-help" style="width:300px; left:(50%-150px)">
         <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
         <div class="text-section">   
-            <h2><a href="{% url 'doctor_login'%}">Zaloguj się</a></h2>
+            <h2>
+                <form action="{% url 'doctor_login' %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright" style="width:200px; height: 50px;">Zaloguj się</button>
+                </form>
+            </h2>
         </div>
     </div>
 </div>

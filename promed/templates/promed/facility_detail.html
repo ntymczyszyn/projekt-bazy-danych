@@ -5,11 +5,11 @@
 {% endcomment %}
 
 {% block content %}
-    <div class="container2" style="position:absolute; top: 30%; left: 30%; width: 40vw"  >
-        <h2>Facility Details</h2>
-        <p><strong>Street Address:</strong> {{ object.street_address }}</p>
-        <p><strong>Postal Code:</strong> {{ object.postal_code }}</p>
-        <p><strong>City:</strong> {{ object.city }}</p>
-        <p><strong>Voivodeship:</strong> {{ object.get_voivodeship_display }}</p>
+    <div class="container2">
+        <h2>Szczegóły Placówki</h2>
+        <p><strong>Ulica i numer budynku:</strong> {{ object.street_address }}</p>
+        <p><strong>Kod pocztowy:</strong> {{ object.postal_code }}</p>
+        <p><strong>Miasto:</strong> {{ object.city }}</p>
+        <p><strong>Województwo:</strong> {{ object.get_voivodeship_display }}</p>
     </div>
 {% endblock %}
