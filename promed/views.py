@@ -33,9 +33,17 @@ def home_patient_view(request):
 def home_doctor_view(request):
     return render(request, 'home_doctor.html')
 
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+
 @login_required
 def patient_dashboard_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
+
+    search_future = request.GET.get('search_future', '')
+    search_past = request.GET.get('search_past', '')
+
 
     # Sprawdzamy, czy pacjent ma uzupełnione dane
     if not (patient.phone_number and patient.date_of_birth and patient.pesel):
@@ -52,6 +60,25 @@ def patient_dashboard_view(request):
     past_appointments = [appointment for appointment in all_appointments if appointment.appointment_time < timezone.now()]
     future_appointments = [appointment for appointment in all_appointments if appointment.appointment_time >= timezone.now()]
 
+    if search_future:
+        future_appointments = [appointment for appointment in future_appointments 
+                               if search_future.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_future.lower() in appointment.service_id.doctor_id.user_id.first_name.lower() 
+                               or search_future.lower() in appointment.service_id.doctor_id.user_id.last_name.lower()
+                               or search_future.lower() in appointment.facility_id.street_address.lower() 
+                               or search_future.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_future.lower() in appointment.facility_id.city.lower() 
+                               or search_future.lower() in appointment.facility_id.voivodeship.lower()]
+    if search_past:
+        past_appointments = [appointment for appointment in past_appointments 
+                               if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_past.lower() in appointment.service_id.doctor_id.user_id.first_name.lower() 
+                               or search_past.lower() in appointment.service_id.doctor_id.user_id.last_name.lower()
+                               or search_past.lower() in appointment.facility_id.street_address.lower() 
+                               or search_past.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_past.lower() in appointment.facility_id.city.lower() 
+                               or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+    
     return render(
         request,
         'patient_dashboard.html',
@@ -183,6 +210,10 @@ def doctor_access_denied_view(request):
 def doctor_dashboard_view(request):
     doctor = get_object_or_404(Doctor, user_id=request.user)
 
+    search_reserved = request.GET.get('search_reserved', '')
+    search_available = request.GET.get('search_available', '')
+    search_past = request.GET.get('search_past', '')
+
     # Pobieramy wszystkie wizyty lekarza
     all_appointments = (
         Appointment.objects.filter(service_id__doctor_id=doctor)
@@ -197,6 +228,29 @@ def doctor_dashboard_view(request):
     reserved_appointments = [appointment for appointment in future_appointments if appointment.status == 'r']
     available_appointments = [appointment for appointment in future_appointments if appointment.status == 'a']
 
+    if search_available:
+        available_appointments = [appointment for appointment in available_appointments 
+                               if  search_available.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_available.lower() in appointment.facility_id.street_address.lower() 
+                               or search_available.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_available.lower() in appointment.facility_id.city.lower() 
+                               or search_available.lower() in appointment.facility_id.voivodeship.lower()]
+    
+    if search_reserved:
+        reserved_appointments = [appointment for appointment in reserved_appointments 
+                               if  search_reserved.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_reserved.lower() in appointment.facility_id.street_address.lower() 
+                               or search_reserved.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_reserved.lower() in appointment.facility_id.city.lower() 
+                               or search_reserved.lower() in appointment.facility_id.voivodeship.lower()]
+    if search_past:
+        past_appointments = [appointment for appointment in past_appointments 
+                               if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_past.lower() in appointment.facility_id.street_address.lower() 
+                               or search_past.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_past.lower() in appointment.facility_id.city.lower() 
+                               or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+    
     return render(
         request,
         'doctor_dashboard.html',

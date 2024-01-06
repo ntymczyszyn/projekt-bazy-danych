@@ -4,34 +4,41 @@
 
 <div class="container2">
     <h2>Przeszłe wizyty</h2>
+    <form action="" method="get">
+        {% csrf_token %}
+        <input placeholder="Search" type="search" class="search_input" name="search_past" value="{{ search_past }}">
+        <button type="submit" id="topright">Search</button>
+    </form>
     {% if past_appointments %}
         {% regroup past_appointments by service_id.specialzation_id as grouped_past_appointments %}
         {% for specialization, appointments in grouped_past_appointments %}
             <h3>{{ specialization }}</h3>
-            <ul class="appointments">  
-                {% regroup appointments by status as grouped_appointments %}
-                {% for status, status_appointments in grouped_appointments %}
-                    <h4>{% if status == 'c' %}Zrealizowane{% else %}Niezrealizowane{% endif %}</h4>
-                    {% for appointment in status_appointments %} 
-                    {% comment %} te style to tak tymczasowo 
-                        <form action="{% url 'appointment_detail' pk=appointment.id %}">
-                            {% csrf_token %}
-                            <button type="submit" id="topright">Szczegóły</button>
-                        </form> 
-                    {% endcomment %}
-                        <a href="{% url 'appointment_detail' pk=appointment.id %}"  style="text-decoration: none; color: white">
-                        <li>        
-                            {% if status == 'c' %}{{ appointment.patient_id }}{% endif %}
-                        </li>
-                        <li>        
-                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                        </li>
-                        </a>
-                        <br>
+            <div style="width: 500px; height: 300px; overflow: auto;">
+                <ul class="appointments">  
+                    {% regroup appointments by status as grouped_appointments %}
+                    {% for status, status_appointments in grouped_appointments %}
+                        <h4>{% if status == 'c' %}Zrealizowane{% else %}Niezrealizowane{% endif %}</h4>
+                        {% for appointment in status_appointments %} 
+                        {% comment %} te style to tak tymczasowo 
+                            <form action="{% url 'appointment_detail' pk=appointment.id %}">
+                                {% csrf_token %}
+                                <button type="submit" id="topright">Szczegóły</button>
+                            </form> 
+                        {% endcomment %}
+                            <a href="{% url 'appointment_detail' pk=appointment.id %}"  style="text-decoration: none; color: white">
+                            <li>        
+                                {% if status == 'c' %}{{ appointment.patient_id }}{% endif %}
+                            </li>
+                            <li>        
+                                {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                            </li>
+                            </a>
+                            <br>
+                        {% endfor %}
+                        <p>Liczba wizyt: {{ status_appointments|length }}</p>
                     {% endfor %}
-                    <p>Liczba wizyt: {{ status_appointments|length }}</p>
-                {% endfor %}
-            </ul>
+                </ul>
+            </div>
         {% endfor %}
     {% else %}
         <p>Brak przeszłych wizyt.</p>

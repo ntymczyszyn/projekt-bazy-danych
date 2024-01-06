@@ -61,6 +61,43 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Search css */
+.group {
+  display: flex;
+  line-height: 28px;
+  align-items: center;
+  position: relative;
+  max-width: 500px;
+  max-height: 35px;
+}
+
+.search_input {
+  height: 30px;
+  line-height: 28px;
+  padding: 0 1rem;
+  width: 100%;
+  padding-left: 2.5rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  background-color: #caf5f3;
+  color: #030431;
+  box-shadow: 0 0 10px #a6f5e8, 0 0 0 5px #9cf8d9;
+  transition: .3s ease;
+}
+
+.search_input::placeholder {
+  color: #799793;
+}
+
+.icon {
+  position: absolute;
+  left: 1rem;
+  fill: #799793;
+  width: 1rem;
+  height: 1rem;
+}
+/* end */
 
 input[type=text], input[type=password] {
     width: 100%;
@@ -143,16 +180,14 @@ label {
   border-image-slice: 1;
 }
 
-
-
-  /* pop up message */
-  .popup-message {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: white;
-    border: 1px solid black;
-    padding: 10px;
-    z-index: 1000;
+/* pop up message */
+.popup-message {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  border: 1px solid black;
+  padding: 10px;
+  z-index: 1000;
 }
