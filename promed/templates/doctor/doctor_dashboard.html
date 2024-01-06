@@ -11,15 +11,14 @@
             <h3>{{ specialization }}</h3>
             <ul class="appointments">
                 {% for appointment in appointments %} 
+                <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
                     <li>        
                         {{ appointment.patient_id }}
                     </li>
                     <li>        
                         {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                    </li>
-                    <li>
-                        <button><a href="{% url 'detail_cancel_appointment' pk=appointment.id %}">Szczegóły</a></button>
-                    </li>
+                    </li> 
+                    </a>
                     <br>
                 {% endfor %}
             </ul>
@@ -35,11 +34,11 @@
             <h3>{{ specialization }}</h3>
             <ul class="appointments">
                 {% for appointment in appointments %} 
+                <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
                     <li>        
                         {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                     </li>
-                    <li>
-                        <button><a href="{% url 'detail_cancel_appointment' pk=appointment.id %}">Szczegóły</a></button>
+                    </a>
                     </li>
                     <br>
                 {% endfor %}
@@ -48,8 +47,7 @@
     {% else %}
         <p>Brak dostępnych wizyt.</p>
     {% endif %} 
-    <h3>Przeszłe wizyty</h3>
-    <button><a href="{% url 'doctor_past_appointments' %}">Przeszłe wizyty</a></button>
+    <button><a href="{% url 'doctor_past_appointments' %}"><h3>Przeszłe wizyty</h3></a></button>
 
     </div>
 

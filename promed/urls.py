@@ -16,6 +16,7 @@ urlpatterns += [
     path('pateint/info/complete', views.complete_info_patient_view, name='complete_patient_info'),
     path('patient/appointment/<uuid:pk>/detail', views.cancel_appointment_view, name='detail_cancel_appointment'),
     path('patient/appointment/<uuid:pk>/cancel/complete', views.confirm_cancel_appointment_view, name='complete_appointment_cancellation'),
+    path('patient/password-change/', views.PatientPasswordChangeView.as_view(), name='patient_password_change'),
 ]
 
 urlpatterns += [
@@ -23,6 +24,8 @@ urlpatterns += [
     path('doctor/dashboard',  views.doctor_dashboard_view, name="doctor_dashboard"),
     path('doctor/details', views.doctor_detail_view, name='doctor_detail'),
     path('doctor/past-appointments/', views.doctor_past_appointments_view, name='doctor_past_appointments'),
+    # path('doctor/availability/', views.doctor_availability, name='doctor_availability'),
+    path('doctor/password-change/', views.DoctorPasswordChangeView.as_view(), name='doctor_password_change'),
 ]
 
 # Django site authentication urls (for login, logout, password management)
@@ -32,6 +35,7 @@ urlpatterns += [
     path('accounts/patient/register/', views.register_patient_view, name='patient_register'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
 urlpatterns += [
     path('accounts/doctor/login/', views.DoctorLoginView.as_view(), name='doctor_login'),
     path('accounts/doctor/login/denied', views.doctor_access_denied_view, name='doctor_access_denied'),

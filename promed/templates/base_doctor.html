@@ -23,6 +23,7 @@
                 <ul class="menu">
                     <li><a href="{% url 'doctor_dashboard' %}">Strona Główna</a></li>
                     <li><a href="{% url 'doctor_detail' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
+                    <li><a href="{% url 'doctor_availability' %}">Dostępność</a></li>                    
                     <li><a href="{% url 'logout' %}">Wyloguj</a></li>
                 </ul>
             </div>   

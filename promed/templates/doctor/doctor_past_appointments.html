@@ -8,18 +8,23 @@
         {% regroup past_appointments by service_id.specialzation_id as grouped_past_appointments %}
         {% for specialization, appointments in grouped_past_appointments %}
             <h3>{{ specialization }}</h3>
-            <ul class="appointments">
-                {% for appointment in appointments %} 
-                    <li>        
-                        {{ appointment.patient_id }}
-                    </li>
-                    <li>        
-                        {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                    </li>
-                    <li>
-                        <button><a href="{% url 'appointment_detail' pk=appointment.id %}">Szczegóły</a></button>
-                    </li>
-                    <br>
+            <ul class="appointments">  
+                {% regroup appointments by status as grouped_appointments %}
+                {% for status, status_appointments in grouped_appointments %}
+                    <h4>{% if status == 'c' %}Zrealizowane{% else %}Niezrealizowane{% endif %}</h4>
+                    {% for appointment in status_appointments %} 
+                    {% comment %} te style to tak tymczasowo {% endcomment %}
+                        <a href="{% url 'appointment_detail' pk=appointment.id %}"  style="text-decoration: none; color: white">
+                        <li>        
+                            {% if status == 'c' %}{{ appointment.patient_id }}{% endif %}
+                        </li>
+                        <li>        
+                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                        </li>
+                        </a>
+                        <br>
+                    {% endfor %}
+                    <p>Liczba wizyt: {{ status_appointments|length }}</p>
                 {% endfor %}
             </ul>
         {% endfor %}
