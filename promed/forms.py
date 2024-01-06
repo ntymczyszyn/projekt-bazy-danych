@@ -1,5 +1,5 @@
 from django import forms
-from .models import Doctor, Facility, Patient, Specialization, CustomUser
+from .models import Doctor, Facility, Patient, Specialization, CustomUser, Service
 from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError   
@@ -47,3 +47,59 @@ class PatientInfoForm(forms.Form):
             raise ValidationError('Nieprawidłowy PESEL.')
 
         return pesel
+
+
+from datetime import timedelta
+from django.utils import timezone
+import logging
+logger = logging.getLogger(__name__)
+
+class AvailabilityForm(forms.Form):
+    selected_date = forms.DateField(widget=forms.SelectDateWidget)
+    start_time = forms.TimeField(
+        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]),
+    )
+    end_time = forms.TimeField(
+        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]),
+    )
+    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none())
+    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')])
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        doctor = kwargs.pop('doctor', None)
+        available_specializations = Specialization.objects.filter(service__doctor_id=doctor)
+        available_facilities = Facility.objects.all()
+        super(AvailabilityForm, self).__init__(*args, **kwargs)
+
+        self.fields['specialization'].queryset = available_specializations
+        self.fields['facility'].queryset = available_facilities
+        # ten zakres miesiąca do przodu mi coś nie działa 
+        today = timezone.now().date()
+        four_weeks_later = today + timedelta(weeks=4)
+        date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days)]
+        self.fields['selected_date'].initial = today
+        self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        selected_service = cleaned_data.get('service')
+        selected_date = cleaned_data.get('selected_date')
+
+        if selected_date and selected_date < timezone.now().date():
+            raise forms.ValidationError("Data nie może być z przeszłości")
+
+        if start_time and end_time and start_time >= end_time:
+            raise forms.ValidationError("Błędnie wybrany przedział czasu")
+
+        if selected_service:
+            cleaned_data['duration'] = selected_service.duration
+            total_minutes = (end_time.hour - start_time.hour) * 60 + (end_time.minute - start_time.minute)
+            if int(cleaned_data['duration']) > int(total_minutes):
+                raise forms.ValidationError("Czas trwania usługi przekracza dostępny przedział czasowy")
+            
+
+        return cleaned_data
+

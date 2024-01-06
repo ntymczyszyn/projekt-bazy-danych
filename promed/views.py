@@ -2,13 +2,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Appointment, Patient, Doctor, Service, Specialization, Facility
-from .forms import AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm
+from .forms import AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.urls import reverse_lazy, reverse
 from .signals import user_registered_patient_site
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 '''
 LEKARZ
 - do deklarowanie dyspozyjności
@@ -125,13 +128,14 @@ def patient_access_denied_view(request):
 
 # class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
-def send_welcome_email_patient(user_email): # czy to moża było jako html zrobić?
+def send_welcome_email_patient(user_email, username):
     subject = 'Witamy w Promed'
-    message = 'Dziękujemy za rejestracje. Pamiętaj o uzupełnieniu swojego profilu po pierwszym logowaniu.'
-    from_email = 'promed.administation@promed.pl'
+    html_message = render_to_string('registration/pateint/welcome_email_.html', {'username': username})
+    plain_message = strip_tags(html_message)
+    from_email = 'promed.administration@promed.pl'
     recipient_list = [user_email]
 
-    send_mail(subject, message, from_email, recipient_list)
+    send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
 
 def register_patient_view(request):
     if request.method == 'POST':
@@ -182,7 +186,7 @@ def doctor_dashboard_view(request):
     # Pobieramy wszystkie wizyty lekarza
     all_appointments = (
         Appointment.objects.filter(service_id__doctor_id=doctor)
-        .order_by('appointment_time')
+        .order_by('service_id__specialzation_id','facility_id','appointment_time')
     )
 
     # Dzielimy wizyty na przeszłe i nadchodzące
@@ -203,6 +207,28 @@ def doctor_dashboard_view(request):
         }
     )
 
+class PatientPasswordChangeView(PasswordChangeView):
+    template_name = 'registration/password_change_form.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Hasło zostało pomyślnie zmienione.')
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('patient_dashboard')  
+
+class DoctorPasswordChangeView(PasswordChangeView):
+    template_name = 'registration/password_change_form.html'  
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Hasło zostało pomyślnie zmienione.')
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('doctor_dashboard') 
+    
 @login_required
 def doctor_past_appointments_view(request):
     doctor = get_object_or_404(Doctor, user_id=request.user)
@@ -213,7 +239,8 @@ def doctor_past_appointments_view(request):
             service_id__doctor_id=doctor,
             appointment_time__lt=timezone.now()
         )
-        .order_by('appointment_time')
+        .order_by('service_id__specialzation_id', 'status', 'appointment_time')
+        .select_related('patient_id')
     )
 
     return render(
@@ -236,6 +263,56 @@ def doctor_detail_view(request):
         'specializations': specializations,
     }
     return render(request, 'doctor_detail.html', context)
+
+from datetime import datetime, timedelta
+
+@login_required
+def doctor_availability(request):
+    template_name = 'set_availability.html'
+    doctor = Doctor.objects.get(user_id=request.user)
+
+    if request.method == 'POST':
+        form = AvailabilityForm(request.POST, doctor=doctor)
+    # poprawiałam tę funkcję i mi nagle wszystko zwolniło :((
+    # dlatego narazie nie jest w użytku
+    #     if form.is_valid():
+    #         start_time = form.cleaned_data['start_time']
+    #         end_time = form.cleaned_data['end_time']
+    #         duration = form.cleaned_data['duration']
+    #         selected_specialization = form.cleaned_data['specialization']
+    #         selected_date = form.cleaned_data['selected_date']
+    #         selected_facility = form.cleaned_data['facility']
+
+    #         current_time = start_time
+    #         current_datetime = datetime.combine(selected_date, current_time)
+    #         end_datetime = datetime.combine(selected_date, end_time)
+
+    #         while current_datetime < end_datetime:
+    #             try:
+    #                 # service = Service.objects.get(
+    #                 #         specialzation_id=selected_specialization,
+    #                 #         doctor_id=doctor,
+    #                 #         duration=duration
+    #                 # )
+    #                 availability = Appointment(
+    #                     appointment_time=current_datetime,
+    #                     service_id=service,
+    #                     facility_id=selected_facility,
+    #                     status='a',
+    #                 )
+    #                 availability.save()
+                    # current_datetime += timedelta(minutes=)
+    #             except Service.DoesNotExist:
+    #                 # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
+    #                 messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
+    #                 return redirect('doctor_dashboard')
+
+    #         messages.success(request, 'Dostępność wprowadzona prawidłowo.')
+    #         return redirect('doctor_dashboard')
+    # else:
+    #     form = AvailabilityForm(doctor=doctor)
+
+    return render(request, template_name, {'form': form})
 
 @login_required
 def appointment_search_patient_view(request):

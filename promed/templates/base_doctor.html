@@ -20,6 +20,11 @@
             <button type="submit" id="topright">{{ user.first_name }} {{ user.last_name }}</button>
         </form>
         &nbsp;
+        <form action="{% url 'doctor_availability' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">Dostępność</button>
+        </form>
+        &nbsp;
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <button type="submit" id="topright">Wyloguj</button>
@@ -32,11 +37,6 @@
             <div style="font-size: 15px; margin-bottom: 20px;">Portal pracownika</div>
         </h1>
     </div>
-
-    
-    
     {% block content %}
     {% endblock %}
-    
-</body>
 </html>

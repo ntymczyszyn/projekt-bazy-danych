@@ -11,6 +11,7 @@
             <h3>{{ specialization }}</h3>
             <ul class="appointments">
                 {% for appointment in appointments %} 
+                <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
                     <li>        
                         {{ appointment.patient_id }}
                     </li>
@@ -38,6 +39,7 @@
             <h3>{{ specialization }}</h3>
             <ul class="appointments">
                 {% for appointment in appointments %} 
+                <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
                     <li>        
                         {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                     </li>
