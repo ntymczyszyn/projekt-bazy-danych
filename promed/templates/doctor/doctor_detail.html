@@ -13,6 +13,9 @@
                 <li>{{ specialization.name }}</li>
             {% endfor %}
         </ul>
-        <p><a href="{% url 'doctor_password_change' %}">Zmień hasło</a></p>
+        <p><form action="{% url 'doctor_password_change' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">Zmień hasło</button>
+        </form></p>
     </div>
 {% endblock %}
