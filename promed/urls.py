@@ -2,11 +2,19 @@ from django.urls import path, include
 from . import views
 from django.contrib import admin
 from django.views.generic import RedirectView
+from django.conf import settings
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/promed/home/', permanent=True)),
     path('home/', views.home_view, name="home"),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)), # tylko na stronie głownej się wyświetla
+    ]
 
 urlpatterns += [
     path('home/pateint', views.home_patient_view, name="home_patient"),
@@ -25,7 +33,7 @@ urlpatterns += [
     path('doctor/dashboard',  views.doctor_dashboard_view, name="doctor_dashboard"),
     path('doctor/details', views.doctor_detail_view, name='doctor_detail'),
     path('doctor/past-appointments/', views.doctor_past_appointments_view, name='doctor_past_appointments'),
-    # path('doctor/availability/', views.doctor_availability, name='doctor_availability'),
+    path('doctor/availability/', views.doctor_availability, name='doctor_availability'),
     path('doctor/password-change/', views.DoctorPasswordChangeView.as_view(), name='doctor_password_change'),
 ]
 

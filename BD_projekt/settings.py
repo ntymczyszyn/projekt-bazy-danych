@@ -16,7 +16,24 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Konfiguracja Celery---------------------------------------------------------
+from celery import Celery
+from celery.schedules import crontab
 
+app = Celery('promed')
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+# Automatycznie odczytaj zadania z plików Django
+app.autodiscover_tasks()
+
+CELERY_BEAT_SCHEDULE = {
+    'send-reminder-emails': {
+        'task': 'promed.tasks.send_daily_reminder_emails',
+        'schedule': crontab(hour=0, minute=0),  # północ
+    },
+}
+
+#-----------------------------------------------------------------------------------------------------
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -133,3 +150,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # do emaila się przyda
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+if DEBUG:
+    import debug_toolbar
+
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+
+    INSTALLED_APPS += [
+        'debug_toolbar',
+    ]
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
+    }
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+    INTERNAL_IPS = [
+        # ...
+        '127.0.0.1',
+    ]

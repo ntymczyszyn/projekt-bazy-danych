@@ -316,44 +316,45 @@ def doctor_availability(request):
         form = AvailabilityForm(request.POST, doctor=doctor)
     # poprawiałam tę funkcję i mi nagle wszystko zwolniło :((
     # dlatego narazie nie jest w użytku
-    #     if form.is_valid():
-    #         start_time = form.cleaned_data['start_time']
-    #         end_time = form.cleaned_data['end_time']
-    #         duration = form.cleaned_data['duration']
-    #         selected_specialization = form.cleaned_data['specialization']
-    #         selected_date = form.cleaned_data['selected_date']
-    #         selected_facility = form.cleaned_data['facility']
+        if form.is_valid():
+            start_time = form.cleaned_data['start_time']
+            end_time = form.cleaned_data['end_time']
+            duration = form.cleaned_data['duration']
+            selected_specialization = form.cleaned_data['specialization']
+            selected_date = form.cleaned_data['selected_date']
+            selected_facility = form.cleaned_data['facility']
 
-    #         current_time = start_time
-    #         current_datetime = datetime.combine(selected_date, current_time)
-    #         end_datetime = datetime.combine(selected_date, end_time)
+            current_time = start_time
+            current_datetime = datetime.combine(selected_date, current_time)
+            end_datetime = datetime.combine(selected_date, end_time)
 
-    #         while current_datetime < end_datetime:
-    #             try:
-    #                 # service = Service.objects.get(
-    #                 #         specialzation_id=selected_specialization,
-    #                 #         doctor_id=doctor,
-    #                 #         duration=duration
-    #                 # )
-    #                 availability = Appointment(
-    #                     appointment_time=current_datetime,
-    #                     service_id=service,
-    #                     facility_id=selected_facility,
-    #                     status='a',
-    #                 )
-    #                 availability.save()
-                    # current_datetime += timedelta(minutes=)
-    #             except Service.DoesNotExist:
-    #                 # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
-    #                 messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
-    #                 return redirect('doctor_dashboard')
+            while current_datetime < end_datetime:
+                try:
+                    service = Service.objects.get(
+                            specialzation_id=selected_specialization,
+                            doctor_id=doctor,
+                            duration=duration
+                    )
+                    availability = Appointment(
+                        appointment_time=current_datetime,
+                        service_id=service,
+                        facility_id=selected_facility,
+                        status='a',
+                    )
+                    availability.save()
+                    current_datetime += timedelta(minutes=int(duration))
+                except Service.DoesNotExist:
+                    # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
+                    messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
+                    return redirect('doctor_dashboard')
 
-    #         messages.success(request, 'Dostępność wprowadzona prawidłowo.')
-    #         return redirect('doctor_dashboard')
-    # else:
-    #     form = AvailabilityForm(doctor=doctor)
+            messages.success(request, 'Dostępność wprowadzona prawidłowo.')
+            return redirect('doctor_dashboard')
+    else:
+        form = AvailabilityForm(doctor=doctor)
 
     return render(request, template_name, {'form': form})
+
 
 @login_required
 def appointment_search_specialization_view(request):
@@ -440,16 +441,28 @@ def confirm_cancel_appointment_view(request, pk):
     return redirect(reverse('patient_dashboard'))
 
 def send_appointment_reminder_email(recipient_email, appointment):
-    subject = 'Nadchodząca wizyta w Promed'
-    html_message = render_to_string('appointment_reminder_email.html', {
-        'doctor_name': appointment.service_id.doctor_id,
-        'appointment_date': appointment.appointment_time.strftime('%Y-%m-%d %H:%M'),
-        'facility_name': appointment.facility_id,
-    })
-    from_email = 'promed.administration@promed.pl'
-    recipient_list = [recipient_email]
+    pass
 
-    send_mail(subject, '', from_email, recipient_list, html_message=html_message)
+def send_reminder_email_for_upcoming_appointments():
+    # Pobierz wszystkie zarezerwowane wizyty na następny dzień
+    tomorrow = timezone.now() + timezone.timedelta(days=1)
+    appointments = Appointment.objects.filter(status='r', appointment_time__date=tomorrow)
+
+    for appointment in appointments:
+        subject = 'Nadchodząca wizyta w Promed'
+        html_message = render_to_string('appointment_reminder_email.html', {
+            'doctor_name': appointment.service_id.doctor_id,
+            'doctor_specialization': appointment.service_id.doctor_id.specialization_id.name,
+            'appointment_date': appointment.appointment_time.strftime('%Y-%m-%d %H:%M'),
+            'facility_name': appointment.facility_id,
+        })
+        from_email = 'promed.administration@promed.pl'
+        recipient_email = appointment.patient_id.user_id.email if appointment.patient_id.user_id.email else ''
+
+        if recipient_email:
+            recipient_list = [recipient_email]
+            send_mail(subject, '', from_email, recipient_list, html_message=html_message)
+
 
 # INNE
 class FacilityDetailView(generic.DetailView):

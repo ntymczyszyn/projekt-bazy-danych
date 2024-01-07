@@ -19,13 +19,11 @@
             {% csrf_token %}
             <button type="submit" id="topright">{{ user.first_name }} {{ user.last_name }}</button>
         </form>
-        {% comment %}
         &nbsp;
         <form action="{% url 'doctor_availability' %}">
             {% csrf_token %}
             <button type="submit" id="topright">Dostępność</button>
         </form>
-        {% endcomment %}
         &nbsp;
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
