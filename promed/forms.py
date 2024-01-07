@@ -15,13 +15,27 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
 
-class AppointmentSearchForm(forms.Form):
+class SpecializationSearchForm(forms.Form):
     specialization = forms.ModelChoiceField(queryset=Specialization.objects.all(), required=True, label='Specjalizacja')
+
+class AppointmentSearchForm(forms.Form):
+    TIME_SLOT_CHOICES = [
+        ('all', '----------'),
+        ('7-12', '7:00 - 12:00'),
+        ('12-17', '12:00 - 17:00'),
+        ('17-20', '17:00 - 20:00'),
+    ]
     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz')
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka')
     date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    start_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
-    end_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
+    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy')
+    
+    def __init__(self, *args, **kwargs):
+            doctor = kwargs.pop('doctor', None)
+            super(AppointmentSearchForm, self).__init__(*args, **kwargs)
+
+            if doctor:
+                self.fields['doctor'].queryset = doctor
 
 class PatientInfoForm(forms.Form):
     phone_number = forms.CharField(max_length=9, label='Numer telefonu')

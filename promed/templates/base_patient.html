@@ -20,7 +20,7 @@
             <button type="submit" id="topright">{{ user.first_name }} {{ user.last_name }}</button>
         </form>
         &nbsp;
-        <form action="{% url 'appointment_search' %}">
+        <form action="{% url 'appointment_search_specialization' %}">
             {% csrf_token %}
             <button type="submit" id="topright">Rezerwacja wizyt</button>
         </form>

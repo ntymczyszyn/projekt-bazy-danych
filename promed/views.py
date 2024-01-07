@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Appointment, Patient, Doctor, Service, Specialization, Facility
-from .forms import AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm
+from .forms import AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm, SpecializationSearchForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
@@ -12,11 +12,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-'''
-LEKARZ
-- do deklarowanie dyspozyjności
-- do przeglądania wykonywanych wizyt (nadchodzących i przeszłych)
-'''
 class MyLogoutView(LogoutView):
     next_page = '/promed/accounts/logout/'
     allowed_methods = ['get']
@@ -146,14 +141,6 @@ class PatientLoginView(LoginView):
 
 def patient_access_denied_view(request):
     return render(request, 'registration/patient/patient_access_denied.html')
-
-# class CustomLogoutView(LogoutView):
-
-# class CustomPasswordChangeView(PasswordChangeView):
-
-# class CustomPasswordResetView(PasswordResetView):
-
-# class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 def send_welcome_email_patient(user_email, username):
     subject = 'Witamy w Promed'
@@ -369,33 +356,52 @@ def doctor_availability(request):
     return render(request, template_name, {'form': form})
 
 @login_required
-def appointment_search_patient_view(request):
-    form = AppointmentSearchForm(request.GET)
-    appointments = []
+def appointment_search_specialization_view(request):
+    form =  SpecializationSearchForm(request.GET)
+    specializations = Specialization.objects.all()
 
     if form.is_valid():
+        specialization = form.cleaned_data.get('specialization')
+        if specialization:
+            return redirect('appointment_search', specialization_id=specialization.id)
+
+    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations})
+
+@login_required
+def appointment_search_patient_view(request,specialization_id):
+    specialization = get_object_or_404(Specialization, id=specialization_id)
+    services = Service.objects.filter(specialzation_id=specialization)
+    doctor = Doctor.objects.filter(service__in=services)
+
+    form = AppointmentSearchForm(request.GET, doctor=doctor)
+    appointments = []
+
+    if request.method == 'GET' and form.is_valid():
         doctor = form.cleaned_data.get('doctor')
         facility = form.cleaned_data.get('facility')
-        specialization = form.cleaned_data.get('specialization')
         date = form.cleaned_data.get('date')
-        start_time = form.cleaned_data.get('start_time')
-        end_time = form.cleaned_data.get('end_time')
-
+        time_slot = form.cleaned_data.get('time_slot')
         appointments = Appointment.objects.filter(status='a')
+
         if doctor:
             appointments = appointments.filter(service_id__doctor_id=doctor)
         if facility:
             appointments = appointments.filter(facility_id=facility)
-        if specialization:
-            appointments = appointments.filter(service_id__specialzation_id=specialization)
         if date:
             appointments = appointments.filter(appointment_time__date=date)
-        if start_time:
-            appointments = appointments.filter(appointment_time__time__gte=start_time)
-        if end_time:
-            appointments = appointments.filter(appointment_time__time__lte=end_time)
 
-    return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments})
+        # Ustaw odpowiednie przedziały czasowe
+        if time_slot == '7-12':
+            appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='12:00')
+        elif time_slot == '12-17':
+            appointments = appointments.filter(appointment_time__time__gte='12:00', appointment_time__time__lt='17:00')
+        elif time_slot == '17-20':
+            appointments = appointments.filter(appointment_time__time__gte='17:00', appointment_time__time__lt='20:00')
+        elif time_slot == 'all':
+            appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='20:00')
+
+
+    return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
 
 def confirm_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
@@ -432,6 +438,18 @@ def confirm_cancel_appointment_view(request, pk):
         messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
 
     return redirect(reverse('patient_dashboard'))
+
+def send_appointment_reminder_email(recipient_email, appointment):
+    subject = 'Nadchodząca wizyta w Promed'
+    html_message = render_to_string('appointment_reminder_email.html', {
+        'doctor_name': appointment.service_id.doctor_id,
+        'appointment_date': appointment.appointment_time.strftime('%Y-%m-%d %H:%M'),
+        'facility_name': appointment.facility_id,
+    })
+    from_email = 'promed.administration@promed.pl'
+    recipient_list = [recipient_email]
+
+    send_mail(subject, '', from_email, recipient_list, html_message=html_message)
 
 # INNE
 class FacilityDetailView(generic.DetailView):
