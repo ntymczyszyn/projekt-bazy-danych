@@ -1,11 +1,99 @@
+/* BODY */
 body {
     font-family: Arial, sans-serif;
     background-color: rgb(135, 175, 228);
 }
 
+/* NAVBAR - umiejscowienie oraz styl nav*/
+nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
+  user-select: none;
+  background-color: rgb(70, 157, 219);
+  border: 1px solid #ccc;
+  border-radius: 16px;
+}
+
+#navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
+  position: fixed;
+  top: 0;
+  width: 500px;
+  height: 8vh;
+  left:(50% - 250px);
+  user-select: none;
+  background-color: rgb(66, 154, 218);
+  border: 1px solid #f7f1f1;
+  border-radius: 16px;
+}
+
+.box {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  font-size: 14px;
+  width: 1vw;
+  height: 1vw;
+  user-select: none;
+  border: 4px solid;
+  border-image-slice: 1;
+  background-color: #313131;
+}
+
+/* HEADER - nagłówek - miejsce na nazwę strony i jej wygląd*/
+header {
+  width: 500px;
+  left:(50% - 250px);
+  height: 15vh;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgb(66, 154, 218);
+  border: 1px solid #ccc;
+  margin: auto;
+  border-radius: 16px;
+}
+
+/* MAIN  box gdzie znajduje się główny materiał ( jeżeli używamy więcej jak jeden blok - columny)*/
+main { 
+  margin: auto;
+  padding: 16px;
+  display: grid;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ }
+ 
+ /* boczny panel - jeszcze nie wiem do czego ale jest na wszelki */
+ aside {
+  width:500px;
+  margin: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(66, 154, 218);
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ }
+
+ 
 .title {
-    font-family: Avantgarde; /* fantasy */
-    margin-bottom: 10px;
+  font-family: Avantgarde; /* fantasy */
+  margin-bottom: 10px;
 }
 
 #container {
@@ -13,28 +101,21 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  position: fixed;
   cursor: pointer;
-  width: 40vw;
+  position: fixed;
+  top: 0;
+  width: 500px;
   height: 8vh;
+  left:(50% - 250px);
   user-select: none;
+  background-color: rgb(66, 154, 218);
+  border: 1px solid #f7f1f1;
+  border-radius: 16px;
 }
 
-.container1 {
-    width: 500px;
-    height: 15vh;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(66, 154, 218);
-    border: 1px solid #ccc;
-    margin: auto;
-    margin-top: 10vh;
-    border-radius: 16px;
-} 
 
-.container2 { 
+/* Sekcje - jako główny blok  */
+section { 
     width:500px; 
     left:(50% - 250px); 
     margin: auto;
@@ -45,20 +126,72 @@ body {
     justify-content: center;
     background-color: rgb(66, 154, 218);
     border: 1px solid #ccc;
-    border-radius: 16px;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.container-info {
-    margin: auto;
-    width: 40vw;
-    height: auto;
-    padding: 16px; 
-    top: 30%;
-    background-color: rgb(66, 154, 218);
-    border: 1px solid #ccc;
-    border-radius: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.section-column{
+  width:500px; 
+  left:(50% - 250px); 
+  margin: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(66, 154, 218);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+ 
+ .menu {
+  padding: 0;
+  display: flex;
+}
+
+.menu li {
+  margin-right: 10px;
+}
+
+.menu li a {
+  display: block;
+  padding: 8px 16px;
+  color: black;
+  text-decoration: none;
+}
+
+.menu li a:hover {
+  background-color: #f2f2f2;
+}
+
+.appointments {
+  list-style-type: none;
+  padding: 0;
+}
+
+.appointments ul {
+  display: flex;
+  flex-wrap: wrap;
+}
+   
+.appointments li {
+  list-style-type: none;
+  padding: 0;
+}
+ 
+.column2 {
+  padding: 10px;
+}
+ 
+.appointments li {
+  flex: 70%;
+  padding: 10px;
+}
+ 
+.column2 {
+  flex: 30%;
+  padding: 10px;
 }
 
 /* Search css */
@@ -99,6 +232,7 @@ body {
 }
 /* end */
 
+/* button */
 input[type=text], input[type=password] {
     width: 100%;
     padding: 12px 20px;
@@ -124,36 +258,13 @@ button:hover {
     opacity: 0.8;
 }
 
-/* Navbar css */
+  
 .container input[type="radio"] {
   position: absolute;
   opacity: 0;
   cursor: pointer;
   height: 0;
   width: 0;
-}
-
-
-.box {
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  font-size: 14px;
-  width: 1vw;
-  height: 1vw;
-  user-select: none;
-  border: 4px solid;
-  border-image-slice: 1;
-  background-color: #313131;
-}
-
-label {
-  align-self: flex-start;
-  font-size: 12px;
-  margin-top: -6px;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  text-align: center;
-  visibility: visible;
 }
 
 #topright {
@@ -179,6 +290,7 @@ label {
                 5px -5px 25px   #36ebc4;
   border-image-slice: 1;
 }
+/* end */
 
 /* pop up message */
 .popup-message {

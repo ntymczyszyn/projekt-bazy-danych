@@ -2,12 +2,11 @@
 {% load static %}
 
 {% block content %}
-  <div class="container2">
+  <section>
         <h2>Wyszukiwarka wizyt</h2>
     <form method="get" action="{% url 'appointment_search_specialization' %}">
     {{ form.as_p }}
     <button type="submit">Szukaj</button>
     </form>
-
-    </div>
+  </section>
 {% endblock %}

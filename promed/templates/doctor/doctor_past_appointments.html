@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<div class="container2">
+<section style="width: 500px;">
     <h2>Przeszłe wizyty</h2>
     <form action="" method="get">
         {% csrf_token %}
@@ -13,7 +13,7 @@
         {% regroup past_appointments by service_id.specialzation_id as grouped_past_appointments %}
         {% for specialization, appointments in grouped_past_appointments %}
             <h3>{{ specialization }}</h3>
-            <div style="width: 500px; height: 300px; overflow: auto;">
+            <div style="width: 490px; height: 300px; overflow: auto;">
                 <ul class="appointments">  
                     {% regroup appointments by status as grouped_appointments %}
                     {% for status, status_appointments in grouped_appointments %}
@@ -43,6 +43,6 @@
     {% else %}
         <p>Brak przeszłych wizyt.</p>
     {% endif %} 
-</div>
+</section>
 
 {% endblock %}

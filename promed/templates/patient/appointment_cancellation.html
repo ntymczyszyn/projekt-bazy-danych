@@ -4,7 +4,7 @@
     {{ block.super }}
     <form method="post" action="{% url 'complete_appointment_cancellation' pk=appointment.id %}">
         {% csrf_token %}
-        <div class="container"  style="width:300px; left:(50% - 150px); margin: auto;" >
+        <div style="width:300px; left:(50% - 150px); margin: auto;" >
             <button type="submit" id="topright">Odwołaj rezerwację</button>
         </div>
     </form>

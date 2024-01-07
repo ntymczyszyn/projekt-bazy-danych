@@ -4,67 +4,73 @@
 {% block content %}
 {% if messages %}
     {% endif %}
-    <div class="container2">
-        <ul class="popup-message">
-            {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        <h2>Nadchodzące wizyty</h2>
-        <form action="" method="get">
-            {% csrf_token %}
-            <input placeholder="Search" type="search" class="search_input" name="search_future" value="{{ search_future }}">
-            <button type="submit" id="topright">Search</button>
-        </form>
-        {% if future_appointments %}
-            <div style="width: 500px; height: 300px; overflow: auto;">
-                <ul class="appointments">
-                    {% for appointment in future_appointments %} 
-                        <li>        
-                            {{ appointment.service_id.doctor_id }}, {{ appointment.service_id.specialzation_id  }}
-                        </li>
-                        <li>        
-                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                        </li>
-                        <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
-                            {% csrf_token %}
-                            <button type="submit" id="topright">Szczegóły</button>
-                        </form>
-                        <br>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% else %}
-            <p>Brak nadchodzących wizyt.</p>
-        {% endif %}  
-        
-        <h2>Przeszłe wizyty</h2>
-        <form action="" method="get">
-            {% csrf_token %}
-            <input placeholder="Search" type="search" class="search_input" name="search_past" value="{{ search_past }}">
-            <button type="submit" id="topright">Search</button>
-        </form>
-        {% if past_appointments %}
-            <div style="width: 500px; height: 300px; overflow: auto;">
-                <ul class="appointments">
-                    {% for appointment in past_appointments %} 
-                        <li>        
-                            {{ appointment.service_id.doctor_id }}, {{ appointment.service_id.specialzation_id  }}
-                        </li>
-                        <li>        
-                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                        </li>
-                        <form action="{% url 'appointment_detail' pk=appointment.id %}">
-                            {% csrf_token %}
-                            <button type="submit" id="topright">Szczegóły</button>
-                        </form>
-                        <br>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% else %}
-            <p>Brak przeszłych wizyt.</p>
-        {% endif %} 
-    </div>
+    <ul class="popup-message">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    <main class="container-fluid">
+        <div class="row" style="justify-content: space-evenly; align-items: center;">
+            <section class="col-*-*">
+                <h2>Nadchodzące wizyty</h2>
+                <form action="" method="get">
+                    {% csrf_token %}
+                    <input placeholder="Search" type="search" class="search_input" style="grid-area: search_box1" name="search_future" value="{{ search_future }}">
+                    <button type="submit" id="topright">Search</button>
+                </form>
+                {% if future_appointments %}
+                    <div style="width: 400px; height: 300px; overflow: auto;">
+                        <ul class="appointments">
+                            {% for appointment in future_appointments %} 
+                                <li>        
+                                    {{ appointment.service_id.doctor_id }}, {{ appointment.service_id.specialzation_id  }}
+                                </li>
+                                <li>        
+                                    {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                                </li>
+                                <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" id="topright">Szczegóły</button>
+                                </form>
+                                <br>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p>Brak nadchodzących wizyt.</p>
+                {% endif %}  
+            </section>            
+            &nbsp;
+            <section class="col-*-*">
+                <h2>Przeszłe wizyty</h2>
+                <form action="" method="get">
+                    {% csrf_token %}
+                    <input placeholder="Search" type="search" class="search_input" style="grid-area: search_box1" name="search_past" value="{{ search_past }}">
+                    <button type="submit" id="topright">Search</button>
+                </form>
+                {% if past_appointments %}
+                    <div style="width: 400px; height: 300px; overflow: auto;">
+                        <ul class="appointments">
+                            {% for appointment in past_appointments %} 
+                                <li>        
+                                    {{ appointment.service_id.doctor_id }}, {{ appointment.service_id.specialzation_id  }}
+                                </li>
+                                <li>        
+                                    {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                                </li>
+                                <form action="{% url 'appointment_detail' pk=appointment.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" id="topright">Szczegóły</button>
+                                </form>
+                                <br>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p>Brak przeszłych wizyt.</p>
+                {% endif %}
+            </section> 
+        </div>
+    </main>
 
 {% endblock %}
