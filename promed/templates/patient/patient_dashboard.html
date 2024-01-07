@@ -3,15 +3,25 @@
 
 {% block content %}
 {% if messages %}
+    <div class="container">
+        <div class="alert alert-success alert-dismissible" id="myAlert">
+            <button type="button" class="close">&times;</button>
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+          $(".close").click(function(){
+            $("#myAlert").alert("close");
+          });
+        });
+    </script>
     {% endif %}
-    <ul class="popup-message">
-        {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    <main class="container-fluid">
-        <div class="row" style="justify-content: space-evenly; align-items: center;">
-            <section class="col-*-*">
+    <main class="container-fluid" style="justify-content: space-evenly; align-items: center;">
+        <div class="row" >
+            <section class="col-*-*" style="width: 45vw">
                 <h2>Nadchodzące wizyty</h2>
                 <form action="" method="get">
                     {% csrf_token %}
@@ -19,7 +29,7 @@
                     <button type="submit" id="topright">Search</button>
                 </form>
                 {% if future_appointments %}
-                    <div style="width: 400px; height: 300px; overflow: auto;">
+                    <div style="width: 40vw; height: 300px; overflow: auto;">
                         <ul class="appointments">
                             {% for appointment in future_appointments %} 
                                 <li>        
@@ -41,7 +51,7 @@
                 {% endif %}  
             </section>            
             &nbsp;
-            <section class="col-*-*">
+            <section class="col-*-*" style="width: 45vw">
                 <h2>Przeszłe wizyty</h2>
                 <form action="" method="get">
                     {% csrf_token %}
@@ -49,7 +59,7 @@
                     <button type="submit" id="topright">Search</button>
                 </form>
                 {% if past_appointments %}
-                    <div style="width: 400px; height: 300px; overflow: auto;">
+                    <div style="width: 40vw; height: 300px; overflow: auto;">
                         <ul class="appointments">
                             {% for appointment in past_appointments %} 
                                 <li>        

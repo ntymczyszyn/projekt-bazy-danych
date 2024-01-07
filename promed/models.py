@@ -113,9 +113,11 @@ class Appointment(models.Model):
     service_id = models.ForeignKey('Service', on_delete=models.PROTECT, null=True, blank=True)
     appointment_time = models.DateTimeField(default=timezone.now, null=True, blank=True) 
     APPOINTMENT_STATUS = (
-        ('a', 'dostepna'),
-        ('r', 'zarezerwowana'),
-        ('c', 'zakonczona'), 
+        ('a', 'dostepna'), #available
+        ('b', 'zarezerwowana'), #booked
+        ('c', 'potwierdzona'), #confirmed
+        ('d', 'zakonczona'), #done
+        ('u', 'niewykorzystana'), #unused
     )
     status = models.CharField(
         max_length=1, 

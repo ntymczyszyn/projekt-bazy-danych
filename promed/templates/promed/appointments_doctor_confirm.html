@@ -1,0 +1,11 @@
+{% extends 'appointment_detail.html' %}
+
+{% block content %}
+    {{ block.super }}
+    <form method="post" action="{% url 'complete_appointment_confirmation' pk=appointment.id %}">
+        {% csrf_token %}
+        <div class="container"  style="width:300px; left:(50% - 150px); margin: auto;" >
+            <button type="submit" id="topright">Oznacz jako zrealizowaną</button>
+        </div>
+    </form>
+{% endblock %}

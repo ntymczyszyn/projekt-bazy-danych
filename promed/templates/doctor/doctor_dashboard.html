@@ -1,14 +1,33 @@
 {% extends 'base_doctor.html' %}
 {% load static %}
-{% block content %} 
+{% block content %}
 
-<main class="container-fluid">
-    <div class="row" style="width: 300px; left: (50% - 150px); justify-content: space-evenly; align-items: center;">
-        <h2>Nadchodzące wizyty</h2> 
+{% if messages %}
+    <div class="container">
+        <div class="alert alert-success alert-dismissible fade show" id="myAlert">
+            <button type="button" class="close">&times;</button>
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+          $(".close").click(function(){
+            $("#myAlert").alert("close");
+          });
+        });
+    </script>
+{% endif %}
+<main class="container-fluid" style="justify-content: space-evenly; align-items: center;">
+    <div class="row">
+        <section class="col-*-6">
+            <h2>Nadchodzące wizyty</h2> 
+        </section>
     </div>
     <br>
-    <div class="row" style="justify-content: space-evenly; align-items: center;">
-        <section class="col-*-*">
+    <div class="row" style="display: flex; align-items: flex-start; height: 100%;">
+        <section class="col-*-*" style="width: 35vw">
             <h3>Zarezerwowane</h3>
             {% if reserved_appointments %}
                 <form action="" method="get">
@@ -19,7 +38,7 @@
                 {% regroup reserved_appointments by service_id.specialzation_id as grouped_appointments %}
                 {% for specialization, appointments in grouped_appointments %}
                     <h3>{{ specialization }}</h3>
-                    <div style="width: 500px; height: auto; overflow: auto;">
+                    <div style="width: 30vw; height: 300px; overflow: auto;">
                         <ul class="appointments">
                             {% for appointment in appointments %} 
                             <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
@@ -28,16 +47,17 @@
                                 </li>
                                 <li>        
                                     {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                                </li></a>
-                                {% comment %}
+                                </li>
+                                {% if appointment.status == 'c' %}
                                 <li>
-                                    <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
+                                    <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
                                         {% csrf_token %}
-                                        <button type="submit" id="topright">Szczegóły</button>
+                                        <button type="submit" id="topright">Zrealizowana</button>
                                     </form>
                                 </li>
-                                {% endcomment %}
-                                <br>
+                                {% endif %}
+                            </a>
+                            <br>
                             {% endfor %}
                         </ul>
                     </div>
@@ -47,7 +67,7 @@
             {% endif %}  
         </section>
         &nbsp;
-        <section class="col-*-*">
+        <section class="col-*-* align-self-start" style="width: 35vw">
             <h3>Dostępne</h3>
             {% if available_appointments %}
                 <form action="" method="get">
@@ -58,7 +78,7 @@
                 {% regroup available_appointments by service_id.specialzation_id as grouped_appointments %}
                 {% for specialization, appointments in grouped_appointments %}
                     <h3>{{ specialization }}</h3>
-                    <div style="width: 500px; height: 300px; overflow: auto;">
+                    <div style="width: 30vw; height: 300px; overflow: auto;">
                         <ul class="appointments">
                             {% for appointment in appointments %} 
                             <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
@@ -67,12 +87,13 @@
                                 </li>
                                 {% comment %}
                                 <li>
-                                    <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
+                                    <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
                                         {% csrf_token %}
-                                        <button type="submit" id="topright">Szczegóły</button>
+                                        <button type="submit" id="topright">Zrealizowana</button>
                                     </form>
-                                </li></a>
+                                </li>
                                 {% endcomment %}
+                                </a>
                                 <br>
                             {% endfor %}
                         </ul>
@@ -83,7 +104,7 @@
             {% endif %}   
         </section>
         &nbsp;
-        <section class="col-*-*">
+        <section class="col-*-*" style="width: 25vw;">
             <h3>Przeszłe wizyty</h3> 
             <form action="{% url 'doctor_past_appointments' %}">
                 {% csrf_token %}

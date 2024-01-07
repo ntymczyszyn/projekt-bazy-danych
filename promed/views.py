@@ -39,19 +39,14 @@ def patient_dashboard_view(request):
     search_future = request.GET.get('search_future', '')
     search_past = request.GET.get('search_past', '')
 
-
-    # Sprawdzamy, czy pacjent ma uzupełnione dane
     if not (patient.phone_number and patient.date_of_birth and patient.pesel):
-        # Jeśli nie, przekierowujemy do formularza uzupełnienia
         return redirect('complete_patient_info')
     
-    # Pobieramy wszystkie wizyty pacjenta
     all_appointments = (
         Appointment.objects.filter(patient_id=patient)
         .order_by('appointment_time')
     )
-
-    # Dzielimy wizyty na przeszłe i nadchodzące
+    # czy ten podział też ze względu na zarezerwowanie i potwierdzoen nie powinien być ?? a nie tak tylko po czasie
     past_appointments = [appointment for appointment in all_appointments if appointment.appointment_time < timezone.now()]
     future_appointments = [appointment for appointment in all_appointments if appointment.appointment_time >= timezone.now()]
 
@@ -207,12 +202,12 @@ def doctor_dashboard_view(request):
         .order_by('service_id__specialzation_id','facility_id','appointment_time')
     )
 
-    # Dzielimy wizyty na przeszłe i nadchodzące
+    # Dzielimy wizyty na przeszłe i nadchodzące one od syatusu powinny zależeć a nie od czasu
     past_appointments = [appointment for appointment in all_appointments if appointment.appointment_time < timezone.now()]
     future_appointments = [appointment for appointment in all_appointments if appointment.appointment_time >= timezone.now()]
 
-    # Dzielimy nadchodzące wizyty na zarezerwowane i dostępne
-    reserved_appointments = [appointment for appointment in future_appointments if appointment.status == 'r']
+    # Dzielimy nadchodzące wizyty na zarezerwowane i dostępne i potwierdzone
+    reserved_appointments = [appointment for appointment in future_appointments if (appointment.status == 'b' or appointment.status == 'c')]
     available_appointments = [appointment for appointment in future_appointments if appointment.status == 'a']
 
     if search_available:
@@ -314,8 +309,7 @@ def doctor_availability(request):
 
     if request.method == 'POST':
         form = AvailabilityForm(request.POST, doctor=doctor)
-    # poprawiałam tę funkcję i mi nagle wszystko zwolniło :((
-    # dlatego narazie nie jest w użytku
+
         if form.is_valid():
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
@@ -416,7 +410,7 @@ def complete_appointment_view(request, pk):
     try:
         patient = request.user.patient
         appointment.patient_id = patient
-        appointment.status = 'r'  
+        appointment.status = 'b'  
         appointment.save()
         messages.success(request, 'Rezerwacja zakończona pomyślnie.')
     except Exception as e:
@@ -440,13 +434,29 @@ def confirm_cancel_appointment_view(request, pk):
 
     return redirect(reverse('patient_dashboard'))
 
+def confirm_appointment_doctor_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'appointments_doctor_confirm.html', {'appointment': appointment,})
+
+def confirm_appointment_doctor_done_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    try:
+        appointment.status = 'd'  
+        appointment.save()
+        messages.success(request, 'Zrealizowano wizytę.')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas zmiany statusu wizyty: {str(e)}')
+
+    return redirect(reverse('doctor_dashboard'))
+
+
 def send_appointment_reminder_email(recipient_email, appointment):
     pass
 
 def send_reminder_email_for_upcoming_appointments():
     # Pobierz wszystkie zarezerwowane wizyty na następny dzień
     tomorrow = timezone.now() + timezone.timedelta(days=1)
-    appointments = Appointment.objects.filter(status='r', appointment_time__date=tomorrow)
+    appointments = Appointment.objects.filter(status='b', appointment_time__date=tomorrow)
 
     for appointment in appointments:
         subject = 'Nadchodząca wizyta w Promed'
