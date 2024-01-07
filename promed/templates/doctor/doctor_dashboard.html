@@ -24,14 +24,14 @@
                         <li>        
                             {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                         </li></a>
-                        {% comment %}
+                        {% if appointment.status == 'c' %}
                         <li>
-                            <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
+                            <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
                                 {% csrf_token %}
-                                <button type="submit" id="topright">Szczegóły</button>
+                                <button type="submit" id="topright">Zrealizowana</button>
                             </form>
-                        </li>
-                        {% endcomment %}
+                        </li></a>
+                        {% endif %}
                         <br>
                     {% endfor %}
                 </ul>
@@ -60,9 +60,9 @@
                         </li>
                         {% comment %}
                         <li>
-                            <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
+                            <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
                                 {% csrf_token %}
-                                <button type="submit" id="topright">Szczegóły</button>
+                                <button type="submit" id="topright">Zrealizowana</button>
                             </form>
                         </li></a>
                         {% endcomment %}

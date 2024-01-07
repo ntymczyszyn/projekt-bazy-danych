@@ -17,7 +17,7 @@
                 <ul class="appointments">  
                     {% regroup appointments by status as grouped_appointments %}
                     {% for status, status_appointments in grouped_appointments %}
-                        <h4>{% if status == 'c' %}Zrealizowane{% else %}Niezrealizowane{% endif %}</h4>
+                        <h4>{% if status == 'd' %}Zrealizowane{% elif appointment.status == 'u' %}Niezrealizowane{% endif %}</h4>
                         {% for appointment in status_appointments %} 
                         {% comment %} te style to tak tymczasowo 
                             <form action="{% url 'appointment_detail' pk=appointment.id %}">
@@ -27,7 +27,7 @@
                         {% endcomment %}
                             <a href="{% url 'appointment_detail' pk=appointment.id %}"  style="text-decoration: none; color: white">
                             <li>        
-                                {% if status == 'c' %}{{ appointment.patient_id }}{% endif %}
+                                {% if status == 'd' %}{{ appointment.patient_id }}{% endif %}
                             </li>
                             <li>        
                                 {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
