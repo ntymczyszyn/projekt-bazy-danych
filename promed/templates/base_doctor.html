@@ -29,7 +29,7 @@
                 <a class="nav-link" href="{% url 'doctor_availability' %}">Dostępność</a>
             </li>
             &nbsp;
-            <li class="p-2 d-lg-flex mb-lg-0 ml-5">
+            <li class="d-lg-flex mb-lg-0 ml-5">
                 <form action="{% url 'logout' %}" method="post">
                     {% csrf_token %}
                     <button type="submit" id="topright">Wyloguj</button>

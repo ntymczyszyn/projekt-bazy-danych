@@ -7,9 +7,9 @@ from django.core.validators import MaxValueValidator
 from datetime import date
 
 class CustomUserCreationForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
-    email = forms.EmailField(max_length=254, required=True)
+    first_name = forms.CharField(max_length=30, required=True, label='Imię')
+    last_name = forms.CharField(max_length=30, required=True, label='Nazwisko')
+    email = forms.EmailField(max_length=254, required=True, label='Email')
 
     class Meta:
         model = CustomUser
@@ -69,16 +69,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AvailabilityForm(forms.Form):
-    selected_date = forms.DateField(widget=forms.SelectDateWidget)
+    selected_date = forms.DateField(widget=forms.SelectDateWidget, label='Wybrany dzień')
     start_time = forms.TimeField(
-        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]),
+        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]), label='Czas rozpoczęcia'
     )
     end_time = forms.TimeField(
-        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]),
+        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]), label='Czas zakończenia'
     )
-    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none())
-    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')])
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all())
+    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja')
+    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania')
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka')
 
     def __init__(self, *args, **kwargs):
         doctor = kwargs.pop('doctor', None)
