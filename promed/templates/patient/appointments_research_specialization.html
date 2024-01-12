@@ -4,9 +4,14 @@
 {% block content %}
   <section>
         <h2>Wyszukiwarka wizyt</h2>
-    <form method="get" action="{% url 'appointment_search_specialization' %}">
-    {{ form.as_p }}
-    <button type="submit">Szukaj</button>
+    <form  method="get" action="{% url 'appointment_search_specialization' %}">
+      {% for field in form %}
+        <div class="form-label form-check-label">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+        </div>
+      {% endfor %}
+      <button type="submit">Szukaj</button>
     </form>
   </section>
 {% endblock %}

@@ -4,6 +4,31 @@ body {
     background-color: rgb(135, 175, 228);
 }
 
+/* style the form */
+#searchForm {
+  background-color: #9c2727;
+  padding: 20px;
+  width: 300px;
+  margin: 0 auto;
+ }
+ 
+ /* style the form fields */
+ #searchForm input,
+ #searchForm select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #023b4b;
+  box-sizing: border-box;
+ }
+ .custom-form-field {
+  background-color: #add8e6;
+  border: 1px solid #00008b;
+  color: #8b0000;
+}
+
+
 /* NAVBAR - umiejscowienie oraz styl nav*/
 nav {
   display: flex;
@@ -16,6 +41,22 @@ nav {
   background-color: rgb(70, 157, 219);
   border: 1px solid #ccc;
   border-radius: 16px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+nav ul li {
+  float: left;
+}
+
+nav ul li:last-child {
+  float: right;
+  margin-right: 10px
 }
 
 .box {

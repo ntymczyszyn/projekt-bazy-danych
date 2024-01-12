@@ -16,7 +16,67 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
 
 class SpecializationSearchForm(forms.Form):
-    specialization = forms.ModelChoiceField(queryset=Specialization.objects.all(), required=True, label='Specjalizacja')
+    specialization = forms.ModelChoiceField(
+        queryset=Specialization.objects.all(), 
+        required=True, label='Specjalizacja', 
+        widget=forms.Select(attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light'}))
+    
+# ---------------- To jest do zablokowania sobót i niedziel w wyborze terminów -------------
+from django.forms import DateInput
+from django.utils.safestring import mark_safe
+
+class DisabledWeekendsDateInput(DateInput):
+    class Media:
+        css = {
+            'all': ("https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css", 
+                    "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css",
+                    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.10.0/css/pikaday.min.css",)
+        }
+        js = (  "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.10.0/pikaday.min.js",
+                "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js",
+                "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js",
+                "https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js",
+                "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js",
+                "https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js",
+            )
+        
+    def render(self, name, value, attrs=None, renderer=None):
+        js = '''
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const dateInput = document.getElementById('id_date');
+                    const picker = new Pikaday({
+                        field: dateInput,
+                        format: 'YYYY-MM-DD',
+                        onSelect: function () {
+                            const selectedDate = new Date(picker.getDate());
+                            if (selectedDate.getDay() === 0 || selectedDate.getDay() === 6) {
+                                picker.setDate(null);
+                                alert('Please select a weekday.');
+                            }
+                        },
+                        toString: function (date, format) {
+                            if (!date) return '';
+                            const day = date.getDate();
+                            const month = date.getMonth() + 1;
+                            const year = date.getFullYear();
+                            return year + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
+                        },
+                        firstDay: 1, // Start the week on Monday
+                        minDate: new Date(), // Disallow dates before today
+                        maxDate: new Date(2025, 11, 31), // Disallow dates after 2025-12-31
+                        disableWeekends: true, // Disable weekends
+                    });
+                });
+            </script>
+        ''' % {'id': attrs['id']}
+        attrs = {'type': 'date' } #,'class':'bg-info text-light'}
+        rendered = super().render(name, value, attrs, renderer)
+        return mark_safe(rendered + js)
+    
+
+# ------------------------------------------------------------------------------------------
+#  Nie umiem tego zrobić w ten sposób :((
 
 class AppointmentSearchForm(forms.Form):
     TIME_SLOT_CHOICES = [
@@ -25,10 +85,10 @@ class AppointmentSearchForm(forms.Form):
         ('12-17', '12:00 - 17:00'),
         ('17-20', '17:00 - 20:00'),
     ]
-    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz')
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka')
-    date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy')
+    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light'}))
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light', }))
+    date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'bg-info text-light'}))
+    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light'}))
     
     def __init__(self, *args, **kwargs):
             doctor = kwargs.pop('doctor', None)
