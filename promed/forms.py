@@ -19,9 +19,10 @@ class SpecializationSearchForm(forms.Form):
     specialization = forms.ModelChoiceField(
         queryset=Specialization.objects.all(), 
         required=True, label='Specjalizacja', 
-        widget=forms.Select(attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light'}))
+        widget=forms.Select(attrs={'class':' btn btn-sm dropdown-toggle bg-info text-light '}))
     
 # ---------------- To jest do zablokowania sobót i niedziel w wyborze terminów -------------
+#  ale na razie nie działa - można usunąć
 from django.forms import DateInput
 from django.utils.safestring import mark_safe
 

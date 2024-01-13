@@ -6,16 +6,19 @@ body {
 
 /* style the form */
 #searchForm {
-  background-color: #9c2727;
-  padding: 20px;
-  width: 300px;
-  margin: 0 auto;
+  background-color: #288da7;
+  width: 100px;
+  height: 20px;
+  padding: 12px 20px;
+  margin: 8px 0;
  }
  
  /* style the form fields */
  #searchForm input,
- #searchForm select {
-  width: 100%;
+ #searchForm select,
+ #searchForm option {
+  width: 100px;
+  height: 20px;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;

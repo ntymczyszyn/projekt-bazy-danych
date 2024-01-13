@@ -6,7 +6,7 @@
         <h2>Wyszukiwarka wizyt</h2>
     <form  method="get" action="{% url 'appointment_search_specialization' %}">
       {% for field in form %}
-        <div class="form-label form-check-label">
+        <div style = " justify-content: center;">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
         </div>
