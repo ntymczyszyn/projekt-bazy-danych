@@ -17,15 +17,15 @@
           <ul class="appointments">
             <h3>Znalezione wizyty:</h3>
               {% for appointment in appointments %}
-              <li class="column1">        
-                {{ appointment }}
-            </li>
-            <li class="column2">
-              <form action="{% url 'confirm_book_appointment' pk=appointment.id %}">
-                {% csrf_token %}
-                <button type="submit" id="topright">Zarezerwuj</button>
-              </form>
-            </li>
+                <li class="column1">        
+                  {{ appointment }}
+                </li>
+                <li class="column2">
+                  <form action="{% url 'confirm_book_appointment' pk=appointment.id %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright">Zarezerwuj</button>
+                  </form>
+                </li>
               {% endfor %}
           </ul>
         {% else %}

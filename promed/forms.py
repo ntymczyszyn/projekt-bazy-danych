@@ -19,7 +19,7 @@ class SpecializationSearchForm(forms.Form):
     specialization = forms.ModelChoiceField(
         queryset=Specialization.objects.all(), 
         required=True, label='Specjalizacja', 
-        widget=forms.Select(attrs={'class':' btn btn-sm dropdown-toggle bg-info text-light '}))
+        widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     
 # ---------------- To jest do zablokowania sobót i niedziel w wyborze terminów -------------
 #  ale na razie nie działa - można usunąć
@@ -86,10 +86,10 @@ class AppointmentSearchForm(forms.Form):
         ('12-17', '12:00 - 17:00'),
         ('17-20', '17:00 - 20:00'),
     ]
-    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light'}))
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light', }))
-    date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'bg-info text-light'}))
-    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'id':'searchForm', 'class':'form-group dropdown bg-info text-light'}))
+    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
+    date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
+    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
     
     def __init__(self, *args, **kwargs):
             doctor = kwargs.pop('doctor', None)

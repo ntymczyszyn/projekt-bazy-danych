@@ -271,6 +271,11 @@ input[type=text], input[type=password] {
     box-sizing: border-box;
 }
 
+.button-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 button {
     background-color: rgb(69, 241, 184);
     color: white;
@@ -280,6 +285,9 @@ button {
     border-radius: 8px;
     cursor: pointer;
     width: 100%;
+    max-height: 40px;
+    line-height: 15px;
+    text-justify: auto;
 }
 
 button:hover {
