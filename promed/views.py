@@ -82,6 +82,11 @@ def patient_dashboard_view(request):
                                or search_past.lower() in appointment.facility_id.city.lower() 
                                or search_past.lower() in appointment.facility_id.voivodeship.lower()]
     
+    booked_appointments.sort(key=lambda x: x.appointment_time)
+    confirmed_appointments.sort(key=lambda x: x.appointment_time)
+    past_appointments.sort(key=lambda x: x.appointment_time)
+
+
     return render(
         request,
         'patient_dashboard.html',
@@ -257,7 +262,13 @@ def doctor_dashboard_view(request):
                                or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                or search_past.lower() in appointment.facility_id.city.lower() 
                                or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+        
     
+    available_appointments.sort(key=lambda x: x.appointment_time)
+    reserved_appointments.sort(key=lambda x: x.appointment_time)
+    confirmed_appointments.sort(key=lambda x: x.appointment_time)
+    past_appointments.sort(key=lambda x: x.appointment_time)
+
     return render(
         request,
         'doctor_dashboard.html',
