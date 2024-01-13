@@ -402,7 +402,7 @@ def appointment_search_patient_view(request,specialization_id):
         facility = form.cleaned_data.get('facility')
         date = form.cleaned_data.get('date')
         time_slot = form.cleaned_data.get('time_slot')
-        appointments = Appointment.objects.filter(status='a')
+        appointments = Appointment.objects.filter(status='a', appointment_time__gte= timezone.now())
 
         if doctor:
             appointments = appointments.filter(service_id__doctor_id=doctor)

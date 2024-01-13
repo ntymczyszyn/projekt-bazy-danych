@@ -86,6 +86,7 @@ class AppointmentSearchForm(forms.Form):
         ('12-17', '12:00 - 17:00'),
         ('17-20', '17:00 - 20:00'),
     ]
+    #  tu by trzeba było usunąć możliwość wybrania siebie samego
     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
