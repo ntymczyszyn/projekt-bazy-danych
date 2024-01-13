@@ -25,6 +25,9 @@ urlpatterns += [
     path('pateint/info/complete', views.complete_info_patient_view, name='complete_patient_info'),
     path('patient/appointment/<uuid:pk>/detail', views.cancel_appointment_view, name='detail_cancel_appointment'),
     path('patient/appointment/<uuid:pk>/cancel/complete', views.confirm_cancel_appointment_view, name='complete_appointment_cancellation'),
+    # Do potwierdzania wizyty przez pacjenta
+    path('patient/appointment/<uuid:pk>/confirm', views.confirmation_appointment_view, name='confirm_appointment'),
+    path('patient/appointment/<uuid:pk>/confirm/complete', views.confirm_confirmation_appointment_view, name='confirm_confirmation_appointment'),
     path('patient/password-change/', views.PatientPasswordChangeView.as_view(), name='patient_password_change'),
 ]
 
@@ -65,6 +68,7 @@ urlpatterns += [
 urlpatterns += [
     path('facility/<int:pk>/', views.FacilityDetailView.as_view(), name='facility_detail'),
     path('appointment/<uuid:pk>/', views.AppointmentDetailView.as_view(), name='appointment_detail'),
-    path('appointment/<uuid:pk>/book/confirm', views.confirm_appointment_view, name='confirm_appointment'),
-    path('appointment/<uuid:pk>/book/complete', views.complete_appointment_view, name='complete_appointment_booking'),
+    path('appointment/<uuid:pk>/doctor', views.AppointmentDetailDoctorView.as_view(), name='appointment_detail_doctor'),
+    path('appointment/<uuid:pk>/book/confirm', views.confirm_book_appointment_view, name='confirm_book_appointment'),
+    path('appointment/<uuid:pk>/book/complete', views.complete_book_appointment_view, name='complete_appointment_booking'),
 ]

@@ -42,6 +42,12 @@
                                     {% csrf_token %}
                                     <button type="submit" id="topright">Szczegóły</button>
                                 </form>
+                                {% if appointment.status == 'b' %}
+                                    <form action="{% url 'confirm_appointment' pk=appointment.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" id="topright">Potwierdź wizytę</button>
+                                    </form>
+                                {% endif %}
                                 <br>
                             {% endfor %}
                         </ul>

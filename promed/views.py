@@ -398,13 +398,30 @@ def appointment_search_patient_view(request,specialization_id):
 
     return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
 
-def confirm_appointment_view(request, pk):
+def confirm_book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_booking.html', {'appointment': appointment,})
 
 from django.contrib import messages
+#  Do confirm
+def confirmation_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'appointment_confirm.html', {'appointment': appointment,})
 
-def complete_appointment_view(request, pk):
+def confirm_confirmation_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    try:
+        appointment.status = 'c'  
+        appointment.save()
+        messages.success(request, 'Potwierdzono wizytę')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas potwierdzania wizyty: {str(e)}')
+
+    return redirect(reverse('patient_dashboard'))
+# 
+
+
+def complete_book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
 
     try:
@@ -482,4 +499,9 @@ class FacilityDetailView(generic.DetailView):
 class AppointmentDetailView(generic.DetailView):
     model = Appointment
     template_name = 'appointment_detail.html'
+    context_object_name = 'appointment'
+
+class AppointmentDetailDoctorView(generic.DeleteView):
+    model = Appointment
+    template_name = 'appointment_detail_doctor.html'
     context_object_name = 'appointment'
