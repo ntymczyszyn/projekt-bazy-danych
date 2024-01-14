@@ -1,6 +1,6 @@
 {% extends "base_patient.html" %}
 {% block content %}
-<div class="container2">
+<section>
     <h2>Informacje o Pacjencie</h2>
     <p><strong>Imię:</strong> {{ first_name }}</p>
     <p><strong>Nazwisko:</strong> {{ last_name }}</p>
@@ -10,5 +10,5 @@
         {% csrf_token %}
         <button type="submit" id="topright">Zmień hasło</button>
     </form></p>
-</div>
+</section>
 {% endblock %}

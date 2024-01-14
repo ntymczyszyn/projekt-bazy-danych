@@ -7,8 +7,8 @@
         <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">
     </head>
-<body class="body">
-    <div class="container1" style="left:(50% - 250px)">
+<body>
+    <header>
         <h1 style="text-align: center;">
             <div class="title" style="font-size: 70px;">
                 <a href="{% url 'home'%}" style="text-decoration: none; color: inherit;">PROMED</a>
@@ -17,7 +17,7 @@
             formatowanie w .css na spokojnie, to tylko żeby link się nie podświetlał {% endcomment %}
             <div style="font-size: 15px; margin-bottom: 10px;">Twoje zdrowie jest najważniesze!</div>
         </h1>
-    </div>
+    </header>
     {% block content %}
     {% endblock %}
 </body>

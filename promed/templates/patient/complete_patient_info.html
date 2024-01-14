@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="width:500px; left:(50% - 250px); margin: auto;">
+<section>
     <h2>Uzupełnij dane pacjenta</h2>
     <form method="post" action="{% url 'complete_patient_info' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" id="topright">Zapisz</button>
     </form>
-</div>
+</section>
 {% endblock %}

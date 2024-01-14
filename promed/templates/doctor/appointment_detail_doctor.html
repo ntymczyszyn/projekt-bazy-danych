@@ -1,0 +1,12 @@
+{% extends "base_doctor.html" %}
+
+{% block content %}
+    <section>
+        <h2>Szczegóły wizyty</h2>
+        <p><strong>Placówka:</strong> <a href="{% url 'facility_detail' pk=appointment.facility_id.id %}">{{ appointment.facility_id }}</a></p>
+        <p><strong>Rodzaj wizyty:</strong> {{ appointment.service_id.specialzation_id }}</p>
+        <p><strong>Czas wizyty:</strong> {{ appointment.formatted_appointment_time }}</p>
+        <p><strong>Status wizyty:</strong> {{ appointment.get_status_display }}</p>
+        {% if appointment.patient_id %}<p><strong>Patient:</strong> {{ appointment.patient_id }}</p>{% endif %}
+    </section>
+{% endblock %}

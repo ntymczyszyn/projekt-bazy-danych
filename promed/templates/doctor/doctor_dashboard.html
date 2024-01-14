@@ -2,84 +2,152 @@
 {% load static %}
 {% block content %}
 
-<div class="container2">
-    <h2>Nadchodzące wizyty</h2>  
-    {% if reserved_appointments %}
-        <h3>Zarezerwowane</h3>
-        <form action="" method="get">
-            {% csrf_token %}
-            <input placeholder="Search" type="search" class="search_input" name="search_reserved" value="{{ search_reserved }}">
-            <button type="submit" id="topright">Search</button>
-        </form>
-        {% regroup reserved_appointments by service_id.specialzation_id as grouped_appointments %}
-        {% for specialization, appointments in grouped_appointments %}
-            <h3>{{ specialization }}</h3>
-            <div style="width: 500px; height: auto; overflow: auto;">
-                <ul class="appointments">
-                    {% for appointment in appointments %} 
-                    <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
-                        <li>        
-                            {{ appointment.patient_id }}
-                        </li>
-                        <li>        
-                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                        </li></a>
-                        {% if appointment.status == 'c' %}
-                        <li>
-                            <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
-                                {% csrf_token %}
-                                <button type="submit" id="topright">Zrealizowana</button>
-                            </form>
-                        </li></a>
-                        {% endif %}
-                        <br>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>Brak nadchodzących zarezerwowanych wizyt.</p>
-    {% endif %}  
-
-    {% if available_appointments %}
-        <h3>Dostępne</h3>
-        <form action="" method="get">
-            {% csrf_token %}
-            <input placeholder="Search" type="search" class="search_input" name="search_available" value="{{ search_available }}">
-            <button type="submit" id="topright">Search</button>
-        </form>
-        {% regroup available_appointments by service_id.specialzation_id as grouped_appointments %}
-        {% for specialization, appointments in grouped_appointments %}
-            <h3>{{ specialization }}</h3>
-            <div style="width: 500px; height: 300px; overflow: auto;">
-                <ul class="appointments">
-                    {% for appointment in appointments %} 
-                    <a href="{% url 'detail_cancel_appointment' pk=appointment.id %}" style="text-decoration: none; color: white">
-                        <li>        
-                            {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
-                        </li>
-                        {% comment %}
-                        <li>
-                            <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
-                                {% csrf_token %}
-                                <button type="submit" id="topright">Zrealizowana</button>
-                            </form>
-                        </li></a>
-                        {% endcomment %}
-                        <br>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>Brak dostępnych wizyt.</p>
-    {% endif %} 
-    <h3>Przeszłe wizyty</h3> 
-    <form action="{% url 'doctor_past_appointments' %}">
-        {% csrf_token %}
-        <button type="submit" id="topright">Przeszłe wizyty</button>
-    </form>
-
+{% if messages %}
+    <div class="container" style="width: 40vw;">
+        <div class="alert alert-success alert-dismissible fade show" id="myAlert">
+            <button type="button" class="close">&times;</button>
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </div>
     </div>
-
+    <script>
+        $(document).ready(function(){
+          $(".close").click(function(){
+            $("#myAlert").alert("close");
+          });
+        });
+    </script>
+{% endif %}
+<main class="container-fluid" style="justify-content: space-evenly; align-items: center;">
+<div class="row">
+    <div class="col" style="width: 100%;  height: 100%;">
+        <div class="row">
+            <section class="col" style="width: 100%;  height: 100%;">
+                <h2>Nadchodzące wizyty</h2> 
+            </section>
+        </div>
+        <br>
+        <div class="row" style="height: 100%;">
+            <section class="col-*-4 align-self-start" style="width: 27vw; height: 100%;">
+                <h3>Dostępne</h3>
+                {% if available_appointments %}
+                    <form action="" method="get">
+                        {% csrf_token %}
+                        <input placeholder="Search" type="search" class="search_input" name="search_available" value="{{ search_available }}">
+                        <button type="submit" id="topright">Search</button>
+                    </form>
+                    {% regroup available_appointments by service_id.specialzation_id as grouped_appointments %}
+                    {% for specialization, appointments in grouped_appointments %}
+                        <h3>{{ specialization }}</h3>
+                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                            <ul class="appointments">
+                                {% for appointment in appointments %} 
+                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
+                                    <li>        
+                                        {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                                    </li>
+                                    </a>
+                                    <br>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Brak dostępnych wizyt.</p>
+                {% endif %}   
+            </section>
+            &nbsp;
+            <section class="col-*-4 align-self-start" style="width: 27vw; height: 100%;">
+                <h3>Zarezerwowane</h3>
+                {% if reserved_appointments %}
+                    <form action="" method="get">
+                        {% csrf_token %}
+                        <input placeholder="Search" type="search" class="search_input" name="search_reserved" value="{{ search_reserved }}">
+                        <button type="submit" id="topright">Szukaj</button>
+                    </form>
+                    {% regroup reserved_appointments by service_id.specialzation_id as grouped_appointments %}
+                    {% for specialization, appointments in grouped_appointments %}
+                        <h3>{{ specialization }}</h3>
+                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                            <ul class="appointments">
+                                {% for appointment in appointments %} 
+                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
+                                    <li>        
+                                        {{ appointment.patient_id }}
+                                    </li>
+                                    <li>        
+                                        {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                                    </li>
+                                    {% comment %}
+                                    <li>
+                                        <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" id="topright">Zrealizowana</button>
+                                        </form>
+                                    </li>
+                                    {% endcomment %}
+                                </a>
+                                <br>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Brak nadchodzących zarezerwowanych wizyt.</p>
+                {% endif %}  
+            </section>
+            &nbsp;
+            <section class="col-*-4 align-self-start" style="width: 27vw; height: 100%;">
+                <h3>Potwierdzone</h3>
+                {% if confirmed_appointments %}
+                    <form action="" method="get">
+                        {% csrf_token %}
+                        <input placeholder="Search" type="search" class="search_input" name="search_confirmed" value="{{ search_confirmed }}">
+                        <button type="submit" id="topright">Szukaj</button>
+                    </form>
+                    {% regroup confirmed_appointments by service_id.specialzation_id as grouped_appointments %}
+                    {% for specialization, appointments in grouped_appointments %}
+                        <h3>{{ specialization }}</h3>
+                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                            <ul class="appointments">
+                                {% for appointment in appointments %} 
+                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
+                                    <li>        
+                                        {{ appointment.patient_id }}
+                                    </li>
+                                    <li>        
+                                        {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
+                                    </li>
+                                    {% if appointment.status == 'c' %}
+                                    <li>
+                                        <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" id="topright">Zrealizowana</button>
+                                        </form>
+                                    </li>
+                                    {% endif %}
+                                </a>
+                                <br>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Brak nadchodzących zarezerwowanych wizyt.</p>
+                {% endif %}  
+            </section>
+        </div>
+    </div>
+    &nbsp;
+</div>
+<br>
+    <section class="col" style="width: 87vw;  height: 100%;">
+        <h3>Przeszłe wizyty</h3> 
+        <form action="{% url 'doctor_past_appointments' %}">
+            {% csrf_token %}
+            <button type="submit" id="topright">Przeszłe wizyty</button>
+        </form>
+    </section>
+</main>
 {% endblock %}

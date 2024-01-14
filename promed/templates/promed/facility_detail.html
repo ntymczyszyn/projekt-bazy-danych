@@ -5,11 +5,11 @@
 {% endcomment %}
 
 {% block content %}
-    <div class="container2">
+    <section>
         <h2>Szczegóły Placówki</h2>
         <p><strong>Ulica i numer budynku:</strong> {{ object.street_address }}</p>
         <p><strong>Kod pocztowy:</strong> {{ object.postal_code }}</p>
         <p><strong>Miasto:</strong> {{ object.city }}</p>
         <p><strong>Województwo:</strong> {{ object.get_voivodeship_display }}</p>
-    </div>
+    </section>
 {% endblock %}

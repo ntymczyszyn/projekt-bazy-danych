@@ -1,12 +1,12 @@
 {% extends 'base_home.html' %}
 
 {% block content %}
-<div class="container2"  style="width:300px; left:(50% - 150px);">
+<section  style="width:300px; left:(50% - 150px);">
     <h2>Wylogowano</h2>
     <p>Zostałeś wylogowany.</p>
     <form action="{% url 'home' %}">
         {% csrf_token %}
         <button type="submit" id="topright">Powrót do strony głównej.</button>
     </form>
-</div>
+</section>
 {% endblock %}

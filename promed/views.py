@@ -37,7 +37,8 @@ from django.db.models import Q
 def patient_dashboard_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
 
-    search_future = request.GET.get('search_future', '')
+    search_booked = request.GET.get('search_booked', '')
+    search_confirmed = request.GET.get('search_confirmed', '')
     search_past = request.GET.get('search_past', '')
 
     if not (patient.phone_number and patient.date_of_birth and patient.pesel):
@@ -48,18 +49,30 @@ def patient_dashboard_view(request):
         .order_by('appointment_time')
     )
     # czy ten podział też ze względu na zarezerwowanie i potwierdzoen nie powinien być ?? a nie tak tylko po czasie
-    past_appointments = [appointment for appointment in all_appointments if appointment.appointment_time < timezone.now()]
-    future_appointments = [appointment for appointment in all_appointments if appointment.appointment_time >= timezone.now()]
+    past_appointments = [appointment for appointment in all_appointments if appointment.status == 'd']
+    booked_appointments = [appointment for appointment in all_appointments if appointment.status == 'b']
+    confirmed_appointments = [appointment for appointment in all_appointments if appointment.status == 'c']
 
-    if search_future:
-        future_appointments = [appointment for appointment in future_appointments 
-                               if search_future.lower() in appointment.service_id.specialzation_id.name.lower()
-                               or search_future.lower() in appointment.service_id.doctor_id.user_id.first_name.lower() 
-                               or search_future.lower() in appointment.service_id.doctor_id.user_id.last_name.lower()
-                               or search_future.lower() in appointment.facility_id.street_address.lower() 
-                               or search_future.lower() in appointment.facility_id.postal_code.lower() 
-                               or search_future.lower() in appointment.facility_id.city.lower() 
-                               or search_future.lower() in appointment.facility_id.voivodeship.lower()]
+    if search_booked:
+        booked_appointments = [appointment for appointment in booked_appointments 
+                               if search_booked.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_booked.lower() in appointment.service_id.doctor_id.user_id.first_name.lower() 
+                               or search_booked.lower() in appointment.service_id.doctor_id.user_id.last_name.lower()
+                               or search_booked.lower() in appointment.facility_id.street_address.lower() 
+                               or search_booked.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_booked.lower() in appointment.facility_id.city.lower() 
+                               or search_booked.lower() in appointment.facility_id.voivodeship.lower()]
+    
+    if search_confirmed:
+        confirmed_appointments = [appointment for appointment in confirmed_appointments 
+                               if search_confirmed.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_confirmed.lower() in appointment.service_id.doctor_id.user_id.first_name.lower() 
+                               or search_confirmed.lower() in appointment.service_id.doctor_id.user_id.last_name.lower()
+                               or search_confirmed.lower() in appointment.facility_id.street_address.lower() 
+                               or search_confirmed.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_confirmed.lower() in appointment.facility_id.city.lower() 
+                               or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()]
+
     if search_past:
         past_appointments = [appointment for appointment in past_appointments 
                                if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
@@ -70,12 +83,18 @@ def patient_dashboard_view(request):
                                or search_past.lower() in appointment.facility_id.city.lower() 
                                or search_past.lower() in appointment.facility_id.voivodeship.lower()]
     
+    booked_appointments.sort(key=lambda x: x.appointment_time)
+    confirmed_appointments.sort(key=lambda x: x.appointment_time)
+    past_appointments.sort(key=lambda x: x.appointment_time)
+
+
     return render(
         request,
         'patient_dashboard.html',
         {
             'past_appointments': past_appointments,
-            'future_appointments': future_appointments,
+            'booked_appointments': booked_appointments,
+            'confirmed_appointments': confirmed_appointments,
         }
     )
 
@@ -287,6 +306,7 @@ def doctor_dashboard_view(request):
 
     search_reserved = request.GET.get('search_reserved', '')
     search_available = request.GET.get('search_available', '')
+    search_confirmed = request.GET.get('search_confirmed', '')
     search_past = request.GET.get('search_past', '')
 
     # Pobieramy wszystkie wizyty lekarza
@@ -296,12 +316,13 @@ def doctor_dashboard_view(request):
     )
 
     # Dzielimy wizyty na przeszłe i nadchodzące one od syatusu powinny zależeć a nie od czasu
-    past_appointments = [appointment for appointment in all_appointments if appointment.appointment_time < timezone.now()]
-    future_appointments = [appointment for appointment in all_appointments if appointment.appointment_time >= timezone.now()]
+    past_appointments = [appointment for appointment in all_appointments if (appointment.appointment_time < timezone.now() and (appointment.status == 'd' or appointment.status == 'a' or appointment.status == 'u'))]
+    future_appointments = [appointment for appointment in all_appointments if (appointment.appointment_time >= timezone.now() or  (appointment.status == 'c' and appointment.appointment_time < timezone.now()))]
 
     # Dzielimy nadchodzące wizyty na zarezerwowane i dostępne i potwierdzone
-    reserved_appointments = [appointment for appointment in future_appointments if (appointment.status == 'b' or appointment.status == 'c')]
+    reserved_appointments = [appointment for appointment in future_appointments if appointment.status == 'b']
     available_appointments = [appointment for appointment in future_appointments if appointment.status == 'a']
+    confirmed_appointments = [appointment for appointment in future_appointments if appointment.status == 'c']
 
     if search_available:
         available_appointments = [appointment for appointment in available_appointments 
@@ -318,6 +339,15 @@ def doctor_dashboard_view(request):
                                or search_reserved.lower() in appointment.facility_id.postal_code.lower() 
                                or search_reserved.lower() in appointment.facility_id.city.lower() 
                                or search_reserved.lower() in appointment.facility_id.voivodeship.lower()]
+        
+    if search_confirmed:
+        confirmed_appointments = [appointment for appointment in confirmed_appointments 
+                               if  search_confirmed.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_confirmed.lower() in appointment.facility_id.street_address.lower() 
+                               or search_confirmed.lower() in appointment.facility_id.postal_code.lower() 
+                               or search_confirmed.lower() in appointment.facility_id.city.lower() 
+                               or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()]
+
     if search_past:
         past_appointments = [appointment for appointment in past_appointments 
                                if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
@@ -325,7 +355,13 @@ def doctor_dashboard_view(request):
                                or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                or search_past.lower() in appointment.facility_id.city.lower() 
                                or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+        
     
+    available_appointments.sort(key=lambda x: x.appointment_time)
+    reserved_appointments.sort(key=lambda x: x.appointment_time)
+    confirmed_appointments.sort(key=lambda x: x.appointment_time)
+    past_appointments.sort(key=lambda x: x.appointment_time)
+
     return render(
         request,
         'doctor_dashboard.html',
@@ -333,6 +369,7 @@ def doctor_dashboard_view(request):
             'past_appointments': past_appointments,
             'reserved_appointments': reserved_appointments,
             'available_appointments': available_appointments,
+            'confirmed_appointments': confirmed_appointments,
         }
     )
 
@@ -510,3 +547,8 @@ def send_reminder_email_for_upcoming_appointments():
             recipient_list = [recipient_email]
             send_email_appointment_reminder.delay()
             
+
+class AppointmentDetailDoctorView(generic.DeleteView):
+    model = Appointment
+    template_name = 'appointment_detail_doctor.html'
+    context_object_name = 'appointment'

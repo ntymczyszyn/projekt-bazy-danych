@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-  <div class="container2">
+  <section>
     <h2>Wyszukiwarka wizyt u {{specialization}}</h2>
     <form method="get" action="{% url 'appointment_search' specialization_id=specialization.id %}">
       {% csrf_token %}
@@ -17,15 +17,15 @@
           <ul class="appointments">
             <h3>Znalezione wizyty:</h3>
               {% for appointment in appointments %}
-              <li class="column1">        
-                {{ appointment }}
-            </li>
-            <li class="column2">
-              <form action="{% url 'confirm_appointment' pk=appointment.id %}">
-                {% csrf_token %}
-                <button type="submit" id="topright">Zarezerwuj</button>
-              </form>
-            </li>
+                <li class="column1">        
+                  {{ appointment }}
+                </li>
+                <li class="column2">
+                  <form action="{% url 'confirm_book_appointment' pk=appointment.id %}">
+                    {% csrf_token %}
+                    <button type="submit" id="topright">Zarezerwuj</button>
+                  </form>
+                </li>
               {% endfor %}
           </ul>
         {% else %}
@@ -33,5 +33,5 @@
         {% endif %}
       {% endif %}
     </div>
-  </div>
+  </section>
 {% endblock %}

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container2" style="width:300px; left:(50% - 150px);">
+<section>
     <h2 style="text-align: center;">
         BŁĄD LOGOWANIA
     </h2>
@@ -14,5 +14,5 @@
         {% csrf_token %}
         <button type="submit" id="topright">Powrót do strony głównej.</button>
     </form>
-</div>
+</section>
 {% endblock %}

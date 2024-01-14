@@ -5,39 +5,46 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="{% static 'hover.css' %}">  
-        <link rel="stylesheet" type="text/css" href="{% static 'patient.css' %}">       
+        <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">               
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>       
     </head>
 <body>
-    <div id="container" style="left:30vw; top: 0vh; ">
-        <form action="{% url 'doctor_dashboard' %}">
-            {% csrf_token %}
-            <button type="submit" id="topright">Strona Główna</button>
-        </form>
-        &nbsp;
-        <form action="{% url 'doctor_detail' %}">
-            {% csrf_token %}
-            <button type="submit" id="topright">{{ user.first_name }} {{ user.last_name }}</button>
-        </form>
-        &nbsp;
-        <form action="{% url 'doctor_availability' %}">
-            {% csrf_token %}
-            <button type="submit" id="topright">Dostępność</button>
-        </form>
-        &nbsp;
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" id="topright">Wyloguj</button>
-        </form>       
-    </div>
+    <nav class="navbar navbar-expand-sm bg-info navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item p-2">
+                <a class="nav-link" href="{% url 'doctor_dashboard' %}">Strona Główna</a>
+            </li>
+            &nbsp;
+            <li class="nav-item p-2">
+                <a class="nav-link" href="{% url 'doctor_detail' %}">{{ user.first_name }} {{ user.last_name }}</a>
+            </li>
+            &nbsp;
+            <li class="nav-item p-2">
+                <a class="nav-link" href="{% url 'doctor_availability' %}">Dostępność</a>
+            </li>
+            &nbsp;
+            <li class="d-lg-flex mb-lg-0 ml-5">
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" id="topright">Wyloguj</button>
+                </form>
+            </li>       
+        </ul>
+    </nav>
     
-    <div class="container1" style="left:(50% - 250px)">
+    <header>
         <h1 style="text-align: center;">
             <div class="title" style="font-size: 25px; top:0;">PROMED</div>
             <div style="font-size: 15px; margin-bottom: 20px;">Portal pracownika</div>
         </h1>
-    </div>
+    </header>
     {% block content %}
     {% endblock %}
 </html>
