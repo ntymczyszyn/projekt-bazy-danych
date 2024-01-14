@@ -125,13 +125,36 @@ class PatientInfoForm(forms.Form):
         return pesel
 
 
-from datetime import timedelta
+from datetime import timedelta, date
 from django.utils import timezone
 import logging
 logger = logging.getLogger(__name__)
 
+class DateCheckboxField(forms.MultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.choices = [(str(date.date()), date.strftime('%a, %b %d, %Y')) for date in self.choices]
+
+    
 class AvailabilityForm(forms.Form):
-    selected_date = forms.DateField(widget=forms.SelectDateWidget, label='Wybrany dzień')
+    # selected_date = forms.DateField(widget=forms.SelectDateWidget, label='Wybrany dzień')
+    selected_date = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        label='Wybierz dni',
+    )
+    
+    # def get_date_choices():
+    #     today = date.today()
+    #     four_weeks_later = today + timedelta(weeks=4)
+    #     date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days) if (today + timedelta(days=x)).weekday() != 5 and (today + timedelta(days=x)).weekday() != 6]
+    #     return date_range
+
+    # selected_dates = DateCheckboxField(
+    #     choices=[(date, date) for date in get_date_choices()],
+    #     widget=forms.CheckboxSelectMultiple,
+    #     required=True
+    # )
+
     start_time = forms.TimeField(
         widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]), label='Czas rozpoczęcia'
     )
@@ -142,6 +165,8 @@ class AvailabilityForm(forms.Form):
     duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania')
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka')
 
+    
+    
     def __init__(self, *args, **kwargs):
         doctor = kwargs.pop('doctor', None)
         available_specializations = Specialization.objects.filter(service__doctor_id=doctor)
@@ -153,9 +178,10 @@ class AvailabilityForm(forms.Form):
         # ten zakres miesiąca do przodu mi coś nie działa 
         today = timezone.now().date()
         four_weeks_later = today + timedelta(weeks=4)
-        date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days)]
-        self.fields['selected_date'].initial = today
+        date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days) if (today + timedelta(days=x)).weekday != 5 or (today + timedelta(days=x)).weekday != 6]
+        # self.fields['selected_date'].initial = today
         self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
+
 
     def clean(self):
         cleaned_data = super().clean()

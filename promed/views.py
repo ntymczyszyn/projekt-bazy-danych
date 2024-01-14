@@ -352,32 +352,34 @@ def doctor_availability(request):
             end_time = form.cleaned_data['end_time']
             duration = form.cleaned_data['duration']
             selected_specialization = form.cleaned_data['specialization']
-            selected_date = form.cleaned_data['selected_date']
+            selected_dates = form.cleaned_data['selected_date']
             selected_facility = form.cleaned_data['facility']
 
             current_time = start_time
-            current_datetime = datetime.combine(selected_date, current_time)
-            end_datetime = datetime.combine(selected_date, end_time)
 
-            while current_datetime < end_datetime:
-                try:
-                    service = Service.objects.get(
-                            specialzation_id=selected_specialization,
-                            doctor_id=doctor,
-                            duration=duration
-                    )
-                    availability = Appointment(
-                        appointment_time=current_datetime,
-                        service_id=service,
-                        facility_id=selected_facility,
-                        status='a',
-                    )
-                    availability.save()
-                    current_datetime += timedelta(minutes=int(duration))
-                except Service.DoesNotExist:
-                    # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
-                    messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
-                    return redirect('doctor_dashboard')
+            for selected_date in selected_dates:
+                current_datetime = datetime.combine(selected_date, current_time)
+                end_datetime = datetime.combine(selected_date, end_time)
+
+                while current_datetime < end_datetime:
+                    try:
+                        service = Service.objects.get(
+                                specialzation_id=selected_specialization,
+                                doctor_id=doctor,
+                                duration=duration
+                        )
+                        availability = Appointment(
+                            appointment_time=current_datetime,
+                            service_id=service,
+                            facility_id=selected_facility,
+                            status='a',
+                        )
+                        availability.save()
+                        current_datetime += timedelta(minutes=int(duration))
+                    except Service.DoesNotExist:
+                        # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
+                        messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
+                        return redirect('doctor_dashboard')
 
             messages.success(request, 'Dostępność wprowadzona prawidłowo.')
             return redirect('doctor_dashboard')
@@ -413,7 +415,11 @@ def appointment_search_patient_view(request,specialization_id):
         facility = form.cleaned_data.get('facility')
         date = form.cleaned_data.get('date')
         time_slot = form.cleaned_data.get('time_slot')
-        appointments = Appointment.objects.filter(status='a', appointment_time__gte= timezone.now())
+        appointments = Appointment.objects.filter(
+            status='a', 
+            appointment_time__gte= timezone.now(),
+            service_id__specialzation_id=specialization)
+        #  TO SIE PRZYDA do szukania wizyt po specializacji tylko
 
         if doctor:
             appointments = appointments.filter(service_id__doctor_id=doctor)
