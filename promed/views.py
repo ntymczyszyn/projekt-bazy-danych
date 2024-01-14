@@ -230,11 +230,11 @@ def appointment_search_patient_view(request,specialization_id):
 
     return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
 
-def confirm_appointment_view(request, pk):
+def book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_booking.html', {'appointment': appointment,})
 
-def complete_appointment_view(request, pk):
+def complete_book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
 
     try:
@@ -244,7 +244,7 @@ def complete_appointment_view(request, pk):
         appointment.save()
         # ------ mail o potwierdzenie wizyty ------
         subject = 'Potwierdzenie rezerwacji wizyty'
-        message = 'Dziękujemy za rezerwację wizyty. Potwierdzamy, że wizyta została zarezerwowana.'
+        message = 'Dziękujemy za rezerwację wizyty. Wizyta została zarezerwowana. Prosimy pamiętać o potwierdzeniu wizyty!'
         from_email = 'promed.administration@promed.pl'
         recipient = request.user.email
         send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
@@ -259,7 +259,7 @@ def cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_cancellation.html', {'appointment': appointment,})
 
-def confirm_cancel_appointment_view(request, pk):
+def complete_cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     try:
         appointment.patient_id = None
@@ -270,7 +270,32 @@ def confirm_cancel_appointment_view(request, pk):
         messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
 
     return redirect(reverse('patient_dashboard'))
-   
+
+def confirm_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'appointment_confirm.html', {'appointment': appointment,})
+
+def complete_confirm_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+
+    try:
+        # patient = request.user.patient
+        # appointment.patient_id = patient
+        appointment.status = 'c'  
+        appointment.save()
+        # ------ mail o potwierdzenie wizyty ------
+        subject = 'Potwierdzenie wizyty'
+        message = 'Dziękujemy za wybranie PROMED. Wizyta została pomyślnie zatwierdzona.'
+        from_email = 'promed.administration@promed.pl'
+        recipient = request.user.email
+        send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
+        #------------------------------------------
+        messages.success(request, 'Potwierdzanie zakończono pomyślnie.')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas potwierdzania wizyty: {str(e)}')
+
+    return redirect(reverse('patient_dashboard'))
+
 # DOCTOR SITE-----------------------------------------------------------------------------
 class DoctorLoginView(LoginView):
     template_name = 'registration/doctor/login_doctor.html'

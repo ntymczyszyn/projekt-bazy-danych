@@ -21,7 +21,7 @@
                   {{ appointment }}
                 </li>
                 <li class="column2">
-                  <form action="{% url 'confirm_book_appointment' pk=appointment.id %}">
+                  <form action="{% url 'book_appointment' pk=appointment.id %}">
                     {% csrf_token %}
                     <button type="submit" id="topright">Zarezerwuj</button>
                   </form>
