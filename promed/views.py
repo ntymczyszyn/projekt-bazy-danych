@@ -1,16 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views import generic, View
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import generic
 from .models import Appointment, Patient, Doctor, Service, Specialization, Facility
 from .forms import AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm, SpecializationSearchForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.urls import reverse_lazy, reverse
 from .signals import user_registered_patient_site
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib import messages
+from .tasks import send_email_appointment_confirmation, send_email_appointment_reminder
+
 
 class MyLogoutView(LogoutView):
     next_page = '/promed/accounts/logout/'
@@ -25,13 +27,12 @@ def home_view(request):
 def home_patient_view(request):
     return render(request, 'home_patient.html')
 
-def home_doctor_view(request):
+def home_staff_view(request):
     return render(request, 'home_doctor.html')
-
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-
+# PATIENT SITE ----------------------------------------------------------------------------
 @login_required
 def patient_dashboard_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
@@ -137,15 +138,6 @@ class PatientLoginView(LoginView):
 def patient_access_denied_view(request):
     return render(request, 'registration/patient/patient_access_denied.html')
 
-def send_welcome_email_patient(user_email, username):
-    subject = 'Witamy w Promed'
-    html_message = render_to_string('registration/pateint/welcome_email_.html', {'username': username})
-    plain_message = strip_tags(html_message)
-    from_email = 'promed.administration@promed.pl'
-    recipient_list = [user_email]
-
-    send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
-
 def register_patient_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -159,6 +151,107 @@ def register_patient_view(request):
 
     return render(request, 'registration/patient/register_patient.html', {'form': form})
 
+class PatientPasswordChangeView(PasswordChangeView):
+    template_name = 'registration/password_change_form.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Hasło zostało pomyślnie zmienione.')
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('patient_dashboard')  
+
+@login_required
+def appointment_search_specialization_view(request):
+    form =  SpecializationSearchForm(request.GET)
+    specializations = Specialization.objects.all()
+
+    if form.is_valid():
+        specialization = form.cleaned_data.get('specialization')
+        if specialization:
+            return redirect('appointment_search', specialization_id=specialization.id)
+
+    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations})
+
+@login_required
+def appointment_search_patient_view(request,specialization_id):
+    specialization = get_object_or_404(Specialization, id=specialization_id)
+    services = Service.objects.filter(specialzation_id=specialization)
+    doctor = Doctor.objects.filter(service__in=services)
+
+    form = AppointmentSearchForm(request.GET, doctor=doctor)
+    appointments = []
+
+    if request.method == 'GET' and form.is_valid():
+        doctor = form.cleaned_data.get('doctor')
+        facility = form.cleaned_data.get('facility')
+        start_date = form.cleaned_data.get('start_date')
+        end_date = form.cleaned_data.get('end_date')
+        time_slot = form.cleaned_data.get('time_slot')
+        appointments = Appointment.objects.filter(status='a')
+
+        if doctor:
+            appointments = appointments.filter(service_id__doctor_id=doctor)
+        if facility:
+            appointments = appointments.filter(facility_id=facility)
+        if start_date and end_date:
+            appointments = appointments.filter(appointment_time__date__range=(start_date, end_date))
+
+        # Ustaw odpowiednie przedziały czasowe
+        if time_slot == '7-12':
+            appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='12:00')
+        elif time_slot == '12-17':
+            appointments = appointments.filter(appointment_time__time__gte='12:00', appointment_time__time__lt='17:00')
+        elif time_slot == '17-20':
+            appointments = appointments.filter(appointment_time__time__gte='17:00', appointment_time__time__lt='20:00')
+        elif time_slot == 'all':
+            appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='20:00')
+
+
+    return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
+
+def confirm_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'appointment_booking.html', {'appointment': appointment,})
+
+def complete_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+
+    try:
+        patient = request.user.patient
+        appointment.patient_id = patient
+        appointment.status = 'b'  
+        appointment.save()
+        # ------ mail o potwierdzenie wizyty ------
+        subject = 'Potwierdzenie rezerwacji wizyty'
+        message = 'Dziękujemy za rezerwację wizyty. Potwierdzamy, że wizyta została zarezerwowana.'
+        from_email = 'promed.administration@promed.pl'
+        recipient = request.user.email
+        send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
+        #------------------------------------------
+        messages.success(request, 'Rezerwacja zakończona pomyślnie.')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas rezerwacji: {str(e)}')
+
+    return redirect(reverse('patient_dashboard'))
+
+def cancel_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'appointment_cancellation.html', {'appointment': appointment,})
+
+def confirm_cancel_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    try:
+        appointment.patient_id = None
+        appointment.status = 'a'  
+        appointment.save()
+        messages.success(request, 'Anulowano wizytę.')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
+
+    return redirect(reverse('patient_dashboard'))
+   
 # DOCTOR SITE-----------------------------------------------------------------------------
 class DoctorLoginView(LoginView):
     template_name = 'registration/doctor/login_doctor.html'
@@ -243,16 +336,6 @@ def doctor_dashboard_view(request):
         }
     )
 
-class PatientPasswordChangeView(PasswordChangeView):
-    template_name = 'registration/password_change_form.html'
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, 'Hasło zostało pomyślnie zmienione.')
-        return response
-
-    def get_success_url(self):
-        return reverse_lazy('patient_dashboard')  
 
 class DoctorPasswordChangeView(PasswordChangeView):
     template_name = 'registration/password_change_form.html'  
@@ -287,7 +370,6 @@ def doctor_past_appointments_view(request):
         }
     )
 
-
 @login_required
 def doctor_detail_view(request):
     doctor = get_object_or_404(Doctor, user_id=request.user)
@@ -311,6 +393,9 @@ def doctor_availability(request):
         form = AvailabilityForm(request.POST, doctor=doctor)
 
         if form.is_valid():
+            # tu dodawane jedynie narazie
+            selected_month = int(form.cleaned_data['selected_month'])
+            selected_days = [int(day) for day in form.cleaned_data['selected_days']]
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
             duration = form.cleaned_data['duration']
@@ -349,90 +434,22 @@ def doctor_availability(request):
 
     return render(request, template_name, {'form': form})
 
+from datetime import datetime, timedelta
 
-@login_required
-def appointment_search_specialization_view(request):
-    form =  SpecializationSearchForm(request.GET)
-    specializations = Specialization.objects.all()
+#to nie testowane
+def get_dates_for_days(year, month, selected_days):
+    first_day_of_month = datetime(year, month, 1)
+    current_date = first_day_of_month
 
-    if form.is_valid():
-        specialization = form.cleaned_data.get('specialization')
-        if specialization:
-            return redirect('appointment_search', specialization_id=specialization.id)
+    dates_for_selected_days = []
 
-    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations})
+    while current_date.month == month:
+        if current_date.weekday() in selected_days:
+            dates_for_selected_days.append(current_date)
+        current_date += timedelta(days=1)
 
-@login_required
-def appointment_search_patient_view(request,specialization_id):
-    specialization = get_object_or_404(Specialization, id=specialization_id)
-    services = Service.objects.filter(specialzation_id=specialization)
-    doctor = Doctor.objects.filter(service__in=services)
+    return dates_for_selected_days
 
-    form = AppointmentSearchForm(request.GET, doctor=doctor)
-    appointments = []
-
-    if request.method == 'GET' and form.is_valid():
-        doctor = form.cleaned_data.get('doctor')
-        facility = form.cleaned_data.get('facility')
-        date = form.cleaned_data.get('date')
-        time_slot = form.cleaned_data.get('time_slot')
-        appointments = Appointment.objects.filter(status='a')
-
-        if doctor:
-            appointments = appointments.filter(service_id__doctor_id=doctor)
-        if facility:
-            appointments = appointments.filter(facility_id=facility)
-        if date:
-            appointments = appointments.filter(appointment_time__date=date)
-
-        # Ustaw odpowiednie przedziały czasowe
-        if time_slot == '7-12':
-            appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='12:00')
-        elif time_slot == '12-17':
-            appointments = appointments.filter(appointment_time__time__gte='12:00', appointment_time__time__lt='17:00')
-        elif time_slot == '17-20':
-            appointments = appointments.filter(appointment_time__time__gte='17:00', appointment_time__time__lt='20:00')
-        elif time_slot == 'all':
-            appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='20:00')
-
-
-    return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
-
-def confirm_appointment_view(request, pk):
-    appointment = get_object_or_404(Appointment, id=pk)
-    return render(request, 'appointment_booking.html', {'appointment': appointment,})
-
-from django.contrib import messages
-
-def complete_appointment_view(request, pk):
-    appointment = get_object_or_404(Appointment, id=pk)
-
-    try:
-        patient = request.user.patient
-        appointment.patient_id = patient
-        appointment.status = 'b'  
-        appointment.save()
-        messages.success(request, 'Rezerwacja zakończona pomyślnie.')
-    except Exception as e:
-        messages.error(request, f'Błąd podczas rezerwacji: {str(e)}')
-
-    return redirect(reverse('patient_dashboard'))
-
-def cancel_appointment_view(request, pk):
-    appointment = get_object_or_404(Appointment, id=pk)
-    return render(request, 'appointment_cancellation.html', {'appointment': appointment,})
-
-def confirm_cancel_appointment_view(request, pk):
-    appointment = get_object_or_404(Appointment, id=pk)
-    try:
-        appointment.patient_id = None
-        appointment.status = 'a'  
-        appointment.save()
-        messages.success(request, 'Anulowano wizytę.')
-    except Exception as e:
-        messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
-
-    return redirect(reverse('patient_dashboard'))
 
 def confirm_appointment_doctor_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
@@ -449,6 +466,26 @@ def confirm_appointment_doctor_done_view(request, pk):
 
     return redirect(reverse('doctor_dashboard'))
 
+
+# INNE --------------------------------------------------------------------------------------
+class FacilityDetailView(generic.DetailView):
+    model = Facility
+    template_name = 'facility_detail.html'   
+
+class AppointmentDetailView(generic.DetailView):
+    model = Appointment
+    template_name = 'appointment_detail.html'
+    context_object_name = 'appointment'
+
+# MAIL ----------------------------------------------------------------------------------------
+def send_welcome_email_patient(user_email, username):
+    subject = 'Witamy w Promed'
+    html_message = render_to_string('registration/pateint/welcome_email_.html', {'username': username})
+    plain_message = strip_tags(html_message)
+    from_email = 'promed.administration@promed.pl'
+    recipient_list = [user_email]
+
+    send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
 
 def send_appointment_reminder_email(recipient_email, appointment):
     pass
@@ -471,15 +508,5 @@ def send_reminder_email_for_upcoming_appointments():
 
         if recipient_email:
             recipient_list = [recipient_email]
-            send_mail(subject, '', from_email, recipient_list, html_message=html_message)
-
-
-# INNE
-class FacilityDetailView(generic.DetailView):
-    model = Facility
-    template_name = 'facility_detail.html'   
-
-class AppointmentDetailView(generic.DetailView):
-    model = Appointment
-    template_name = 'appointment_detail.html'
-    context_object_name = 'appointment'
+            send_email_appointment_reminder.delay()
+            

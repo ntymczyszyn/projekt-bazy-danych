@@ -16,24 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Konfiguracja Celery---------------------------------------------------------
-from celery import Celery
-from celery.schedules import crontab
-
-app = Celery('promed')
-app.config_from_object('django.conf:settings', namespace='CELERY')
-
-# Automatycznie odczytaj zadania z plików Django
-app.autodiscover_tasks()
-
-CELERY_BEAT_SCHEDULE = {
-    'send-reminder-emails': {
-        'task': 'promed.tasks.send_daily_reminder_emails',
-        'schedule': crontab(hour=0, minute=0),  # północ
-    },
-}
-
-#-----------------------------------------------------------------------------------------------------
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -45,9 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'promed.apps.PromedConfig',
+    'django_celery_results', # dodano: django-celery-results
+    'django_celery_beat', # dodano: django-celery-beat
 ]
 
 MIDDLEWARE = [
@@ -79,7 +61,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'promed','templates', 'promed'),
             os.path.join(BASE_DIR, 'promed', 'templates', 'patient'),
             os.path.join(BASE_DIR, 'promed', 'templates', 'doctor'),
-        ], # chyba już działa poprawnie
+        ], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,13 +109,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# własny model użytkownika
 AUTH_USER_MODEL = 'promed.CustomUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-# zmieniłam na polski czas
 TIME_ZONE = 'Europe/Warsaw'
 USE_I18N = True
 USE_TZ = False
@@ -148,9 +130,22 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CELERY SETTINGS----------------------------------------------------------
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Warsaw'
+
+CELERY_RESULT_BACKEND = 'django-db' 
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+#--------------------------------------------------------------------------
+
 # do emaila się przyda
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# do wyświetlania dodatkowych informacji
 if DEBUG:
     import debug_toolbar
 
@@ -169,6 +164,5 @@ if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
     INTERNAL_IPS = [
-        # ...
         '127.0.0.1',
     ]
