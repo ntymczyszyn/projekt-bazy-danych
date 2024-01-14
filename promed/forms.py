@@ -156,6 +156,8 @@ class AvailabilityForm(forms.Form):
     duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania')
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka')
 
+    
+    
     def __init__(self, *args, **kwargs):
         doctor = kwargs.pop('doctor', None)
         available_specializations = Specialization.objects.filter(service__doctor_id=doctor)
@@ -167,8 +169,8 @@ class AvailabilityForm(forms.Form):
         # ten zakres miesiąca do przodu mi coś nie działa 
         today = timezone.now().date()
         four_weeks_later = today + timedelta(weeks=4)
-        date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days)]
-        self.fields['selected_date'].initial = today
+        date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days) if (today + timedelta(days=x)).weekday != 5 or (today + timedelta(days=x)).weekday != 6]
+        # self.fields['selected_date'].initial = today
         self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
         self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
 
@@ -177,6 +179,7 @@ class AvailabilityForm(forms.Form):
             if not selected_days:
                 raise forms.ValidationError("Select at least one day.")
             return selected_days
+
 
     def clean(self):
         cleaned_data = super().clean()

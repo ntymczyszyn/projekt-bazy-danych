@@ -230,11 +230,11 @@ def appointment_search_patient_view(request,specialization_id):
 
     return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
 
-def confirm_appointment_view(request, pk):
+def book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_booking.html', {'appointment': appointment,})
 
-def complete_appointment_view(request, pk):
+def complete_book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
 
     try:
@@ -244,7 +244,7 @@ def complete_appointment_view(request, pk):
         appointment.save()
         # ------ mail o potwierdzenie wizyty ------
         subject = 'Potwierdzenie rezerwacji wizyty'
-        message = 'Dziękujemy za rezerwację wizyty. Potwierdzamy, że wizyta została zarezerwowana.'
+        message = 'Dziękujemy za rezerwację wizyty. Wizyta została zarezerwowana. Prosimy pamiętać o potwierdzeniu wizyty!'
         from_email = 'promed.administration@promed.pl'
         recipient = request.user.email
         send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
@@ -259,7 +259,7 @@ def cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_cancellation.html', {'appointment': appointment,})
 
-def confirm_cancel_appointment_view(request, pk):
+def complete_cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     try:
         appointment.patient_id = None
@@ -270,7 +270,32 @@ def confirm_cancel_appointment_view(request, pk):
         messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
 
     return redirect(reverse('patient_dashboard'))
-   
+
+def confirm_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    return render(request, 'appointment_confirm.html', {'appointment': appointment,})
+
+def complete_confirm_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+
+    try:
+        # patient = request.user.patient
+        # appointment.patient_id = patient
+        appointment.status = 'c'  
+        appointment.save()
+        # ------ mail o potwierdzenie wizyty ------
+        subject = 'Potwierdzenie wizyty'
+        message = 'Dziękujemy za wybranie PROMED. Wizyta została pomyślnie zatwierdzona.'
+        from_email = 'promed.administration@promed.pl'
+        recipient = request.user.email
+        send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
+        #------------------------------------------
+        messages.success(request, 'Potwierdzanie zakończono pomyślnie.')
+    except Exception as e:
+        messages.error(request, f'Błąd podczas potwierdzania wizyty: {str(e)}')
+
+    return redirect(reverse('patient_dashboard'))
+
 # DOCTOR SITE-----------------------------------------------------------------------------
 class DoctorLoginView(LoginView):
     template_name = 'registration/doctor/login_doctor.html'
@@ -437,32 +462,34 @@ def doctor_availability(request):
             end_time = form.cleaned_data['end_time']
             duration = form.cleaned_data['duration']
             selected_specialization = form.cleaned_data['specialization']
-            selected_date = form.cleaned_data['selected_date']
+            selected_dates = form.cleaned_data['selected_date']
             selected_facility = form.cleaned_data['facility']
 
             current_time = start_time
-            current_datetime = datetime.combine(selected_date, current_time)
-            end_datetime = datetime.combine(selected_date, end_time)
 
-            while current_datetime < end_datetime:
-                try:
-                    service = Service.objects.get(
-                            specialzation_id=selected_specialization,
-                            doctor_id=doctor,
-                            duration=duration
-                    )
-                    availability = Appointment(
-                        appointment_time=current_datetime,
-                        service_id=service,
-                        facility_id=selected_facility,
-                        status='a',
-                    )
-                    availability.save()
-                    current_datetime += timedelta(minutes=int(duration))
-                except Service.DoesNotExist:
-                    # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
-                    messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
-                    return redirect('doctor_dashboard')
+            for selected_date in selected_dates:
+                current_datetime = datetime.combine(selected_date, current_time)
+                end_datetime = datetime.combine(selected_date, end_time)
+
+                while current_datetime < end_datetime:
+                    try:
+                        service = Service.objects.get(
+                                specialzation_id=selected_specialization,
+                                doctor_id=doctor,
+                                duration=duration
+                        )
+                        availability = Appointment(
+                            appointment_time=current_datetime,
+                            service_id=service,
+                            facility_id=selected_facility,
+                            status='a',
+                        )
+                        availability.save()
+                        current_datetime += timedelta(minutes=int(duration))
+                    except Service.DoesNotExist:
+                        # Obsłuż sytuację, gdy nie istnieje usługa dla danej specjalizacji i lekarza
+                        messages.error(request, f'Nie istnieje usługa dla specjalizacji {selected_specialization} i lekarza {doctor}.')
+                        return redirect('doctor_dashboard')
 
             messages.success(request, 'Dostępność wprowadzona prawidłowo.')
             return redirect('doctor_dashboard')
