@@ -1,7 +1,6 @@
 from django import forms
 from .models import Doctor, Facility, Patient, Specialization, CustomUser, Service
 from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError   
 from django.core.validators import MaxValueValidator
 from datetime import date
@@ -89,7 +88,9 @@ class AppointmentSearchForm(forms.Form):
     #  tu by trzeba było usunąć możliwość wybrania siebie samego
     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
-    date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
+    # date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Od')
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Do')
     time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
     
     def __init__(self, *args, **kwargs):
@@ -125,36 +126,26 @@ class PatientInfoForm(forms.Form):
         return pesel
 
 
-from datetime import timedelta, date
+from datetime import timedelta, datetime
 from django.utils import timezone
 import logging
+import calendar
+import locale
+
 logger = logging.getLogger(__name__)
+# chciałam dzięki temu zrobić po polsu te daty ale narazie się nie da
+# jest chyba w tym jakiś problem z kodowanie UTF-8 - próbowałam to naprawić ale jak narazie na marne
+# locale.setlocale(locale.LC_TIME, 'pl_PL.UTF-8')
 
-class DateCheckboxField(forms.MultipleChoiceField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.choices = [(str(date.date()), date.strftime('%a, %b %d, %Y')) for date in self.choices]
-
-    
 class AvailabilityForm(forms.Form):
-    # selected_date = forms.DateField(widget=forms.SelectDateWidget, label='Wybrany dzień')
-    selected_date = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        label='Wybierz dni',
-    )
+    current_year = datetime.now().year
+    select_year = forms.DateField(widget=forms.SelectDateWidget(years=range(current_year, current_year + 1)))
+
+    MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
+    selected_month = forms.ChoiceField(choices=MONTH_CHOICES, label='Wybierz miesiąc')
+    selected_days = forms.MultipleChoiceField(choices=[], widget=forms.CheckboxSelectMultiple, label='Wybierz dni')
     
-    # def get_date_choices():
-    #     today = date.today()
-    #     four_weeks_later = today + timedelta(weeks=4)
-    #     date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days) if (today + timedelta(days=x)).weekday() != 5 and (today + timedelta(days=x)).weekday() != 6]
-    #     return date_range
-
-    # selected_dates = DateCheckboxField(
-    #     choices=[(date, date) for date in get_date_choices()],
-    #     widget=forms.CheckboxSelectMultiple,
-    #     required=True
-    # )
-
+    selected_date = forms.DateField(widget=forms.SelectDateWidget)
     start_time = forms.TimeField(
         widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]), label='Czas rozpoczęcia'
     )
@@ -181,6 +172,13 @@ class AvailabilityForm(forms.Form):
         date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days) if (today + timedelta(days=x)).weekday != 5 or (today + timedelta(days=x)).weekday != 6]
         # self.fields['selected_date'].initial = today
         self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
+        self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
+
+    def clean_selected_days(self):
+            selected_days = self.cleaned_data['selected_days']
+            if not selected_days:
+                raise forms.ValidationError("Select at least one day.")
+            return selected_days
 
 
     def clean(self):
