@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib import messages
-from .tasks import send_email_appointment_confirmation, send_email_appointment_reminder
+from .tasks import send_email_appointment_confirmation
 
 
 class MyLogoutView(LogoutView):
@@ -545,7 +545,7 @@ def send_reminder_email_for_upcoming_appointments():
 
         if recipient_email:
             recipient_list = [recipient_email]
-            send_email_appointment_reminder.delay()
+            # send_email_appointment_reminder.delay()
             
 
 class AppointmentDetailDoctorView(generic.DeleteView):
