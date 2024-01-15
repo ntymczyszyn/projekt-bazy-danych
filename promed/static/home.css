@@ -37,7 +37,7 @@ nav {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
   cursor: pointer;
   user-select: none;
   height: 3vw;
@@ -45,7 +45,7 @@ nav {
   border: 1px solid #ccc;
   border-radius: 16px;
 }
-
+/* 
 nav ul {
   list-style-type: none;
   margin: 0;
@@ -60,7 +60,7 @@ nav ul li {
 nav ul li:last-child {
   float: right;
   margin-right: 10px
-}
+} */
 
 .box {
   display: inline-block;

@@ -5,10 +5,10 @@
 {% if messages %}
     <div class="container" style="width: 40vw;">
         <div class="alert alert-success alert-dismissible fade show" id="myAlert">
-            <button type="button" class="close">&times;</button>
             {% for message in messages %}
                 <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
+            <button type="button" class="close"  style="width: 15px; float:inline-end">&times;</button>
         </div>
     </div>
     <script>
