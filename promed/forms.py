@@ -20,63 +20,6 @@ class SpecializationSearchForm(forms.Form):
         required=True, label='Specjalizacja', 
         widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     
-# ---------------- To jest do zablokowania sobót i niedziel w wyborze terminów -------------
-#  ale na razie nie działa - można usunąć
-from django.forms import DateInput
-from django.utils.safestring import mark_safe
-
-class DisabledWeekendsDateInput(DateInput):
-    class Media:
-        css = {
-            'all': ("https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css", 
-                    "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css",
-                    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.10.0/css/pikaday.min.css",)
-        }
-        js = (  "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.10.0/pikaday.min.js",
-                "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js",
-                "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js",
-                "https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js",
-                "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js",
-                "https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js",
-            )
-        
-    def render(self, name, value, attrs=None, renderer=None):
-        js = '''
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const dateInput = document.getElementById('id_date');
-                    const picker = new Pikaday({
-                        field: dateInput,
-                        format: 'YYYY-MM-DD',
-                        onSelect: function () {
-                            const selectedDate = new Date(picker.getDate());
-                            if (selectedDate.getDay() === 0 || selectedDate.getDay() === 6) {
-                                picker.setDate(null);
-                                alert('Please select a weekday.');
-                            }
-                        },
-                        toString: function (date, format) {
-                            if (!date) return '';
-                            const day = date.getDate();
-                            const month = date.getMonth() + 1;
-                            const year = date.getFullYear();
-                            return year + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
-                        },
-                        firstDay: 1, // Start the week on Monday
-                        minDate: new Date(), // Disallow dates before today
-                        maxDate: new Date(2025, 11, 31), // Disallow dates after 2025-12-31
-                        disableWeekends: true, // Disable weekends
-                    });
-                });
-            </script>
-        ''' % {'id': attrs['id']}
-        attrs = {'type': 'date' } #,'class':'bg-info text-light'}
-        rendered = super().render(name, value, attrs, renderer)
-        return mark_safe(rendered + js)
-    
-
-# ------------------------------------------------------------------------------------------
-#  Nie umiem tego zrobić w ten sposób :((
 
 class AppointmentSearchForm(forms.Form):
     TIME_SLOT_CHOICES = [
@@ -89,8 +32,8 @@ class AppointmentSearchForm(forms.Form):
     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
     # date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
-    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Od')
-    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Do')
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class':'form-group dropdown bg-info text-light'}), label='Od')
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class':'form-group dropdown bg-info text-light'}), label='Do')
     time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
     
     def __init__(self, *args, **kwargs):
@@ -137,24 +80,44 @@ logger = logging.getLogger(__name__)
 # jest chyba w tym jakiś problem z kodowanie UTF-8 - próbowałam to naprawić ale jak narazie na marne
 # locale.setlocale(locale.LC_TIME, 'pl_PL.UTF-8')
 
-class AvailabilityForm(forms.Form):
-    current_year = datetime.now().year
-    select_year = forms.DateField(widget=forms.SelectDateWidget(years=range(current_year, current_year + 1)))
+# do zrobienia odpowiednich style dla Checkboxów, ale nie działa
+from django.utils.safestring import mark_safe
 
-    MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
-    selected_month = forms.ChoiceField(choices=MONTH_CHOICES, label='Wybierz miesiąc')
-    selected_days = forms.MultipleChoiceField(choices=[], widget=forms.CheckboxSelectMultiple, label='Wybierz dni')
+class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        if attrs is None:
+            attrs = {}
+        option_html = super().create_option(name, value, label, selected, index, subindex, attrs)
+        html = f'<div class="row">{option_html.strip()}</div>'
+        return mark_safe(html.replace('<input', '<div class="col">').replace('type="checkbox"', 'type="checkbox" class="col"'))
+
+
+class AvailabilityForm(forms.Form):
+#     current_year = datetime.now().year
+#     select_year = forms.DateField(widget=forms.SelectDateWidget(years=range(current_year, current_year + 1)))
+# #  zamienić na wybierz tydzień ?
+#     MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
+#     selected_month = forms.ChoiceField(choices=MONTH_CHOICES, label='Wybierz miesiąc')
+    selected_days = forms.MultipleChoiceField(
+        choices=[], 
+        widget=forms.CheckboxSelectMultiple(), 
+        label='Wybierz dni')
     
-    selected_date = forms.DateField(widget=forms.SelectDateWidget)
+    # selected_date = forms.DateField(widget=forms.SelectDateWidget)
+
     start_time = forms.TimeField(
-        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]), label='Czas rozpoczęcia'
+        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)],  
+                            attrs={'class':'form-group dropdown bg-info text-light'}), 
+        label='Czas rozpoczęcia'
     )
     end_time = forms.TimeField(
-        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)]), label='Czas zakończenia'
+        widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)],  
+                            attrs={'class':'form-group dropdown bg-info text-light'}), 
+        label='Czas zakończenia'
     )
-    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja')
-    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania')
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka')
+    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja', widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
+    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
 
     
     
@@ -169,10 +132,18 @@ class AvailabilityForm(forms.Form):
         # ten zakres miesiąca do przodu mi coś nie działa 
         today = timezone.now().date()
         four_weeks_later = today + timedelta(weeks=4)
-        date_range = [today + timedelta(days=x) for x in range((four_weeks_later - today).days) if (today + timedelta(days=x)).weekday != 5 or (today + timedelta(days=x)).weekday != 6]
+        date_range = [today + timedelta(days=x) for x in range(20) if (today + timedelta(days=x)).weekday != 5 or (today + timedelta(days=x)).weekday != 6]
         # self.fields['selected_date'].initial = today
-        self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
-        self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
+        # choices, names = [((d, d), d.weekday)  for d in date_range]
+        # names = [calendar.day_name[day] for day in range(0, 6)]
+        # self.fields['selected_days'].widget.attrs.update({'class': 'col'})
+        self.fields['selected_days'].choices = [(d, d)  for d in date_range]
+        # self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
+        # self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
+        
+
+
+
 
     def clean_selected_days(self):
             selected_days = self.cleaned_data['selected_days']
@@ -186,10 +157,10 @@ class AvailabilityForm(forms.Form):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         selected_service = cleaned_data.get('service')
-        selected_date = cleaned_data.get('selected_date')
+        # selected_date = cleaned_data.get('selected_date')
 
-        if selected_date and selected_date < timezone.now().date():
-            raise forms.ValidationError("Data nie może być z przeszłości")
+        # if selected_date and selected_date < timezone.now().date():
+        #     raise forms.ValidationError("Data nie może być z przeszłości")
 
         if start_time and end_time and start_time >= end_time:
             raise forms.ValidationError("Błędnie wybrany przedział czasu")
@@ -200,6 +171,5 @@ class AvailabilityForm(forms.Form):
             if int(cleaned_data['duration']) > int(total_minutes):
                 raise forms.ValidationError("Czas trwania usługi przekracza dostępny przedział czasowy")
             
-
         return cleaned_data
 

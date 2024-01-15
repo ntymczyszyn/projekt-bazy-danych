@@ -127,6 +127,9 @@ class Appointment(models.Model):
     )
     patient_id = models.ForeignKey('Patient', on_delete=models.SET_NULL, null=True, blank=True)
 
+#  to nie działa :((
+    # time_to_visit = appointment_time - timezone.now()
+
     class Meta:
         ordering = ['appointment_time']
     

@@ -119,7 +119,7 @@
                                     <li>        
                                         {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                                     </li>
-                                    {% if appointment.status == 'c' %}
+                                    {% if time_now >= appointment.appointment_time  %}
                                     <li>
                                         <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
                                             {% csrf_token %}
