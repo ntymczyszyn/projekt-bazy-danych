@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anulowanie rezerwacji wizyty</title>
+</head>
+<body>
+    <h2>Odwołanie Wizyty</h2>
+    <p>Informujemy o odwołaniu wizyty w PROMED.</p>
+    
+    <h3>Informacje o Wizycie:</h3>
+    <ul>
+        <li><strong>Lekarz:</strong> {{ appointment.service_id.doctor_id }}, {{ appointment.service_id.specialzation_id.name }}</li>
+        <li><strong>Data:</strong> {{ appointment.formatted_appointment_time }}</li>
+        <li><strong>Placówka:</strong> {{ appointment.facility_id }}</li>
+    </ul>
+    
+    <p>Pozdrawiamy,</p>
+    <p>Zespół PROMED</p>
+</body>
+</html>

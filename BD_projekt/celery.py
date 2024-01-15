@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from django.utils.html import strip_tags
 # celery -A BD_projekt worker --loglevel=INFO --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo
 # celery -A BD_projekt beat -l INFO
 
@@ -41,21 +42,24 @@ def send_email_appointment_reminder():
 
     for appointment in appointments:
         subject = 'Nadchodząca wizyta w Promed'
-        html_message = render_to_string('appointment_reminder_email.html', {
-            'doctor_name': appointment.service_id.doctor_id,
-            'doctor_specialization': appointment.service_id.specialzation_id.name,
-            'appointment_date': appointment.appointment_time.strftime('%Y-%m-%d %H:%M'),
-            'facility_name': appointment.facility_id,
+        html_message = render_to_string('email/appointment_reminder_email.html', {
+            'appointment': appointment,
         })
-        from_email = 'promed.administration@promed.pl'
+        plain_message = strip_tags(html_message)
+        from_email = settings.DEFAULT_FROM_EMAIL
         recipient_email = appointment.patient_id.user_id.email if appointment.patient_id.user_id.email else ''
 
         if recipient_email:
-            recipient_list = [recipient_email]
-            send_mail(subject, '', from_email, recipient_list, html_message=html_message)
+            send_mail(
+                subject,
+                plain_message, 
+                from_email,
+                [recipient_email],
+                html_message=html_message, 
+            )
 
     return "Reminder email sent. :)"
-
+    
 @app.task
 def change_unused_appointments_status():
     yesterday = timezone.now() - timezone.timedelta(days=1)

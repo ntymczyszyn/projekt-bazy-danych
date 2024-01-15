@@ -11,8 +11,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib import messages
-from .tasks import send_email_appointment_confirmation
-
+from .tasks import send_email_appointment_confirmation, send_email_appointment_cancel
+from django.db import transaction
+from django.conf import settings
 
 class MyLogoutView(LogoutView):
     next_page = '/promed/accounts/logout/'
@@ -86,7 +87,6 @@ def patient_dashboard_view(request):
     booked_appointments.sort(key=lambda x: x.appointment_time)
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
     past_appointments.sort(key=lambda x: x.appointment_time)
-
 
     return render(
         request,
@@ -163,7 +163,7 @@ def register_patient_view(request):
         if form.is_valid():
             user = form.save()
             user_registered_patient_site.send(sender=user.__class__, user=user, created=True)
-            send_welcome_email_patient(user.email)
+            send_welcome_email_patient(user.email, user.username)
             return redirect('home_patient')
     else:
         form = CustomUserCreationForm()
@@ -217,7 +217,6 @@ def appointment_search_patient_view(request,specialization_id):
         if start_date and end_date:
             appointments = appointments.filter(appointment_time__date__range=(start_date, end_date))
 
-        # Ustaw odpowiednie przedziały czasowe
         if time_slot == '7-12':
             appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='12:00')
         elif time_slot == '12-17':
@@ -242,12 +241,9 @@ def complete_book_appointment_view(request, pk):
         appointment.patient_id = patient
         appointment.status = 'b'  
         appointment.save()
-        # ------ mail o potwierdzenie wizyty ------
-        subject = 'Potwierdzenie rezerwacji wizyty'
-        message = 'Dziękujemy za rezerwację wizyty. Wizyta została zarezerwowana. Prosimy pamiętać o potwierdzeniu wizyty!'
-        from_email = 'promed.administration@promed.pl'
+        # ------ mail o rezerwacje wizyty ------
         recipient = request.user.email
-        send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
+        send_email_appointment_confirmation.delay(recipient, appointment.id)
         #------------------------------------------
         messages.success(request, 'Rezerwacja zakończona pomyślnie.')
     except Exception as e:
@@ -259,12 +255,14 @@ def cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_cancellation.html', {'appointment': appointment,})
 
+@transaction.atomic
 def complete_cancel_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     try:
         appointment.patient_id = None
         appointment.status = 'a'  
         appointment.save()
+        send_email_appointment_cancel.delay(request.user.patient, appointment.id)
         messages.success(request, 'Anulowano wizytę.')
     except Exception as e:
         messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')
@@ -279,17 +277,8 @@ def complete_confirm_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
 
     try:
-        # patient = request.user.patient
-        # appointment.patient_id = patient
         appointment.status = 'c'  
         appointment.save()
-        # ------ mail o potwierdzenie wizyty ------
-        subject = 'Potwierdzenie wizyty'
-        message = 'Dziękujemy za wybranie PROMED. Wizyta została pomyślnie zatwierdzona.'
-        from_email = 'promed.administration@promed.pl'
-        recipient = request.user.email
-        send_email_appointment_confirmation.delay(subject, message, from_email, recipient)
-        #------------------------------------------
         messages.success(request, 'Potwierdzanie zakończono pomyślnie.')
     except Exception as e:
         messages.error(request, f'Błąd podczas potwierdzania wizyty: {str(e)}')
@@ -518,7 +507,6 @@ def get_dates_for_days(year, month, selected_days):
 
     return dates_for_selected_days
 
-
 def confirm_appointment_doctor_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointments_doctor_confirm.html', {'appointment': appointment,})
@@ -534,6 +522,10 @@ def confirm_appointment_doctor_done_view(request, pk):
 
     return redirect(reverse('doctor_dashboard'))
 
+class AppointmentDetailDoctorView(generic.DeleteView):
+    model = Appointment
+    template_name = 'appointment_detail_doctor.html'
+    context_object_name = 'appointment'
 
 # INNE --------------------------------------------------------------------------------------
 class FacilityDetailView(generic.DetailView):
@@ -546,40 +538,17 @@ class AppointmentDetailView(generic.DetailView):
     context_object_name = 'appointment'
 
 # MAIL ----------------------------------------------------------------------------------------
-def send_welcome_email_patient(user_email, username):
+def send_welcome_email_patient(recipient_email, username):
     subject = 'Witamy w Promed'
-    html_message = render_to_string('registration/pateint/welcome_email_.html', {'username': username})
+    html_message = render_to_string('email/welcome_email.html', 
+                                    {'username': username})
     plain_message = strip_tags(html_message)
-    from_email = 'promed.administration@promed.pl'
-    recipient_list = [user_email]
-
-    send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
-
-def send_appointment_reminder_email(recipient_email, appointment):
-    pass
-
-def send_reminder_email_for_upcoming_appointments():
-    # Pobierz wszystkie zarezerwowane wizyty na następny dzień
-    tomorrow = timezone.now() + timezone.timedelta(days=1)
-    appointments = Appointment.objects.filter(status='b', appointment_time__date=tomorrow)
-
-    for appointment in appointments:
-        subject = 'Nadchodząca wizyta w Promed'
-        html_message = render_to_string('appointment_reminder_email.html', {
-            'doctor_name': appointment.service_id.doctor_id,
-            'doctor_specialization': appointment.service_id.doctor_id.specialization_id.name,
-            'appointment_date': appointment.appointment_time.strftime('%Y-%m-%d %H:%M'),
-            'facility_name': appointment.facility_id,
-        })
-        from_email = 'promed.administration@promed.pl'
-        recipient_email = appointment.patient_id.user_id.email if appointment.patient_id.user_id.email else ''
-
-        if recipient_email:
-            recipient_list = [recipient_email]
-            # send_email_appointment_reminder.delay()
-            
-
-class AppointmentDetailDoctorView(generic.DeleteView):
-    model = Appointment
-    template_name = 'appointment_detail_doctor.html'
-    context_object_name = 'appointment'
+    from_email = settings.DEFAULT_FROM_EMAIL
+   
+    send_mail(
+                subject,
+                plain_message,  
+                from_email,
+                [recipient_email],
+                html_message=html_message, 
+            )

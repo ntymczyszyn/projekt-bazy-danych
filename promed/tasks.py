@@ -15,33 +15,71 @@ import time
 import json
 from .models import Appointment, Patient, Doctor, Service, Specialization, Facility
 from django.utils import timezone
-from django.template.loader import render_to_string
 
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 @shared_task(serializer='json', name="send_appointment_confirmation_mail")
-def send_email_appointment_confirmation(subject, message, sender, receiver):    
-    send_mail(subject, message, sender, [receiver])
-    return "Wysłano maila z potwierdzeniem rezerwacji!"
+def send_email_appointment_confirmation(recipient, appointment_id):
+    try:
+        appointment = Appointment.objects.get(id=appointment_id)
+        subject = 'Potwierdzenie wizyty'
+        html_message = render_to_string('email/appointment_confirmation_email.html', {
+            'appointment': appointment,
+        })
+        plain_message = strip_tags(html_message)
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_email = recipient
 
-# # codzienne przypomnienia o 23.59
-# @shared_task(bind=True, serializer='json', name="send_appointment_reminder_mail")
-# def send_email_appointment_reminder(self):
-#     tomorrow = timezone.now() + timezone.timedelta(days=1)
-#     appointments = Appointment.objects.filter(status='b', appointment_time__date=tomorrow)
+        send_mail(
+            subject,
+            plain_message,  # Tekstowa wersja e-maila
+            from_email,
+            [recipient_email],
+            html_message=html_message,  # HTMLowa wersja e-maila
+        )
 
-#     for appointment in appointments:
-#         subject = 'Nadchodząca wizyta w Promed'
-#         html_message = render_to_string('appointment_reminder_email.html', {
-#             'doctor_name': appointment.service_id.doctor_id,
-#             'doctor_specialization': appointment.service_id.doctor_id.specialization_id.name,
-#             'appointment_date': appointment.appointment_time.strftime('%Y-%m-%d %H:%M'),
-#             'facility_name': appointment.facility_id,
-#         })
-#         from_email = 'promed.administration@promed.pl'
-#         recipient_email = appointment.patient_id.user_id.email if appointment.patient_id.user_id.email else ''
+        return "Wysłano maila z potwierdzeniem rezerwacji!"
+    except Appointment.DoesNotExist:
+        return "Błąd: Wizyta nie istnieje."
 
-#         if recipient_email:
-#             recipient_list = [recipient_email]
-#             send_mail(subject, '', from_email, recipient_list, html_message=html_message)
+@shared_task(serializer='json', name="send_appointment_cancel_mail")
+def send_email_appointment_cancel(recipient, appointment_id):
+    try:
+        appointment = Appointment.objects.get(id=appointment_id)
+        subject = 'Odwołanie wizyty'
+        html_message = render_to_string('email/appointment_cancel_email.html', {
+            'appointment': appointment,
+        })
+        plain_message = strip_tags(html_message)
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_email = recipient
 
-#     return "Reminder email sent. :)"
+        send_mail(
+            subject,
+            plain_message,  
+            from_email,
+            [recipient_email],
+            html_message=html_message, 
+        )
+        return "Wysłano maila z info o odwołaniu wizyty"
+    except Appointment.DoesNotExist:
+        return "Błąd: Wizyta nie istnieje."
+
+# @shared_task
+# def send_welcome_email_patient(recipient_email, username):
+#     subject = 'Witamy w Promed'
+#     html_message = render_to_string('email/welcome_email_.html', 
+#                                     {'username': username})
+#     plain_message = strip_tags(html_message)
+#     from_email = settings.DEFAULT_FROM_EMAIL
+   
+#     send_mail(
+#                 subject,
+#                 plain_message,  
+#                 from_email,
+#                 [recipient_email],
+#                 html_message=html_message, 
+#             )

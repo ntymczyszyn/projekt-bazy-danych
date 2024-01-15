@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Przypomnienie o nadchodzącej wizycie</title>
+</head>
+<body>
+    <p>Witaj!</p>
+    <p>Przypominamy o nadchodzącej wizycie w jednej z naszych placówek.</p>
+
+    <h2>Szczegóły:</h2>
+    <ul>
+        <li><strong>Lekarz:</strong> {{ appointment.service_id.doctor_id }}, {{ appointment.service_id.specialzation_id.name }}</li>
+        <li><strong>Data:</strong> {{ appointment.formatted_appointment_time }}</li>
+        <li><strong>Placówka:</strong> {{ appointment.facility_id }}</li>
+    </ul>
+    <p>Przypomianmy o możliwości potwierdzenia wizyty przez naszą stronę. 
+        Moża też zrobić to bezpośrednio w rejestracji danej placówki. Zapraszamy 15 min przed umówioną wizytą.</p>
+    <p>Dziękujemy za skorzystanie z naszych usług!</p>
+</body>
+</html>

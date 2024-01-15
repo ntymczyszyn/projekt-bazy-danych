@@ -145,6 +145,7 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # do emaila się przyda
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'promed.administration@promed.pl'
 
 # do wyświetlania dodatkowych informacji
 if DEBUG:
