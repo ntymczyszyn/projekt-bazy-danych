@@ -73,7 +73,7 @@
                                         {% csrf_token %}
                                         <button type="submit" id="topright" style="font-size: 15px;">Szczegóły</button>
                                     </form>
-                                    {% if appointment.status == 'b'  %}
+                                    {% if appointment.status == 'b' and 6 >= time_to_visit %}
                                         <form action="{% url 'confirm_appointment' pk=appointment.id %}">
                                             {% csrf_token %}
                                             <button type="submit" id="topright" style="font-size: 15px;">Potwierdź wizytę</button>

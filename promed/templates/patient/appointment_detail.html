@@ -7,6 +7,8 @@
         <p><strong>Rodzaj wizyty:</strong> {{ appointment.service_id }}</p>
         <p><strong>Czas wizyty:</strong> {{ appointment.formatted_appointment_time }}</p>
         <p><strong>Status wizyty:</strong> {{ appointment.get_status_display }}</p>
-        {% comment %} <p><strong>Patient:</strong> {{ appointment.patient_id }}</p> {% endcomment %}
+        {% comment %} <br>
+        <p><strong>Wizyta za </strong>{{ appointment.time_to_visit }}<strong> godzin</strong></p>
+        <p><strong>Patient:</strong> {{ appointment.patient_id }}</p> {% endcomment %}
     </section>
 {% endblock %}

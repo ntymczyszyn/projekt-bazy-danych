@@ -96,11 +96,6 @@ class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 
 
 class AvailabilityForm(forms.Form):
-#     current_year = datetime.now().year
-#     select_year = forms.DateField(widget=forms.SelectDateWidget(years=range(current_year, current_year + 1)))
-# #  zamienić na wybierz tydzień ?
-#     MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
-#     selected_month = forms.ChoiceField(choices=MONTH_CHOICES, label='Wybierz miesiąc')
     selected_days = forms.MultipleChoiceField(
         choices= [], 
         widget=forms.CheckboxSelectMultiple(), 
@@ -140,16 +135,12 @@ class AvailabilityForm(forms.Form):
         next_week = today + timedelta(weeks=1)
         date_range = []
         for x in range(28):
-            if ((next_week + timedelta(days=x)).weekday != 5 and (next_week + timedelta(days=x)).weekday != 6):
-                date_range.append(next_week + timedelta(days=x))
+            date = next_week + timedelta(days=x)
+            if (calendar.weekday(date.year, date.month, date.day) != 5 and calendar.weekday(date.year, date.month, date.day) != 6):
+                date_range.append(date)
 
-
-        # date_range = [next_week + timedelta(days=x) for x in range(20) if ((next_week + timedelta(days=x)).weekday != 5 and (next_week + timedelta(days=x)).weekday != 6)]
-
-        # self.fields['selected_days'].widget.attrs.update({'class': 'col'})
+        # self.fields['selected_days'].widget.attrs.update({'class': 'd-flex justify-content-center'})
         self.fields['selected_days'].choices = [(d, d)  for d in date_range]
-        # self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
-        # self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
         
 
 # Na razie się poddaje...
