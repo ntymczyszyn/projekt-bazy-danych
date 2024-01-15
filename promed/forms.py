@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from datetime import date
 
+css_styles = 'form-group dropdown bg-light text.dark'
+
 class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, label='Imię')
     last_name = forms.CharField(max_length=30, required=True, label='Nazwisko')
@@ -29,12 +31,13 @@ class AppointmentSearchForm(forms.Form):
         ('17-20', '17:00 - 20:00'),
     ]
     #  tu by trzeba było usunąć możliwość wybrania siebie samego
-    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
+    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class': css_styles}))
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class': css_styles}))
+    # city = 
     # date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
-    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class':'form-group dropdown bg-info text-light'}), label='Od')
-    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class':'form-group dropdown bg-info text-light'}), label='Do')
-    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': css_styles}), label='Od')
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': css_styles}), label='Do')
+    time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'class': css_styles}))
     
     def __init__(self, *args, **kwargs):
             doctor = kwargs.pop('doctor', None)
@@ -99,7 +102,7 @@ class AvailabilityForm(forms.Form):
 #     MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
 #     selected_month = forms.ChoiceField(choices=MONTH_CHOICES, label='Wybierz miesiąc')
     selected_days = forms.MultipleChoiceField(
-        choices=[], 
+        choices= [], 
         widget=forms.CheckboxSelectMultiple(), 
         label='Wybierz dni')
     
@@ -107,42 +110,49 @@ class AvailabilityForm(forms.Form):
 
     start_time = forms.TimeField(
         widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)],  
-                            attrs={'class':'form-group dropdown bg-info text-light'}), 
+                            attrs={'class': css_styles}), 
         label='Czas rozpoczęcia'
     )
     end_time = forms.TimeField(
         widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)],  
-                            attrs={'class':'form-group dropdown bg-info text-light'}), 
+                            attrs={'class':css_styles}), 
         label='Czas zakończenia'
     )
-    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja', widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
-    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka',  widget=forms.Select( attrs={'class':'form-group dropdown bg-info text-light'}))
+    specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja', widget=forms.Select( attrs={'class': css_styles}))
+    duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania',  widget=forms.Select( attrs={'class': css_styles}))
+    # city = forms.ModelChoiceField(queryset=Facility.objects.only('city'), label='Placówka',  widget=forms.Select( attrs={'class': css_styles})) 
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka',  widget=forms.Select( attrs={'class': css_styles}))
 
     
     
     def __init__(self, *args, **kwargs):
         doctor = kwargs.pop('doctor', None)
         available_specializations = Specialization.objects.filter(service__doctor_id=doctor)
+        # city = Facility.objects.only(city)
         available_facilities = Facility.objects.all()
         super(AvailabilityForm, self).__init__(*args, **kwargs)
 
         self.fields['specialization'].queryset = available_specializations
         self.fields['facility'].queryset = available_facilities
         # ten zakres miesiąca do przodu mi coś nie działa 
+        
         today = timezone.now().date()
-        four_weeks_later = today + timedelta(weeks=4)
-        date_range = [today + timedelta(days=x) for x in range(20) if (today + timedelta(days=x)).weekday != 5 or (today + timedelta(days=x)).weekday != 6]
-        # self.fields['selected_date'].initial = today
-        # choices, names = [((d, d), d.weekday)  for d in date_range]
-        # names = [calendar.day_name[day] for day in range(0, 6)]
+        next_week = today + timedelta(weeks=1)
+        date_range = []
+        for x in range(28):
+            if ((next_week + timedelta(days=x)).weekday != 5 and (next_week + timedelta(days=x)).weekday != 6):
+                date_range.append(next_week + timedelta(days=x))
+
+
+        # date_range = [next_week + timedelta(days=x) for x in range(20) if ((next_week + timedelta(days=x)).weekday != 5 and (next_week + timedelta(days=x)).weekday != 6)]
+
         # self.fields['selected_days'].widget.attrs.update({'class': 'col'})
         self.fields['selected_days'].choices = [(d, d)  for d in date_range]
         # self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
         # self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
         
 
-
+# Na razie się poddaje...
 
 
     def clean_selected_days(self):

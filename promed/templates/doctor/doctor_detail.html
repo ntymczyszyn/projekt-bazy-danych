@@ -2,12 +2,12 @@
 
 {% block content %}
     <section>
-        <h2>Informacje o Lekarzu</h2>
+        <h2 style="font-size: large; font-weight: bold;">Informacje o Lekarzu</h2>
         <p><strong>Imię:</strong> {{ doctor.user_id.first_name }}</p>
         <p><strong>Nazwisko:</strong> {{ doctor.user_id.last_name }}</p>
         <p><strong>Numer Telefonu:</strong> {{ doctor.phone_number }}</p>
 
-        <h3>Specjalizacja:</h3>
+        <h3 style="font-size: medium; font-weight: bold;">Specjalizacja:</h3>
         <ul>
             {% for specialization in specializations %}
                 <li>{{ specialization.name }}</li>
