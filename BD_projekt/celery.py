@@ -25,8 +25,12 @@ app.conf.update(timezone = 'Europe/Warsaw')
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(hour=0, minute=42),
+        crontab(hour=23, minute=59),
         send_email_appointment_reminder, name="send_appointment_reminder_mail"
+    )
+    sender.add_periodic_task(
+        crontab(hour=0, minute=1),
+        send_email_appointment_reminder, name="change_unused_appointments_status"
     )
 
 @app.task
@@ -52,19 +56,15 @@ def send_email_appointment_reminder():
 
     return "Reminder email sent. :)"
 
-# app.conf.beat_schedule = {
-#     'send-appointment-remainder-mail-every-day': {
-#         'task': 'promed.tasks.send_email_appointment_reminder',
-#         'schedule': crontab(hour=23, minute=16),
-#     }
-# }
+@app.task
+def change_unused_appointments_status():
+    yesterday = timezone.now() - timezone.timedelta(days=1)
+    appointments_to_change = Appointment.objects.filter(
+        status='a',  
+        appointment_time__date=yesterday.date()
+    )
+    appointments_to_change.update(status='u') 
 
-# app.conf.beat_schedule = {
-#     'Send_mail_to_Client': {
-#     'task': 'promed.tasks.send_email_appointment_confirmation',
-#     'schedule': 30.0, #every 30 seconds it will be called
-#     }
-# }
-# Load task modules from all registered Django apps.
+
 app.autodiscover_tasks()
 

@@ -74,10 +74,10 @@
                                         <button type="submit" id="topright" style="font-size: 15px;">Szczegóły</button>
                                     </form>
                                     {% if appointment.status == 'b' %}
-                                    <form action="{% url 'confirm_appointment' pk=appointment.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" id="topright" style="font-size: 15px;">Potwierdź wizytę</button>
-                                    </form>
+                                        <form action="{% url 'confirm_appointment' pk=appointment.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" id="topright" style="font-size: 15px;">Potwierdź wizytę</button>
+                                        </form>
                                     {% endif %}
                                 </div>
                                 <br>
