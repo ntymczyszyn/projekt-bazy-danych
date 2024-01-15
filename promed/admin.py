@@ -34,9 +34,11 @@ admin.site.register(Service)
 admin.site.register(Specialization)
 
 @admin.register(Appointment)
-class AppointmentAdmin(admin.ModelAdmin):  
-    list_filter = ('status','appointment_time', 'facility_id','service_id__doctor_id')
+class AppointmentAdmin(admin.ModelAdmin):
+    list_filter = ('status', 'appointment_time', 'service_id__specialzation_id', 'service_id__doctor_id', 'facility_id')
     list_per_page = 200
+
+
 class ServiceInline(admin.TabularInline):
     model = Service
 
