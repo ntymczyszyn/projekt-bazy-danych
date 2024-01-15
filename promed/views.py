@@ -208,7 +208,7 @@ def appointment_search_patient_view(request,specialization_id):
         start_date = form.cleaned_data.get('start_date')
         end_date = form.cleaned_data.get('end_date')
         time_slot = form.cleaned_data.get('time_slot')
-        appointments = Appointment.objects.filter(status='a')
+        appointments = Appointment.objects.filter(status='a', service_id__specialzation_id=specialization)
 
         if doctor:
             appointments = appointments.filter(service_id__doctor_id=doctor)
@@ -386,6 +386,7 @@ def doctor_dashboard_view(request):
     reserved_appointments.sort(key=lambda x: x.appointment_time)
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
     past_appointments.sort(key=lambda x: x.appointment_time)
+    time_now = timezone.now()
 
     return render(
         request,
@@ -395,6 +396,7 @@ def doctor_dashboard_view(request):
             'reserved_appointments': reserved_appointments,
             'available_appointments': available_appointments,
             'confirmed_appointments': confirmed_appointments,
+            'time_now': time_now,
         }
     )
 
@@ -456,18 +458,20 @@ def doctor_availability(request):
 
         if form.is_valid():
             # tu dodawane jedynie narazie
-            selected_month = int(form.cleaned_data['selected_month'])
-            selected_days = [int(day) for day in form.cleaned_data['selected_days']]
+            # selected_month = int(form.cleaned_data['selected_month'])
+            selected_days = [day for day in form.cleaned_data['selected_days']]
+            # selected_dates = form.cleaned_data['selected_date']
+
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
             duration = form.cleaned_data['duration']
             selected_specialization = form.cleaned_data['specialization']
-            selected_dates = form.cleaned_data['selected_date']
             selected_facility = form.cleaned_data['facility']
 
             current_time = start_time
 
-            for selected_date in selected_dates:
+            for selected_date in selected_days:
+                selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
                 current_datetime = datetime.combine(selected_date, current_time)
                 end_datetime = datetime.combine(selected_date, end_time)
 
