@@ -87,6 +87,7 @@ def patient_dashboard_view(request):
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
     past_appointments.sort(key=lambda x: x.appointment_time)
 
+    
 
     return render(
         request,
@@ -208,7 +209,7 @@ def appointment_search_patient_view(request,specialization_id):
         start_date = form.cleaned_data.get('start_date')
         end_date = form.cleaned_data.get('end_date')
         time_slot = form.cleaned_data.get('time_slot')
-        appointments = Appointment.objects.filter(status='a', service_id__specialzation_id=specialization)
+        appointments = Appointment.objects.filter(status='a', service_id__specialzation_id=specialization, appointment_time__gte=timezone.now())
 
         if doctor:
             appointments = appointments.filter(service_id__doctor_id=doctor)
@@ -332,7 +333,7 @@ def doctor_dashboard_view(request):
     search_reserved = request.GET.get('search_reserved', '')
     search_available = request.GET.get('search_available', '')
     search_confirmed = request.GET.get('search_confirmed', '')
-    search_past = request.GET.get('search_past', '')
+    # search_past = request.GET.get('search_past', '')
 
     # Pobieramy wszystkie wizyty lekarza
     all_appointments = (
@@ -341,7 +342,7 @@ def doctor_dashboard_view(request):
     )
 
     # Dzielimy wizyty na przeszłe i nadchodzące one od syatusu powinny zależeć a nie od czasu
-    past_appointments = [appointment for appointment in all_appointments if (appointment.appointment_time < timezone.now() and (appointment.status == 'd' or appointment.status == 'a' or appointment.status == 'u'))]
+    # past_appointments = [appointment for appointment in all_appointments if appointment.status == 'd']
     future_appointments = [appointment for appointment in all_appointments if (appointment.appointment_time >= timezone.now() or  (appointment.status == 'c' and appointment.appointment_time < timezone.now()))]
 
     # Dzielimy nadchodzące wizyty na zarezerwowane i dostępne i potwierdzone
@@ -373,26 +374,26 @@ def doctor_dashboard_view(request):
                                or search_confirmed.lower() in appointment.facility_id.city.lower() 
                                or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()]
 
-    if search_past:
-        past_appointments = [appointment for appointment in past_appointments 
-                               if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
-                               or search_past.lower() in appointment.facility_id.street_address.lower() 
-                               or search_past.lower() in appointment.facility_id.postal_code.lower() 
-                               or search_past.lower() in appointment.facility_id.city.lower() 
-                               or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+    # if search_past:
+    #     past_appointments = [appointment for appointment in past_appointments 
+    #                            if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
+    #                            or search_past.lower() in appointment.facility_id.street_address.lower() 
+    #                            or search_past.lower() in appointment.facility_id.postal_code.lower() 
+    #                            or search_past.lower() in appointment.facility_id.city.lower() 
+    #                            or search_past.lower() in appointment.facility_id.voivodeship.lower()]
         
     
     available_appointments.sort(key=lambda x: x.appointment_time)
     reserved_appointments.sort(key=lambda x: x.appointment_time)
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
-    past_appointments.sort(key=lambda x: x.appointment_time)
+    # past_appointments.sort(key=lambda x: x.appointment_time)
     time_now = timezone.now()
 
     return render(
         request,
         'doctor_dashboard.html',
         {
-            'past_appointments': past_appointments,
+            # 'past_appointments': past_appointments,
             'reserved_appointments': reserved_appointments,
             'available_appointments': available_appointments,
             'confirmed_appointments': confirmed_appointments,
@@ -416,15 +417,26 @@ class DoctorPasswordChangeView(PasswordChangeView):
 def doctor_past_appointments_view(request):
     doctor = get_object_or_404(Doctor, user_id=request.user)
 
+    search_past = request.GET.get('search_past', '')
+
     # Pobieramy przeszłe wizyty lekarza
-    past_appointments = (
+    all_appointments = (
         Appointment.objects.filter(
             service_id__doctor_id=doctor,
-            appointment_time__lt=timezone.now()
         )
         .order_by('service_id__specialzation_id', 'status', 'appointment_time')
         .select_related('patient_id')
     )
+
+    past_appointments = [appointment for appointment in all_appointments if appointment.status == 'd']
+
+    if search_past:
+        past_appointments = [appointment for appointment in past_appointments 
+                                if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
+                                or search_past.lower() in appointment.facility_id.street_address.lower() 
+                                or search_past.lower() in appointment.facility_id.postal_code.lower() 
+                                or search_past.lower() in appointment.facility_id.city.lower() 
+                                or search_past.lower() in appointment.facility_id.voivodeship.lower()]
 
     return render(
         request,

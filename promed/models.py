@@ -127,15 +127,17 @@ class Appointment(models.Model):
     )
     patient_id = models.ForeignKey('Patient', on_delete=models.SET_NULL, null=True, blank=True)
 
-#  to nie działa :((
-    # time_to_visit = appointment_time - timezone.now()
-
     class Meta:
         ordering = ['appointment_time']
     
     def formatted_appointment_time(self):
         return self.appointment_time.strftime('%H:%M, %d-%m-%Y') if self.appointment_time else ''
-
+    # def time_until_appointment(self):
+    #     if self.appointment_time:
+    #         time_difference = self.appointment_time - timezone.now()
+    #         return time_difference.total_seconds() / 3600  # Convert seconds to hours
+    #     else:
+    #         return None
     def __str__(self):
         formatted_time = self.formatted_appointment_time()
         return f"{self.service_id} [{formatted_time}] [{self.facility_id}]"

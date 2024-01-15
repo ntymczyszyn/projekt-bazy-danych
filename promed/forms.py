@@ -102,7 +102,7 @@ class AvailabilityForm(forms.Form):
 #     MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
 #     selected_month = forms.ChoiceField(choices=MONTH_CHOICES, label='Wybierz miesiąc')
     selected_days = forms.MultipleChoiceField(
-        choices=[], 
+        choices= [], 
         widget=forms.CheckboxSelectMultiple(), 
         label='Wybierz dni')
     
@@ -135,19 +135,24 @@ class AvailabilityForm(forms.Form):
         self.fields['specialization'].queryset = available_specializations
         self.fields['facility'].queryset = available_facilities
         # ten zakres miesiąca do przodu mi coś nie działa 
+        
         today = timezone.now().date()
         next_week = today + timedelta(weeks=1)
-        date_range = [next_week + timedelta(days=x) for x in range(20) if (next_week + timedelta(days=x)).weekday != 5 or (next_week + timedelta(days=x)).weekday != 6]
-        # self.fields['selected_date'].initial = today
-        # choices, names = [((d, d), d.weekday)  for d in date_range]
-        # names = [calendar.day_name[day] for day in range(0, 6)]
+        date_range = []
+        for x in range(28):
+            if ((next_week + timedelta(days=x)).weekday != 5 and (next_week + timedelta(days=x)).weekday != 6):
+                date_range.append(next_week + timedelta(days=x))
+
+
+        # date_range = [next_week + timedelta(days=x) for x in range(20) if ((next_week + timedelta(days=x)).weekday != 5 and (next_week + timedelta(days=x)).weekday != 6)]
+
         # self.fields['selected_days'].widget.attrs.update({'class': 'col'})
         self.fields['selected_days'].choices = [(d, d)  for d in date_range]
         # self.fields['selected_date'].widget.choices = [(d, d) for d in date_range]
         # self.fields['selected_days'].choices = [(str(day), calendar.day_name[day]) for day in range(0, 6)] # till saturday max
         
 
-
+# Na razie się poddaje...
 
 
     def clean_selected_days(self):

@@ -15,28 +15,18 @@
             <h3>{{ specialization }}</h3>
             <div style="width: 490px; height: 300px; overflow: auto;">
                 <ul class="appointments">  
-                    {% regroup appointments by status as grouped_appointments %}
-                    {% for status, status_appointments in grouped_appointments %}
-                        <h4>{% if status == 'd' %}Zrealizowane{% elif appointment.status == 'u' %}Niezrealizowane{% endif %}</h4>
-                        {% for appointment in status_appointments %} 
-                        {% comment %} te style to tak tymczasowo 
-                            <form action="{% url 'appointment_detail_doctor' pk=appointment.id %}">
-                                {% csrf_token %}
-                                <button type="submit" id="topright">Szczegóły</button>
-                            </form> 
-                        {% endcomment %}
-                            <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}"  style="text-decoration: none; color: white">
+                    {% for appointment in appointments %} 
+                        <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}"  style="text-decoration: none; color: white">
                             <li>        
-                                {% if status == 'd' %}{{ appointment.patient_id }}{% endif %}
+                                {{ appointment.patient_id }}
                             </li>
                             <li>        
                                 {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                             </li>
-                            </a>
-                            <br>
-                        {% endfor %}
-                        <p>Liczba wizyt: {{ status_appointments|length }}</p>
+                        </a>
+                        <br>
                     {% endfor %}
+                    <p>Liczba wizyt: {{ appointments|length }}</p>
                 </ul>
             </div>
         {% endfor %}
