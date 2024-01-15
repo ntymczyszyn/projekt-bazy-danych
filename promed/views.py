@@ -233,17 +233,31 @@ def book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     return render(request, 'appointment_booking.html', {'appointment': appointment,})
 
+@transaction.atomic
 def complete_book_appointment_view(request, pk):
-    appointment = get_object_or_404(Appointment, id=pk)
+    new_appointment = get_object_or_404(Appointment, id=pk)
 
     try:
         patient = request.user.patient
-        appointment.patient_id = patient
-        appointment.status = 'b'  
-        appointment.save()
+        new_appointment.patient_id = patient
+        new_appointment.status = 'b'  
+        new_appointment.save()
+
+        existing_appointment = Appointment.objects.filter(
+            patient_id=request.user.patient,
+            status='b',  
+            service_id=new_appointment.service_id,
+            appointment_time__gt=new_appointment.appointment_time,
+        ).first()
+
+        if existing_appointment:
+            existing_appointment.patient_id = None
+            existing_appointment.status = 'a'
+            existing_appointment.save()
+
         # ------ mail o rezerwacje wizyty ------
         recipient = request.user.email
-        send_email_appointment_confirmation.delay(recipient, appointment.id)
+        send_email_appointment_confirmation.delay(recipient, new_appointment.id)
         #------------------------------------------
         messages.success(request, 'Rezerwacja zakończona pomyślnie.')
     except Exception as e:
