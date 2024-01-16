@@ -30,7 +30,7 @@
                     <button type="submit" id="topright">Search</button>
                 </form>
                 {% if past_appointments %}
-                    <div style="width: 30vw; height: 300px; overflow: auto;">
+                    <div class="scroll-container" style="width: 30vw; height: 300px;">
                         <ul class="appointments">
                             {% for appointment in past_appointments %} 
                                 <li>        
@@ -80,7 +80,7 @@
                     <button type="submit" id="topright">Search</button>
                 </form>
                 {% if booked_appointments %}
-                    <div style="width: 30vw; height: 300px; overflow: auto;">
+                    <div class="scroll-container" style="width: 30vw; height: 300px;">
                         <ul class="appointments">
                             {% for appointment in booked_appointments %} 
                                 <li>        
@@ -94,7 +94,7 @@
                                         {% csrf_token %}
                                         <button type="submit" id="topright" style="font-size: 15px;">Szczegóły</button>
                                     </form>
-                                    {% if appointment.status == 'b' and 6 >= time_to_visit %}
+                                    {% if appointment.status == 'b' and 6 >= appointment.time_to_visit %}
                                         <form action="{% url 'confirm_appointment' pk=appointment.id %}">
                                             {% csrf_token %}
                                             <button type="submit" id="topright" style="font-size: 15px;">Potwierdź wizytę</button>
@@ -136,7 +136,7 @@
                     <button type="submit" id="topright">Search</button>
                 </form>
                 {% if confirmed_appointments %}
-                    <div style="width: 30vw; height: 300px; overflow: auto;">
+                    <div class="scroll-container" style="width: 30vw; height: 300px;">
                         <ul class="appointments">
                             {% for appointment in confirmed_appointments %} 
                                 <li>        

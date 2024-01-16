@@ -13,10 +13,10 @@
         {% regroup past_appointments by service_id.specialzation_id as grouped_past_appointments %}
         {% for specialization, appointments in grouped_past_appointments %}
             <h3>{{ specialization }}</h3>
-            <div style="width: 490px; height: 300px; overflow: auto;">
+            <div class="scroll-container" style="width: 490px; height: 300px;">
                 <ul class="appointments">  
                     {% for appointment in appointments %} 
-                        <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}"  style="text-decoration: none; color: white">
+                        <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}"  style="text-decoration: none; color: rgb(12, 12, 12)">
                             <li>        
                                 {{ appointment.patient_id }}
                             </li>

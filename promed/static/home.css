@@ -264,6 +264,25 @@ section {
 hr.solid {
   border-top: 1px solid #dad7d7;
 }
+
+
+  /* Scroll bar */
+.scroll-container {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+/* .scroll-container {
+  width: 490px;
+  height: 300px;
+  overflow: auto;
+} */
+
+.scroll-container::-webkit-scrollbar {
+  width: 0 !important; 
+} 
+
+
 /* button */
 input[type=text], input[type=password] {
     width: 100%;

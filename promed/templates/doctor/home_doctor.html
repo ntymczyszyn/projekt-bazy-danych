@@ -7,25 +7,26 @@
         <div class="title" style="font-size: 15px;">Portal pracownika</div>
     </h1>
 </div>
-<section >
-    <div class="btn-help" style="width:500px; left:(50%-250px)">
-        <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
-        <div class="text-section">   
-            <h2>
-                <form action="{% url 'doctor_login' %}">
-                    {% csrf_token %}
-                    <button type="submit" id="topright" style="width:200px; height: 50px;">Zaloguj się</button>
-                </form>
-            </h2>
+<div style="display: flex; justify-content: center; height: 200px">
+    <section >
+        <div class="btn-help" style="width:500px; left:(50%-250px)">
+            <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
+            <div class="text-section">   
+                <h2>
+                    <form action="{% url 'doctor_login' %}">
+                        {% csrf_token %}
+                        <button type="submit" id="topright" style="width:200px; height: 50px;">Zaloguj się</button>
+                    </form>
+                </h2>
+           </div>
+            <div class="text-section">    
+                <h2>
+                    <a href="{% url 'admin:login' %}" style="text-decoration: none;">
+                        <button type="button" id="topright" style="width:200px; height: 50px;">Dla administratorów</button>
+                    </a>
+                </h2>
+            </div>
         </div>
-        <div class="text-section">   
-            <h2>
-                <a href="{% url 'admin:login' %}" style="text-decoration: none;">
-                    <button type="button" id="topright" style="width:200px; height: 50px;">Dla administratorów</button>
-                </a>
-            </h2>
-        </div>
-        
-    </div>
-</section>
+    </section>
+</div>
 {% endblock %}

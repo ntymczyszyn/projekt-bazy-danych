@@ -1,23 +1,28 @@
 {% extends 'base_home.html' %}
 {% load static %}
 {% block content %}
-<section>
-    <div class="btn-help" style="width:500px; left:(50% - 250px); margin: auto;">
-        <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
-        <div class="text-section">   
-            <h2>
-                <form action="{% url 'home_patient' %}">
-                    {% csrf_token %}
-                    <button type="submit" id="topright" style="width:200px; height: 50px;">Strefa pacjenta</button>
-                </form>
-            </h2>  
-            <h2>
-                <form action="{% url 'home_doctor' %}">
-                    {% csrf_token %}
-                    <button type="submit" id="topright" style="width:200px; height: 50px;">Strefa pracownika</button>
-                </form>
-            </h2>
+
+<div style="display: flex; justify-content: center; height: 300px">
+    <section>
+        <div class="btn-help" style="width:500px; left:(50% - 250px); margin: auto;">
+            <img src="{% static 'images/dzik_logo_2.png' %}" alt="Image" class="dzik-image">
+            <div class="text-section">   
+                <h2>
+                    <form action="{% url 'home_patient' %}">
+                        {% csrf_token %}
+                        <button type="submit" id="topright" style="width:200px; height: 50px;">Strefa pacjenta</button>
+                    </form>
+                </h2>
+            </div>
+            <div class="text-section">  
+                <h2>
+                    <form action="{% url 'home_doctor' %}">
+                        {% csrf_token %}
+                        <button type="submit" id="topright" style="width:200px; height: 50px;">Strefa pracownika</button>
+                    </form>
+                </h2>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 {% endblock %}

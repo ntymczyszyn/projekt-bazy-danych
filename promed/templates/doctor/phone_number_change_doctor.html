@@ -1,16 +1,13 @@
-{% extends 'base_patient.html' %}
+{% extends 'base_doctor.html' %}
 {% load static %}
 
 {% block content %}
 <section>
     <h2>Zmiana numeru telefonu</h2>
-    <form method="post" action="{% url 'patient_change_phone_number' %}">
+    <form method="post" action="{% url 'doctor_change_phone_number' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" id="topright">Zapisz</button>
     </form>
 </section>
 {% endblock %}
-
-
-

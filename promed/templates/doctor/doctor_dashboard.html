@@ -31,19 +31,19 @@
         <div class="row" style="height: 100%;">
             <section class="col-*-4 align-self-start" style="width: 27vw; height: 520px;">
                 <h3>Dostępne</h3>
-                {% if available_appointments %}
                     <form action="" method="get">
                         {% csrf_token %}
                         <input placeholder="Search" type="search" class="search_input" name="search_available" value="{{ search_available }}">
                         <button type="submit" id="topright">Search</button>
                     </form>
+                    {% if available_appointments %}
                     {% regroup available_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                        <div class="scroll-container" style="width: 25vw; height: 300px;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
-                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
+                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: rgb(12, 12, 12)">
                                     <li>        
                                         {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                                     </li>
@@ -78,19 +78,19 @@
             <section class="col-*-4 align-self-start" style="width: 27vw; height: 520px;">
                 <h3>Zarezerwowane</h3>
                 <br>
-                {% if reserved_appointments %}
                     <form action="" method="get">
                         {% csrf_token %}
                         <input placeholder="Search" type="search" class="search_input" name="search_reserved" value="{{ search_reserved }}">
                         <button type="submit" id="topright">Szukaj</button>
                     </form>
+                    {% if reserved_appointments %}
                     {% regroup reserved_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px;">
+                        <div class="scroll-container" style="width: 25vw; height: 300px;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
-                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
+                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: rgb(12, 12, 12)">
                                     <li>        
                                         {{ appointment.patient_id }}
                                     </li>
@@ -137,19 +137,19 @@
             &nbsp;
             <section class="col-*-4 align-self-start" style="width: 27vw; height: 520px;">
                 <h3>Potwierdzone</h3>
-                {% if confirmed_appointments %}
                     <form action="" method="get">
                         {% csrf_token %}
                         <input placeholder="Search" type="search" class="search_input" name="search_confirmed" value="{{ search_confirmed }}">
                         <button type="submit" id="topright">Szukaj</button>
                     </form>
+                    {% if confirmed_appointments %}
                     {% regroup confirmed_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px;">
+                        <div class="scroll-container" style="width: 25vw; height: 300px;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
-                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
+                                <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: rgb(12, 12, 12)">
                                     <li>        
                                         {{ appointment.patient_id }}
                                     </li>

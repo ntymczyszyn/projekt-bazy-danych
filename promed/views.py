@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from .models import Appointment, Patient, Doctor, Service, Specialization, Facility
-from .forms import PatientUpdateInfoForm, AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm, SpecializationSearchForm
+from .forms import DoctorUpdateInfoForm, PatientUpdateInfoForm, AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm, SpecializationSearchForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
@@ -62,7 +62,8 @@ def patient_dashboard_view(request):
                                or search_booked.lower() in appointment.facility_id.street_address.lower() 
                                or search_booked.lower() in appointment.facility_id.postal_code.lower() 
                                or search_booked.lower() in appointment.facility_id.city.lower() 
-                               or search_booked.lower() in appointment.facility_id.voivodeship.lower()]
+                               or search_booked.lower() in appointment.facility_id.voivodeship.lower()
+                               or search_booked in appointment.formatted_appointment_time()]
     
     if search_confirmed:
         confirmed_appointments = [appointment for appointment in confirmed_appointments 
@@ -72,7 +73,8 @@ def patient_dashboard_view(request):
                                or search_confirmed.lower() in appointment.facility_id.street_address.lower() 
                                or search_confirmed.lower() in appointment.facility_id.postal_code.lower() 
                                or search_confirmed.lower() in appointment.facility_id.city.lower() 
-                               or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()]
+                               or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()
+                               or search_confirmed in appointment.formatted_appointment_time()]
 
     if search_past:
         past_appointments = [appointment for appointment in past_appointments 
@@ -82,7 +84,8 @@ def patient_dashboard_view(request):
                                or search_past.lower() in appointment.facility_id.street_address.lower() 
                                or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                or search_past.lower() in appointment.facility_id.city.lower() 
-                               or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+                               or search_past.lower() in appointment.facility_id.voivodeship.lower()
+                               or search_past in appointment.formatted_appointment_time()]
     
     booked_appointments.sort(key=lambda x: x.appointment_time)
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
@@ -407,23 +410,30 @@ def doctor_dashboard_view(request):
                                or search_available.lower() in appointment.facility_id.street_address.lower() 
                                or search_available.lower() in appointment.facility_id.postal_code.lower() 
                                or search_available.lower() in appointment.facility_id.city.lower() 
-                               or search_available.lower() in appointment.facility_id.voivodeship.lower()]
+                               or search_available.lower() in appointment.facility_id.voivodeship.lower()
+                               or search_available in appointment.formatted_appointment_time()]
     
     if search_reserved:
         reserved_appointments = [appointment for appointment in reserved_appointments 
                                if  search_reserved.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_reserved.lower() in appointment.patient_id.user_id.first_name.lower()
+                               or search_reserved.lower() in appointment.patient_id.user_id.last_name.lower()
                                or search_reserved.lower() in appointment.facility_id.street_address.lower() 
                                or search_reserved.lower() in appointment.facility_id.postal_code.lower() 
                                or search_reserved.lower() in appointment.facility_id.city.lower() 
-                               or search_reserved.lower() in appointment.facility_id.voivodeship.lower()]
+                               or search_reserved.lower() in appointment.facility_id.voivodeship.lower()
+                               or search_reserved in appointment.formatted_appointment_time()]
         
     if search_confirmed:
         confirmed_appointments = [appointment for appointment in confirmed_appointments 
                                if  search_confirmed.lower() in appointment.service_id.specialzation_id.name.lower()
+                               or search_confirmed.lower() in appointment.patient_id.user_id.first_name.lower()
+                               or search_confirmed.lower() in appointment.patient_id.user_id.last_name.lower()
                                or search_confirmed.lower() in appointment.facility_id.street_address.lower() 
                                or search_confirmed.lower() in appointment.facility_id.postal_code.lower() 
                                or search_confirmed.lower() in appointment.facility_id.city.lower() 
-                               or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()]
+                               or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()
+                               or search_confirmed in appointment.formatted_appointment_time()]
 
     # if search_past:
     #     past_appointments = [appointment for appointment in past_appointments 
@@ -487,7 +497,22 @@ class DoctorPasswordChangeView(PasswordChangeView):
 
     def get_success_url(self):
         return reverse_lazy('doctor_dashboard') 
-    
+
+@login_required
+def change_info_doctor_view(request):
+    doctor = get_object_or_404(Doctor, user_id=request.user)
+
+    if request.method == 'POST':
+        form = DoctorUpdateInfoForm(request.POST)
+        if form.is_valid():
+            doctor.phone_number = form.cleaned_data['phone_number']
+            doctor.save()
+            return redirect('doctor_dashboard')
+    else:
+        form = DoctorUpdateInfoForm()
+
+    return render(request, 'phone_number_change_doctor.html', {'form': form})
+
 @login_required
 def doctor_past_appointments_view(request):
     doctor = get_object_or_404(Doctor, user_id=request.user)
@@ -513,8 +538,7 @@ def doctor_past_appointments_view(request):
                                 or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                 or search_past.lower() in appointment.facility_id.city.lower() 
                                 or search_past.lower() in appointment.facility_id.voivodeship.lower()
-                                or search_past in appointment.appointment_time.date
-                                or search_past in appointment.appointment_time.time ]
+                                or search_past in appointment.formatted_appointment_time() ]
     
     past_appointments.sort(key=lambda x: x.appointment_time)
 

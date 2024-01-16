@@ -42,6 +42,7 @@ urlpatterns += [
     path('doctor/password-change/', views.DoctorPasswordChangeView.as_view(), name='doctor_password_change'),
     path('doctor/appointment/<uuid:pk>/confirm', views.confirm_appointment_doctor_view, name='confirm_appointment_doctor'),
     path('doctor/appointment/<uuid:pk>/confirm/complete', views.confirm_appointment_doctor_done_view, name='complete_appointment_confirmation'),
+    path('doctor/phone-number-change/', views.change_info_doctor_view, name='doctor_change_phone_number'),
 ]
 
 # Django site authentication urls (for login, logout, password management)

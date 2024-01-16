@@ -21,7 +21,7 @@
           <h3>Znalezione wizyty:</h3>
           <br>
             <ul class="appointments">
-                <div style="width: 47vw; height: 400px; overflow: auto;">
+                <div class="scroll-container" style="width: 47vw; height: 400px;">
                   {% for appointment in page_appointments %}
                     <div class="button-container">
                       {{ appointment }}

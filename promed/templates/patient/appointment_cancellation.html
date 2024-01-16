@@ -2,10 +2,12 @@
 
 {% block content %}
     {{ block.super }}
-    <form method="post" action="{% url 'complete_appointment_cancellation' pk=appointment.id %}">
-        {% csrf_token %}
-        <div style="width:300px; left:(50% - 150px); margin: auto;" >
-            <button type="submit" id="topright">Odwołaj rezerwację</button>
-        </div>
-    </form>
+    {% if appointment.status == 'b' %}
+        <form method="post" action="{% url 'complete_appointment_cancellation' pk=appointment.id %}">
+            {% csrf_token %}
+            <div style="width:300px; left:(50% - 150px); margin: auto;" >
+                <button type="submit" id="topright">Odwołaj rezerwację</button>
+            </div>
+        </form>
+    {% endif %}
 {% endblock %}

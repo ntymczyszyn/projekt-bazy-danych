@@ -107,6 +107,8 @@ class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         html = f'<div class="row">{option_html.strip()}</div>'
         return mark_safe(html.replace('<input', '<div class="col">').replace('type="checkbox"', 'type="checkbox" class="col"'))
 
+class DoctorUpdateInfoForm(forms.Form):
+    phone_number = forms.CharField(max_length=9, label='Numer telefonu')
 
 class AvailabilityForm(forms.Form):
     selected_days = forms.MultipleChoiceField(
