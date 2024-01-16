@@ -25,7 +25,7 @@ class SpecializationSearchForm(forms.Form):
     city = forms.ModelChoiceField(
         queryset=Facility.objects.values_list('city', flat=True).distinct(),
         to_field_name='city',
-        empty_label=None,
+        empty_label='----------',
         required=True, label='Miasto', 
         widget=forms.Select(attrs={'class': css_styles})
     )

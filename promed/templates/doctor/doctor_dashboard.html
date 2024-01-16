@@ -40,7 +40,7 @@
                     {% regroup available_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px;">
+                        <div style="width: 25vw; height: 300px; overflow: auto;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
                                 <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">

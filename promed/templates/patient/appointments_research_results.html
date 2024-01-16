@@ -17,12 +17,12 @@
     &nbsp;
     <section class="col-*-*" style="width: 50vw; height: 520px;">
       <div style="margin-top: 0px;">
-          {% if appointments %}
+          {% if page_appointments %}
           <h3>Znalezione wizyty:</h3>
           <br>
             <ul class="appointments">
                 <div style="width: 47vw; height: 400px; overflow: auto;">
-                  {% for appointment in appointments %}
+                  {% for appointment in page_appointments %}
                     <div class="button-container">
                       {{ appointment }}
                       <form action="{% url 'book_appointment' pk=appointment.id %}">
@@ -32,6 +32,23 @@
                     </div>
                     <hr class="solid">
                   {% endfor %}
+                  <div class="pagination" style="justify-content: center;">
+                    <span class="step-links">
+                        {% if page_appointments.has_previous %}
+                            <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                            <a href="?page={{ page_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                        {% endif %}
+            
+                        <span class="current">
+                            Page {{ page_appointments.number }} of {{ page_appointments.paginator.num_pages }}.
+                        </span>
+            
+                        {% if page_appointments.has_next %}
+                            <a href="?page={{ page_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                            <a href="?page={{ page_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                  </div>
                 </div>
             </ul>
           {% else %}

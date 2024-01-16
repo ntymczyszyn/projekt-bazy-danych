@@ -90,7 +90,7 @@ def patient_dashboard_view(request):
 
 
     # RESERVED
-    paginator = Paginator(booked_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(booked_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         booked_appointments = paginator.page(page)
@@ -98,7 +98,7 @@ def patient_dashboard_view(request):
         booked_appointments = paginator.page(paginator.num_pages)
 
     #  CONFIRMED
-    paginator = Paginator(confirmed_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(confirmed_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         confirmed_appointments = paginator.page(page)
@@ -106,7 +106,7 @@ def patient_dashboard_view(request):
         confirmed_appointments = paginator.page(paginator.num_pages)
 
     # PAST
-    paginator = Paginator(past_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(past_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         past_appointments = paginator.page(page)
@@ -269,7 +269,14 @@ def appointment_search_patient_view(request, specialization_id, city):
         elif time_slot == 'all':
             appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='20:00')
 
-    return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
+    paginator = Paginator(appointments, 10)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        page_appointments = paginator.page(page)
+    except EmptyPage:
+        page_appointments = paginator.page(paginator.num_pages)
+
+    return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization, 'city': city, 'page_appointments': page_appointments})
 
 def book_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
@@ -434,7 +441,7 @@ def doctor_dashboard_view(request):
     time_now = timezone.now()
 
     # AVAILABLE
-    paginator = Paginator(available_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(available_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         available_appointments = paginator.page(page)
@@ -442,7 +449,7 @@ def doctor_dashboard_view(request):
         available_appointments = paginator.page(paginator.num_pages)
     
     # RESERVED
-    paginator = Paginator(reserved_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(reserved_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         reserved_appointments = paginator.page(page)
@@ -450,7 +457,7 @@ def doctor_dashboard_view(request):
         reserved_appointments = paginator.page(paginator.num_pages)
 
     #  CONFIRMED
-    paginator = Paginator(confirmed_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(confirmed_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         confirmed_appointments = paginator.page(page)
@@ -505,11 +512,13 @@ def doctor_past_appointments_view(request):
                                 or search_past.lower() in appointment.facility_id.street_address.lower() 
                                 or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                 or search_past.lower() in appointment.facility_id.city.lower() 
-                                or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+                                or search_past.lower() in appointment.facility_id.voivodeship.lower()
+                                or search_past in appointment.appointment_time.date
+                                or search_past in appointment.appointment_time.time ]
     
     past_appointments.sort(key=lambda x: x.appointment_time)
 
-    paginator = Paginator(past_appointments, 4)  # Show 10 appointments per page
+    paginator = Paginator(past_appointments, 9)  # Show 10 appointments per page
     page = request.GET.get('page', 1)
     try:
         past_appointments = paginator.page(page)
