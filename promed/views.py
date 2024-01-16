@@ -63,7 +63,9 @@ def patient_dashboard_view(request):
                                or search_booked.lower() in appointment.facility_id.postal_code.lower() 
                                or search_booked.lower() in appointment.facility_id.city.lower() 
                                or search_booked.lower() in appointment.facility_id.voivodeship.lower()
-                               or search_booked in appointment.formatted_appointment_time()]
+                               or search_booked in appointment.formatted_appointment_time()
+                               or search_booked in appointment.formatted_appointment_time().split(',')[1]
+                               or search_booked in appointment.formatted_appointment_time().split(',')[1].strip()]
     
     if search_confirmed:
         confirmed_appointments = [appointment for appointment in confirmed_appointments 
@@ -74,7 +76,9 @@ def patient_dashboard_view(request):
                                or search_confirmed.lower() in appointment.facility_id.postal_code.lower() 
                                or search_confirmed.lower() in appointment.facility_id.city.lower() 
                                or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()
-                               or search_confirmed in appointment.formatted_appointment_time()]
+                               or search_confirmed in appointment.formatted_appointment_time()
+                               or search_confirmed in appointment.formatted_appointment_time().split(',')[1]
+                               or search_confirmed in appointment.formatted_appointment_time().split(',')[1].strip()]
 
     if search_past:
         past_appointments = [appointment for appointment in past_appointments 
@@ -85,7 +89,9 @@ def patient_dashboard_view(request):
                                or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                or search_past.lower() in appointment.facility_id.city.lower() 
                                or search_past.lower() in appointment.facility_id.voivodeship.lower()
-                               or search_past in appointment.formatted_appointment_time()]
+                               or search_past in appointment.formatted_appointment_time()
+                               or search_past in appointment.formatted_appointment_time().split(',')[1]
+                               or search_past in appointment.formatted_appointment_time().split(',')[1].strip()]
     
     booked_appointments.sort(key=lambda x: x.appointment_time)
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
@@ -411,7 +417,9 @@ def doctor_dashboard_view(request):
                                or search_available.lower() in appointment.facility_id.postal_code.lower() 
                                or search_available.lower() in appointment.facility_id.city.lower() 
                                or search_available.lower() in appointment.facility_id.voivodeship.lower()
-                               or search_available in appointment.formatted_appointment_time()]
+                               or search_available in appointment.formatted_appointment_time()
+                               or search_available in appointment.formatted_appointment_time().split(',')[1]
+                               or search_available in appointment.formatted_appointment_time().split(',')[1].strip()]
     
     if search_reserved:
         reserved_appointments = [appointment for appointment in reserved_appointments 
@@ -422,7 +430,9 @@ def doctor_dashboard_view(request):
                                or search_reserved.lower() in appointment.facility_id.postal_code.lower() 
                                or search_reserved.lower() in appointment.facility_id.city.lower() 
                                or search_reserved.lower() in appointment.facility_id.voivodeship.lower()
-                               or search_reserved in appointment.formatted_appointment_time()]
+                               or search_reserved in appointment.formatted_appointment_time()
+                               or search_reserved in appointment.formatted_appointment_time().split(',')[1]
+                               or search_reserved in appointment.formatted_appointment_time().split(',')[1].strip()]
         
     if search_confirmed:
         confirmed_appointments = [appointment for appointment in confirmed_appointments 
@@ -433,7 +443,9 @@ def doctor_dashboard_view(request):
                                or search_confirmed.lower() in appointment.facility_id.postal_code.lower() 
                                or search_confirmed.lower() in appointment.facility_id.city.lower() 
                                or search_confirmed.lower() in appointment.facility_id.voivodeship.lower()
-                               or search_confirmed in appointment.formatted_appointment_time()]
+                               or search_confirmed in appointment.formatted_appointment_time()
+                               or search_confirmed in appointment.formatted_appointment_time().split(',')[1]
+                               or search_confirmed in appointment.formatted_appointment_time().split(',')[1].strip()]
 
     # if search_past:
     #     past_appointments = [appointment for appointment in past_appointments 
@@ -538,7 +550,9 @@ def doctor_past_appointments_view(request):
                                 or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                 or search_past.lower() in appointment.facility_id.city.lower() 
                                 or search_past.lower() in appointment.facility_id.voivodeship.lower()
-                                or search_past in appointment.formatted_appointment_time() ]
+                                or search_past in appointment.formatted_appointment_time()
+                                or search_past in appointment.formatted_appointment_time().split(',')[1]
+                                or search_past in appointment.formatted_appointment_time().split(',')[1].strip()]
     
     past_appointments.sort(key=lambda x: x.appointment_time)
 
