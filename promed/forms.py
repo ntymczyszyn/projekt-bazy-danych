@@ -97,6 +97,7 @@ logger = logging.getLogger(__name__)
 
 # do zrobienia odpowiednich style dla Checkboxów, ale nie działa
 from django.utils.safestring import mark_safe
+from dateutil.relativedelta import relativedelta
 
 class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
@@ -113,8 +114,6 @@ class AvailabilityForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(), 
         label='Wybierz dni')
     
-    # selected_date = forms.DateField(widget=forms.SelectDateWidget)
-
     start_time = forms.TimeField(
         widget=forms.Select(choices=[(f"{hour:02d}:{minute:02d}", f"{hour:02d}:{minute:02d}") for hour in range(7, 21) for minute in range(0, 60, 5)],  
                             attrs={'class': css_styles}), 
@@ -127,8 +126,6 @@ class AvailabilityForm(forms.Form):
     )
     specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja', widget=forms.Select( attrs={'class': css_styles}))
     duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania',  widget=forms.Select( attrs={'class': css_styles}))
-    # city_queryset = Facility.city
-    # city = forms.ModelChoiceField(queryset=Facility.objects.only('city'), label='Placówka',  widget=forms.Select( attrs={'class': css_styles})) 
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka',  widget=forms.Select( attrs={'class': css_styles}))
 
     
@@ -136,46 +133,66 @@ class AvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         doctor = kwargs.pop('doctor', None)
         available_specializations = Specialization.objects.filter(service__doctor_id=doctor)
-        # city = Facility.objects.only(city)
         available_facilities = Facility.objects.all()
         super(AvailabilityForm, self).__init__(*args, **kwargs)
 
         self.fields['specialization'].queryset = available_specializations
         self.fields['facility'].queryset = available_facilities
-        # ten zakres miesiąca do przodu mi coś nie działa 
         
         today = timezone.now().date()
-        next_week = today + timedelta(weeks=1)
+        month_start = today + relativedelta(day=1, months=1)
+        
+        x = 0
         date_range = []
-        for x in range(28):
-            date = next_week + timedelta(days=x)
+        date = month_start
+        while date.month == month_start.month:
             if (calendar.weekday(date.year, date.month, date.day) != 5 and calendar.weekday(date.year, date.month, date.day) != 6):
                 date_range.append(date)
+            x += 1
+            date = month_start + timedelta(days=x)
 
-        # self.fields['selected_days'].widget.attrs.update({'class': 'd-flex justify-content-center'})
+        self.fields['selected_days'].widget.attrs.update({'class': 'd-flex flex-wrap mx-5'})
         self.fields['selected_days'].choices = [(d, d)  for d in date_range]
-        
-
-# Na razie się poddaje...
+        # self.fields['selected_days'].choices = [(None, 'Select All')] + self.fields['selected_days'].choices 
 
 
     def clean_selected_days(self):
-            selected_days = self.cleaned_data['selected_days']
+        selected_days = self.cleaned_data['selected_days']
+        if selected_days is not None:
             if not selected_days:
                 raise forms.ValidationError("Select at least one day.")
             return selected_days
+       
+# # =============================
+#     def is_SelectAll(self):
+#         selected_days = self.cleaned_data['selected_days']
+#         if selected_days is None:
+#             return True
+#         else:
+#             return False
+        
+#     def select_all_days():
+#         today = timezone.now().date()
+#         month_start = today + relativedelta(day=1, months=1)
+        
+#         x = -1
+#         date_range = []
+#         date = month_start
+#         while date.month == month_start.month:
+#             if (calendar.weekday(date.year, date.month, date.day) != 5 and calendar.weekday(date.year, date.month, date.day) != 6):
+#                 date_range.append(date)
+#             x += 1
+#             date = month_start + timedelta(days=x)
 
+#         return [ d for d in date_range]
+# # =============================
 
     def clean(self):
         cleaned_data = super().clean()
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         selected_service = cleaned_data.get('service')
-        # selected_date = cleaned_data.get('selected_date')
-
-        # if selected_date and selected_date < timezone.now().date():
-        #     raise forms.ValidationError("Data nie może być z przeszłości")
-
+        
         if start_time and end_time and start_time >= end_time:
             raise forms.ValidationError("Błędnie wybrany przedział czasu")
 

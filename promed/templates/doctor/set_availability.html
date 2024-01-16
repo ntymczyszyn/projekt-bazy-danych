@@ -1,12 +1,22 @@
 {% extends 'base_doctor.html' %}
 
 {% block content %}
-    <section>
-    <h2>Wskaż dostępność</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" id="topright">Zatwierdź</button>
-    </form>
-    </section>
+    {% if today > 15 %}
+        <section style="width: 800px">
+            <h2>Wskaż dostępność</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" id="topright">Zatwierdź</button>
+            </form>
+        </section>
+    {% else %}
+        <section>
+            <h5>Wprowadzanie dostępności możliwe od 18.</h5>
+            <form action="{% url 'doctor_dashboard' %}">
+                {% csrf_token %}
+                <button type="submit" id="topright">Powrót na stronę główną</button>
+            </form>
+        </section>
+    {% endif %}
 {% endblock %}

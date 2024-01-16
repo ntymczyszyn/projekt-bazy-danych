@@ -484,15 +484,15 @@ from datetime import datetime, timedelta
 def doctor_availability(request):
     template_name = 'set_availability.html'
     doctor = Doctor.objects.get(user_id=request.user)
+    today = timezone.now().day
 
     if request.method == 'POST':
         form = AvailabilityForm(request.POST, doctor=doctor)
 
         if form.is_valid():
-            # tu dodawane jedynie narazie
-            # selected_month = int(form.cleaned_data['selected_month'])
+            # if form.is_SelectAll:
+            #     all_selected = form.select_all_days
             selected_days = [day for day in form.cleaned_data['selected_days']]
-            # selected_dates = form.cleaned_data['selected_date']
 
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
@@ -532,7 +532,7 @@ def doctor_availability(request):
     else:
         form = AvailabilityForm(doctor=doctor)
 
-    return render(request, template_name, {'form': form})
+    return render(request, template_name, {'form': form, 'today': today})
 
 from datetime import datetime, timedelta
 
