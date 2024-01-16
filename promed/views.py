@@ -88,6 +88,31 @@ def patient_dashboard_view(request):
     confirmed_appointments.sort(key=lambda x: x.appointment_time)
     past_appointments.sort(key=lambda x: x.appointment_time)
 
+
+    # RESERVED
+    paginator = Paginator(booked_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        booked_appointments = paginator.page(page)
+    except EmptyPage:
+        booked_appointments = paginator.page(paginator.num_pages)
+
+    #  CONFIRMED
+    paginator = Paginator(confirmed_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        confirmed_appointments = paginator.page(page)
+    except EmptyPage:
+        confirmed_appointments = paginator.page(paginator.num_pages)
+
+    # PAST
+    paginator = Paginator(past_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        past_appointments = paginator.page(page)
+    except EmptyPage:
+        past_appointments = paginator.page(paginator.num_pages)
+
     return render(
         request,
         'patient_dashboard.html',
@@ -200,7 +225,7 @@ class PatientPasswordChangeView(PasswordChangeView):
 def appointment_search_specialization_view(request):
     form =  SpecializationSearchForm(request.GET)
     specializations = Specialization.objects.all()
-    cities = Facility.city
+    city = Facility.city
 
     if form.is_valid():
         specialization = form.cleaned_data.get('specialization')
@@ -208,7 +233,7 @@ def appointment_search_specialization_view(request):
         if specialization and city:
             return redirect('appointment_search', specialization_id=specialization.id, city=city)
 
-    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations, 'cities': cities})
+    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations, 'city': city})
 
 @login_required
 def appointment_search_patient_view(request, specialization_id, city):
@@ -243,7 +268,6 @@ def appointment_search_patient_view(request, specialization_id, city):
             appointments = appointments.filter(appointment_time__time__gte='17:00', appointment_time__time__lt='20:00')
         elif time_slot == 'all':
             appointments = appointments.filter(appointment_time__time__gte='07:00', appointment_time__time__lt='20:00')
-
 
     return render(request, 'appointments_research_results.html', {'form': form, 'appointments': appointments, 'specialization':specialization})
 
@@ -409,6 +433,30 @@ def doctor_dashboard_view(request):
     # past_appointments.sort(key=lambda x: x.appointment_time)
     time_now = timezone.now()
 
+    # AVAILABLE
+    paginator = Paginator(available_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        available_appointments = paginator.page(page)
+    except EmptyPage:
+        available_appointments = paginator.page(paginator.num_pages)
+    
+    # RESERVED
+    paginator = Paginator(reserved_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        reserved_appointments = paginator.page(page)
+    except EmptyPage:
+        reserved_appointments = paginator.page(paginator.num_pages)
+
+    #  CONFIRMED
+    paginator = Paginator(confirmed_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        confirmed_appointments = paginator.page(page)
+    except EmptyPage:
+        confirmed_appointments = paginator.page(paginator.num_pages)
+
     return render(
         request,
         'doctor_dashboard.html',
@@ -450,6 +498,7 @@ def doctor_past_appointments_view(request):
 
     past_appointments = [appointment for appointment in all_appointments if appointment.status == 'd']
 
+    amount = len(past_appointments)
     if search_past:
         past_appointments = [appointment for appointment in past_appointments 
                                 if search_past.lower() in appointment.service_id.specialzation_id.name.lower()
@@ -457,12 +506,21 @@ def doctor_past_appointments_view(request):
                                 or search_past.lower() in appointment.facility_id.postal_code.lower() 
                                 or search_past.lower() in appointment.facility_id.city.lower() 
                                 or search_past.lower() in appointment.facility_id.voivodeship.lower()]
+    
+    past_appointments.sort(key=lambda x: x.appointment_time)
+
+    paginator = Paginator(past_appointments, 4)  # Show 10 appointments per page
+    page = request.GET.get('page', 1)
+    try:
+        past_appointments = paginator.page(page)
+    except EmptyPage:
+        past_appointments = paginator.page(paginator.num_pages)
 
     return render(
         request,
         'doctor_past_appointments.html',
         {
-            'past_appointments': past_appointments,
+            'past_appointments': past_appointments, 'amount': amount,
         }
     )
 

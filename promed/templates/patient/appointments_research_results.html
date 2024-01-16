@@ -6,7 +6,7 @@
   <div class="row" >
     <section class="col-*-*" style="width: 30vw; height: 520px;">
       <h2 style="text-align: center;">Wyszukiwarka wizyt u {{specialization}}</h2>
-      <form method="get" action="{% url 'appointment_search' specialization_id=specialization.id city=city%}">
+      <form method="get" action="{% url 'appointment_search' specialization_id=specialization.id city=city %}">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="hidden" name="submitted" value="1">

@@ -26,7 +26,24 @@
                         </a>
                         <br>
                     {% endfor %}
-                    <p>Liczba wizyt: {{ appointments|length }}</p>
+                    <div class="pagination" style="justify-content: center;">
+                        <span class="step-links">
+                            {% if past_appointments.has_previous %}
+                                <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                <a href="?page={{ past_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                            {% endif %}
+                
+                            <span class="current">
+                                Page {{ past_appointments.number }} of {{ past_appointments.paginator.num_pages }}.
+                            </span>
+                
+                            {% if past_appointments.has_next %}
+                                <a href="?page={{ past_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                <a href="?page={{ past_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <p>Liczba wizyt: {{ amount }}</p>
                 </ul>
             </div>
         {% endfor %}

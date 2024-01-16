@@ -40,7 +40,7 @@
                     {% regroup available_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                        <div style="width: 25vw; height: 300px;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
                                 <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
@@ -50,6 +50,23 @@
                                     </a>
                                     <br>
                                 {% endfor %}
+                                <div class="pagination" style="justify-content: center;">
+                                    <span class="step-links">
+                                        {% if available_appointments.has_previous %}
+                                            <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                            <a href="?page={{ available_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                                        {% endif %}
+                            
+                                        <span class="current">
+                                            Page {{ available_appointments.number }} of {{ available_appointments.paginator.num_pages }}.
+                                        </span>
+                            
+                                        {% if available_appointments.has_next %}
+                                            <a href="?page={{ available_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                            <a href="?page={{ available_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
                             </ul>
                         </div>
                     {% endfor %}
@@ -70,7 +87,7 @@
                     {% regroup reserved_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                        <div style="width: 25vw; height: 300px;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
                                 <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
@@ -93,6 +110,23 @@
                                 </a>
                                 <br>
                                 {% endfor %}
+                                <div class="pagination" style="justify-content: center;">
+                                    <span class="step-links">
+                                        {% if reserved_appointments.has_previous %}
+                                            <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                            <a href="?page={{ reserved_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                                        {% endif %}
+                            
+                                        <span class="current">
+                                            Page {{ reserved_appointments.number }} of {{ reserved_appointments.paginator.num_pages }}.
+                                        </span>
+                            
+                                        {% if reserved_appointments.has_next %}
+                                            <a href="?page={{ reserved_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                            <a href="?page={{ reserved_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
                             </ul>
                         </div>
                     {% endfor %}
@@ -112,7 +146,7 @@
                     {% regroup confirmed_appointments by service_id.specialzation_id as grouped_appointments %}
                     {% for specialization, appointments in grouped_appointments %}
                         <h3>{{ specialization }}</h3>
-                        <div style="width: 25vw; height: 300px; overflow: auto;">
+                        <div style="width: 25vw; height: 300px;">
                             <ul class="appointments">
                                 {% for appointment in appointments %} 
                                 <a href="{% url 'appointment_detail_doctor' pk=appointment.id %}" style="text-decoration: none; color: white">
@@ -133,6 +167,23 @@
                                 </a>
                                 <br>
                                 {% endfor %}
+                                <div class="pagination" style="justify-content: center;">
+                                    <span class="step-links">
+                                        {% if confirmed_appointments.has_previous %}
+                                            <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                            <a href="?page={{ confirmed_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                                        {% endif %}
+                            
+                                        <span class="current">
+                                            Page {{ confirmed_appointments.number }} of {{ confirmed_appointments.paginator.num_pages }}.
+                                        </span>
+                            
+                                        {% if confirmed_appointments.has_next %}
+                                            <a href="?page={{ confirmed_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                            <a href="?page={{ confirmed_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
                             </ul>
                         </div>
                     {% endfor %}

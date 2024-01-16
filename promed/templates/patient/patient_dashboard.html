@@ -47,6 +47,23 @@
                                 </div>
                                 <br>
                             {% endfor %}
+                            <div class="pagination" style="justify-content: center;">
+                                <span class="step-links">
+                                    {% if past_appointments.has_previous %}
+                                        <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                        <a href="?page={{ past_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                                    {% endif %}
+                        
+                                    <span class="current">
+                                        Page {{ past_appointments.number }} of {{ past_appointments.paginator.num_pages }}.
+                                    </span>
+                        
+                                    {% if past_appointments.has_next %}
+                                        <a href="?page={{ past_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                        <a href="?page={{ past_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
                         </ul>
                     </div>
                 {% else %}
@@ -86,6 +103,23 @@
                                 </div>
                                 <br>
                             {% endfor %}
+                            <div class="pagination" style="justify-content: center;">
+                                <span class="step-links">
+                                    {% if booked_appointments.has_previous %}
+                                        <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                        <a href="?page={{ booked_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                                    {% endif %}
+                        
+                                    <span class="current">
+                                        Page {{ booked_appointments.number }} of {{ booked_appointments.paginator.num_pages }}.
+                                    </span>
+                        
+                                    {% if booked_appointments.has_next %}
+                                        <a href="?page={{ booked_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                        <a href="?page={{ booked_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
                         </ul>
                     </div>
                 {% else %}
@@ -119,6 +153,23 @@
                                 </div>
                                 <br>
                             {% endfor %}
+                            <div class="pagination" style="justify-content: center;">
+                                <span class="step-links">
+                                    {% if confirmed_appointments.has_previous %}
+                                        <a href="?page=1" style="text-decoration: none; color: black">&laquo; first</a>
+                                        <a href="?page={{ confirmed_appointments.previous_page_number }}" style="text-decoration: none; color: black">previous</a>
+                                    {% endif %}
+                        
+                                    <span class="current">
+                                        Page {{ confirmed_appointments.number }} of {{ confirmed_appointments.paginator.num_pages }}.
+                                    </span>
+                        
+                                    {% if confirmed_appointments.has_next %}
+                                        <a href="?page={{ confirmed_appointments.next_page_number }}" style="text-decoration: none; color: black">next</a>
+                                        <a href="?page={{ confirmed_appointments.paginator.num_pages }}" style="text-decoration: none; color: black">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
                         </ul>
                     </div>
                 {% else %}
