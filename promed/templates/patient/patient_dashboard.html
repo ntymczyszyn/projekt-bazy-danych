@@ -23,6 +23,7 @@
         <div class="row" >
             <section class="col-*-*" style="width: 30vw; height: 520px;">
                 <h2>Przeszłe wizyty</h2>
+                <br>
                 <form action="" method="get">
                     {% csrf_token %}
                     <input placeholder="Search" type="search" class="search_input" style="grid-area: search_box1" name="search_past" value="{{ search_past }}">
@@ -38,10 +39,12 @@
                                 <li>        
                                     {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                                 </li>
-                                <form action="{% url 'appointment_detail' pk=appointment.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" id="topright">Szczegóły</button>
-                                </form>
+                                <div class="button-container">
+                                    <form action="{% url 'appointment_detail' pk=appointment.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" id="topright">Szczegóły</button>
+                                    </form>
+                                </div>
                                 <br>
                             {% endfor %}
                         </ul>
@@ -53,6 +56,7 @@
             &nbsp;
             <section class="col-*-*" style="width: 30vw; height: 520px;">
                 <h2>Zarezerwowane wizyty</h2>
+                <br>
                 <form action="" method="get">
                     {% csrf_token %}
                     <input placeholder="Search" type="search" class="search_input" style="grid-area: search_box1" name="search_booked" value="{{ search_booked }}">
@@ -91,6 +95,7 @@
             &nbsp;
             <section class="col-*-*" style="width: 30vw; height: 520px;">
                 <h2>Potwierdzone wizyty</h2>
+                <br>
                 <form action="" method="get">
                     {% csrf_token %}
                     <input placeholder="Search" type="search" class="search_input" style="grid-area: search_box1" name="search_confirmed" value="{{ search_confirmed }}">
@@ -106,10 +111,12 @@
                                 <li>        
                                     {{ appointment.formatted_appointment_time }} - {{ appointment.facility_id }}
                                 </li>
-                                <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" id="topright">Szczegóły</button>
-                                </form>
+                                <div class="button-container">
+                                    <form action="{% url 'detail_cancel_appointment' pk=appointment.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" id="topright">Szczegóły</button>
+                                    </form>
+                                </div>
                                 <br>
                             {% endfor %}
                         </ul>

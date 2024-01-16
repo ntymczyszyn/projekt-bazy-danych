@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from datetime import date
 
-css_styles = 'form-group dropdown bg-light text.dark'
+css_styles = 'form-group dropdown bg-light text-dark'
 
 class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, label='Imię')
@@ -20,7 +20,16 @@ class SpecializationSearchForm(forms.Form):
     specialization = forms.ModelChoiceField(
         queryset=Specialization.objects.all(), 
         required=True, label='Specjalizacja', 
-        widget=forms.Select(attrs={'class':'form-group dropdown bg-info text-light'}))
+        widget=forms.Select(attrs={'class': css_styles}))
+    
+    city = forms.ModelChoiceField(
+        queryset=Facility.objects.values_list('city', flat=True).distinct(),
+        to_field_name='city',
+        empty_label=None,
+        required=True, label='Miasto', 
+        widget=forms.Select(attrs={'class': css_styles})
+    )
+    
     
 
 class AppointmentSearchForm(forms.Form):
@@ -33,18 +42,18 @@ class AppointmentSearchForm(forms.Form):
     #  tu by trzeba było usunąć możliwość wybrania siebie samego
     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), required=False, label='Lekarz', widget=forms.Select(attrs={'class': css_styles}))
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), required=False, label='Placówka', widget=forms.Select(attrs={'class': css_styles}))
-    # city = 
-    # date = forms.DateField(required=False, label='Zakres dni',widget=forms.DateInput( attrs = {'type': 'date', 'class':'form-group dropdown bg-info text-light'}))
     start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': css_styles}), label='Od')
     end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': css_styles}), label='Do')
     time_slot = forms.ChoiceField(choices=TIME_SLOT_CHOICES, required=False, label='Przedział czasowy',  widget=forms.Select( attrs={'class': css_styles}))
     
     def __init__(self, *args, **kwargs):
             doctor = kwargs.pop('doctor', None)
+            facilities = kwargs.pop('facilities', None)
             super(AppointmentSearchForm, self).__init__(*args, **kwargs)
 
             if doctor:
                 self.fields['doctor'].queryset = doctor
+                self.fields['facility'].queryset = facilities
 
 class PatientInfoForm(forms.Form):
     phone_number = forms.CharField(max_length=9, label='Numer telefonu')
@@ -68,8 +77,11 @@ class PatientInfoForm(forms.Form):
         checksum = sum(int(p) * w for p, w in zip(pesel, weights)) % 10
         if checksum != 0 or Patient.objects.filter(pesel=pesel).exists():
             raise ValidationError('Nieprawidłowy PESEL.')
-
+        
         return pesel
+
+class PatientUpdateInfoForm(forms.Form):
+    phone_number = forms.CharField(max_length=9, label='Numer telefonu')
 
 
 from datetime import timedelta, datetime
@@ -115,6 +127,7 @@ class AvailabilityForm(forms.Form):
     )
     specialization = forms.ModelChoiceField(queryset=Specialization.objects.none(), label='Specjalizacja', widget=forms.Select( attrs={'class': css_styles}))
     duration = forms.ChoiceField(choices=[(15, '15 minutes'), (30, '30 minut'), (45, '45 minut'), (60, '60 minut')], label='Czas trwania',  widget=forms.Select( attrs={'class': css_styles}))
+    # city_queryset = Facility.city
     # city = forms.ModelChoiceField(queryset=Facility.objects.only('city'), label='Placówka',  widget=forms.Select( attrs={'class': css_styles})) 
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(), label='Placówka',  widget=forms.Select( attrs={'class': css_styles}))
 

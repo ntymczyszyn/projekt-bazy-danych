@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from .models import Appointment, Patient, Doctor, Service, Specialization, Facility
-from .forms import AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm, SpecializationSearchForm
+from .forms import PatientUpdateInfoForm, AppointmentSearchForm, PatientInfoForm, CustomUserCreationForm, AvailabilityForm, SpecializationSearchForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
@@ -119,6 +119,21 @@ def complete_info_patient_view(request):
     return render(request, 'complete_patient_info.html', {'form': form})
 
 @login_required
+def change_info_patient_view(request):
+    patient = get_object_or_404(Patient, user_id=request.user)
+
+    if request.method == 'POST':
+        form = PatientUpdateInfoForm(request.POST)
+        if form.is_valid():
+            patient.phone_number = form.cleaned_data['phone_number']
+            patient.save()
+            return redirect('patient_dashboard')
+    else:
+        form = PatientUpdateInfoForm()
+
+    return render(request, 'phone_number_change.html', {'form': form})
+
+@login_required
 def patient_detail_view(request):
     patient = get_object_or_404(Patient, user_id=request.user)
     context = {
@@ -185,21 +200,24 @@ class PatientPasswordChangeView(PasswordChangeView):
 def appointment_search_specialization_view(request):
     form =  SpecializationSearchForm(request.GET)
     specializations = Specialization.objects.all()
+    cities = Facility.city
 
     if form.is_valid():
         specialization = form.cleaned_data.get('specialization')
-        if specialization:
-            return redirect('appointment_search', specialization_id=specialization.id)
+        city = form.cleaned_data.get('city')
+        if specialization and city:
+            return redirect('appointment_search', specialization_id=specialization.id, city=city)
 
-    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations})
+    return render(request, 'appointments_research_specialization.html', {'form': form, 'specializations': specializations, 'cities': cities})
 
 @login_required
-def appointment_search_patient_view(request,specialization_id):
+def appointment_search_patient_view(request, specialization_id, city):
     specialization = get_object_or_404(Specialization, id=specialization_id)
+    facilities = Facility.objects.filter(city=city)
     services = Service.objects.filter(specialzation_id=specialization)
     doctor = Doctor.objects.filter(service__in=services)
 
-    form = AppointmentSearchForm(request.GET, doctor=doctor)
+    form = AppointmentSearchForm(request.GET, doctor=doctor, facilities=facilities)
     appointments = []
 
     if request.method == 'GET' and form.is_valid():
@@ -276,7 +294,7 @@ def complete_cancel_appointment_view(request, pk):
         appointment.patient_id = None
         appointment.status = 'a'  
         appointment.save()
-        send_email_appointment_cancel.delay(request.user.patient, appointment.id)
+        send_email_appointment_cancel.delay(request.user.email, appointment.id)
         messages.success(request, 'Anulowano wizytę.')
     except Exception as e:
         messages.error(request, f'Błąd podczas odwływania wizyty: {str(e)}')

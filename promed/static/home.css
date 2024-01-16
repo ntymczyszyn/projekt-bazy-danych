@@ -1,6 +1,6 @@
 /* BODY */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Avantgarde;
     background-color: rgb(135, 175, 228);
 }
 
@@ -79,7 +79,7 @@ nav ul li:last-child {
 header {
   width: 500px;
   left:(50% - 250px);
-  height: 15vh;
+  height: 95px;
   padding: 16px;
   display: flex;
   align-items: center;
@@ -89,6 +89,7 @@ header {
   border: 1px solid #ccc;
   margin: auto;
   border-radius: 16px;
+  line-height: 30px;
 }
 
 /* MAIN  box gdzie znajduje się główny materiał ( jeżeli używamy więcej jak jeden blok - columny)*/
@@ -259,7 +260,10 @@ section {
   height: 1rem;
 }
 /* end */
-
+/* Do robienia linii */
+hr.solid {
+  border-top: 1px solid #dad7d7;
+}
 /* button */
 input[type=text], input[type=password] {
     width: 100%;

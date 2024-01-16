@@ -21,7 +21,7 @@ urlpatterns += [
     path('patient/dashboard', views.patient_dashboard_view, name="patient_dashboard"),
     path('patient/details', views.patient_detail_view, name='patient_detail'),
     path('patient/search/appointments/specialization', views.appointment_search_specialization_view, name='appointment_search_specialization'),
-    path('patient/search/appointments/<int:specialization_id>/', views.appointment_search_patient_view, name='appointment_search'),
+    path('patient/search/appointments/<int:specialization_id><str:city>/', views.appointment_search_patient_view, name='appointment_search'),
     path('pateint/info/complete', views.complete_info_patient_view, name='complete_patient_info'),
     path('patient/appointment/<uuid:pk>/detail', views.cancel_appointment_view, name='detail_cancel_appointment'),
     path('patient/appointment/<uuid:pk>/cancel/complete', views.complete_cancel_appointment_view, name='complete_appointment_cancellation'),
@@ -29,6 +29,8 @@ urlpatterns += [
     path('patient/appointment/<uuid:pk>/confirm', views.confirm_appointment_view, name='confirm_appointment'),
     path('patient/appointment/<uuid:pk>/confirm/complete', views.complete_confirm_appointment_view, name='complete_confirm_appointment'),
     path('patient/password-change/', views.PatientPasswordChangeView.as_view(), name='patient_password_change'),
+    path('patient/phone-number-change/', views.change_info_patient_view, name='patient_change_phone_number'),
+    
 ]
 
 urlpatterns += [

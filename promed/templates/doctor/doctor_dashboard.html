@@ -60,6 +60,7 @@
             &nbsp;
             <section class="col-*-4 align-self-start" style="width: 27vw; height: 520px;">
                 <h3>Zarezerwowane</h3>
+                <br>
                 {% if reserved_appointments %}
                     <form action="" method="get">
                         {% csrf_token %}
@@ -81,10 +82,12 @@
                                     </li>
                                     {% comment %}
                                     <li>
-                                        <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
-                                            {% csrf_token %}
-                                            <button type="submit" id="topright">Zrealizowana</button>
-                                        </form>
+                                        <div class="button-container">
+                                            <form action="{% url 'confirm_appointment_doctor' pk=appointment.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" id="topright">Zrealizowana</button>
+                                            </form>
+                                        </div>
                                     </li>
                                     {% endcomment %}
                                 </a>

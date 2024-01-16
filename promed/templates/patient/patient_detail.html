@@ -6,6 +6,10 @@
     <p><strong>Nazwisko:</strong> {{ last_name }}</p>
     <p><strong>Numer Telefonu:</strong> {{ phone_number }}</p>
     <p><strong>PESEL:</strong> {{ pesel }}</p>
+    <p><form action="{% url 'patient_change_phone_number' %}">
+        {% csrf_token %}
+        <button type="submit" id="topright">Zmień numer nelefonu</button>
+    </form></p>
     <p><form action="{% url 'patient_password_change' %}">
         {% csrf_token %}
         <button type="submit" id="topright">Zmień hasło</button>

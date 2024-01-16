@@ -5,8 +5,8 @@
 <main class="container-fluid" style="justify-content: space-evenly; align-items: center;">
   <div class="row" >
     <section class="col-*-*" style="width: 30vw; height: 520px;">
-      <h2>Wyszukiwarka wizyt u {{specialization}}</h2>
-      <form method="get" action="{% url 'appointment_search' specialization_id=specialization.id %}">
+      <h2 style="text-align: center;">Wyszukiwarka wizyt u {{specialization}}</h2>
+      <form method="get" action="{% url 'appointment_search' specialization_id=specialization.id city=city%}">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="hidden" name="submitted" value="1">
@@ -15,22 +15,22 @@
     </section> 
     {% if request.GET.submitted %}        
     &nbsp;
-    <section class="col-*-*" style="width: 30vw; height: 520px;">
-      <div style="margin-top: 20px;">
+    <section class="col-*-*" style="width: 50vw; height: 520px;">
+      <div style="margin-top: 0px;">
           {% if appointments %}
+          <h3>Znalezione wizyty:</h3>
+          <br>
             <ul class="appointments">
-              <h3>Znalezione wizyty:</h3>
-                <div style="width: 490px; height: 300px; overflow: auto;">
+                <div style="width: 47vw; height: 400px; overflow: auto;">
                   {% for appointment in appointments %}
-                    <li class="column1">        
+                    <div class="button-container">
                       {{ appointment }}
-                    </li>
-                    <li class="column2">
                       <form action="{% url 'book_appointment' pk=appointment.id %}">
                         {% csrf_token %}
                         <button type="submit" id="topright">Zarezerwuj</button>
                       </form>
-                    </li>
+                    </div>
+                    <hr class="solid">
                   {% endfor %}
                 </div>
             </ul>

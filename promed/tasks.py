@@ -21,7 +21,7 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMessage
 from django.conf import settings
 
-@shared_task(serializer='json', name="send_appointment_confirmation_mail")
+@shared_task(name="send_appointment_confirmation_mail")
 def send_email_appointment_confirmation(recipient, appointment_id):
     try:
         appointment = Appointment.objects.get(id=appointment_id)
@@ -45,7 +45,7 @@ def send_email_appointment_confirmation(recipient, appointment_id):
     except Appointment.DoesNotExist:
         return "Błąd: Wizyta nie istnieje."
 
-@shared_task(serializer='json', name="send_appointment_cancel_mail")
+@shared_task(name="send_appointment_cancel_mail")
 def send_email_appointment_cancel(recipient, appointment_id):
     try:
         appointment = Appointment.objects.get(id=appointment_id)
