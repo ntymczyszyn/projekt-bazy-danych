@@ -153,9 +153,9 @@ class AvailabilityForm(forms.Form):
             x += 1
             date = month_start + timedelta(days=x)
 
-        self.fields['selected_days'].widget.attrs.update({'class': 'd-flex flex-wrap mx-5'})
-        self.fields['selected_days'].choices = [(d, d)  for d in date_range]
-        # self.fields['selected_days'].choices = [(None, 'Select All')] + self.fields['selected_days'].choices 
+        self.fields['selected_days'].widget.attrs.update({'class': 'availability-doctor'})
+        self.fields['selected_days'].choices = [(d,  f"{d} \n({calendar.day_name[calendar.weekday(d.year, d.month, d.day)]})")  for d in date_range]
+        # self.fields['selected_days'].choices = [(None, 'Select All')] + self.fields['selected_days'].choices   calendar.weekday(d.year, d.month, d.day)
 
 
     def clean_selected_days(self):

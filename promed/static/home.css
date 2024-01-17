@@ -265,6 +265,14 @@ hr.solid {
   border-top: 1px solid #dad7d7;
 }
 
+/* test do boxów w availability */
+.availability-doctor {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 5rem;
+  margin-left: 5rem;
+  margin-top: 2rem;
+}
 
   /* Scroll bar */
 .scroll-container {
