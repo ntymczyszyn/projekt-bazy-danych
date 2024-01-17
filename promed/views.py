@@ -260,7 +260,7 @@ def appointment_search_patient_view(request, specialization_id, city):
         start_date = form.cleaned_data.get('start_date')
         end_date = form.cleaned_data.get('end_date')
         time_slot = form.cleaned_data.get('time_slot')
-        appointments = Appointment.objects.filter(status='a', service_id__specialzation_id=specialization, appointment_time__gte=timezone.now())
+        appointments = Appointment.objects.filter(status='a', service_id__specialzation_id=specialization, appointment_time__gte=timezone.now(), facility_id__city=city)
 
         if doctor:
             appointments = appointments.filter(service_id__doctor_id=doctor)
